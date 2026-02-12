@@ -655,7 +655,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
-          <div class="kpi-trend">64 deals</div>
+          <div class="kpi-trend" id="kpi-deals-count">...</div>
         </div>
         <div class="kpi-value" id="kpi-pipeline">$0</div>
         <div class="kpi-label">Pipeline Total</div>
@@ -685,7 +685,7 @@
       <div class="section-header">
         <div>
           <h2 class="section-title">Top 10 Open Deals</h2>
-          <p class="section-subtitle">64 deals activos • $540,000 USD total</p>
+          <p class="section-subtitle" id="dealsSubtitle">Cargando...</p>
         </div>
       </div>
 
@@ -746,50 +746,51 @@
       { company: 'Red Sea Global', value: '$12,000', contact: 'Stephen Cheesebrough', priority: '📊 Media', progress: 60, class: 'priority-medium' }
     ];
 
-    const MODAL_DATA = {
+    // MODAL_DATA - Se actualiza dinámicamente desde Supabase
+    let MODAL_DATA = {
       invitations: {
         title: 'Invitaciones Enviadas',
         stats: [
-          { label: 'Lemlist', value: '3,200' },
-          { label: 'Sales Robot', value: '2,558' },
-          { label: 'Últimas 24h', value: '+156' },
-          { label: 'Promedio diario', value: '~92' }
+          { label: 'Total', value: 'Cargando...' },
+          { label: 'Últimas 24h', value: 'Cargando...' },
+          { label: 'Promedio diario', value: 'Cargando...' },
+          { label: 'Status', value: '⏳ Cargando' }
         ]
       },
       acceptance: {
         title: 'Tasa de Aceptación',
         stats: [
-          { label: 'Actual', value: '23.7%' },
+          { label: 'Actual', value: 'Cargando...' },
           { label: 'Benchmark Min', value: '25%' },
           { label: 'Benchmark Max', value: '35%' },
-          { label: 'Tendencia', value: '↗ Mejorando' }
+          { label: 'Tendencia', value: 'Calculando...' }
         ]
       },
       positive: {
         title: 'Respuestas Positivas',
         stats: [
-          { label: 'Total', value: '102' },
-          { label: 'Tasa conversión', value: '26%' },
+          { label: 'Total', value: 'Cargando...' },
+          { label: 'Tasa conversión', value: 'Cargando...' },
           { label: 'Promedio industria', value: '15-20%' },
-          { label: 'Status', value: '✅ Excelente' }
+          { label: 'Status', value: '⏳ Cargando' }
         ]
       },
       meetings: {
         title: 'Reuniones Agendadas',
         stats: [
-          { label: 'Esta semana', value: '4' },
-          { label: 'Este mes', value: '16+' },
-          { label: 'Próximas', value: '3 programadas' },
-          { label: 'Tasa conversión', value: '15.7%' }
+          { label: 'Total', value: 'Cargando...' },
+          { label: 'Tasa conversión', value: 'Cargando...' },
+          { label: 'Próximas', value: 'Cargando...' },
+          { label: 'Status', value: '⏳ Cargando' }
         ]
       },
       pipeline: {
         title: 'Pipeline Total',
         stats: [
-          { label: 'Deals abiertos', value: '64' },
-          { label: 'Valor promedio', value: '$8,438' },
-          { label: 'Top deal', value: '$250,000' },
-          { label: 'Últimos 30 días', value: '+$120K' }
+          { label: 'Deals abiertos', value: 'Cargando...' },
+          { label: 'Valor promedio', value: 'Cargando...' },
+          { label: 'Total pipeline', value: 'Cargando...' },
+          { label: 'Status', value: '⏳ Cargando' }
         ]
       }
     };
@@ -824,6 +825,8 @@
         const positive = metrics.qualified_interested || 5;
         const meetings = metrics.meetings_scheduled || 0;
         const pipeline = metrics.total_pipeline || 219000;
+        const accepted = metrics.connections_accepted || 40;
+        const responses = metrics.total_responses || 29;
 
         // Animar con los valores reales
         animateValue('kpi-invitations', 0, invitations, 2000, '', '', true);
@@ -832,15 +835,52 @@
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, pipeline, 2000, '', '$', true);
 
+        // Actualizar MODAL_DATA con valores reales
+        MODAL_DATA.invitations.stats = [
+          { label: 'Total enviadas', value: invitations.toLocaleString() },
+          { label: 'Aceptadas', value: accepted.toLocaleString() },
+          { label: 'Tasa aceptación', value: acceptance.toFixed(1) + '%' },
+          { label: 'Status', value: acceptance > 25 ? '✅ Excelente' : '⚠️ Mejorable' }
+        ];
+
+        MODAL_DATA.acceptance.stats = [
+          { label: 'Actual', value: acceptance.toFixed(1) + '%' },
+          { label: 'Benchmark Min', value: '25%' },
+          { label: 'Benchmark Max', value: '35%' },
+          { label: 'Tendencia', value: acceptance > 30 ? '↗ Excelente' : acceptance > 25 ? '→ Bueno' : '↘ Mejorar' }
+        ];
+
+        const positiveRate = accepted > 0 ? ((positive / accepted) * 100).toFixed(1) : 0;
+        MODAL_DATA.positive.stats = [
+          { label: 'Total', value: positive.toLocaleString() },
+          { label: 'Tasa conversión', value: positiveRate + '%' },
+          { label: 'Promedio industria', value: '15-20%' },
+          { label: 'Status', value: positiveRate > 20 ? '✅ Excelente' : positiveRate > 15 ? '→ Bueno' : '↘ Mejorar' }
+        ];
+
+        const meetingRate = positive > 0 ? ((meetings / positive) * 100).toFixed(1) : 0;
+        MODAL_DATA.meetings.stats = [
+          { label: 'Total agendadas', value: meetings.toLocaleString() },
+          { label: 'De positivos', value: positive.toLocaleString() },
+          { label: 'Tasa conversión', value: meetingRate + '%' },
+          { label: 'Status', value: meetings > 0 ? '✅ Activo' : '⏳ Pendiente' }
+        ];
+
+        // Estos se actualizan desde loadDealsFromSupabase
+        // pero ponemos valores por defecto por si acaso
+        MODAL_DATA.pipeline.stats[0] = { label: 'Deals abiertos', value: '...' };
+        MODAL_DATA.pipeline.stats[1] = { label: 'Valor total', value: '$' + pipeline.toLocaleString() };
+
         console.log('✅ Datos cargados desde Supabase:', metrics);
+        console.log('✅ MODAL_DATA actualizado:', MODAL_DATA);
       } catch (error) {
         console.error('❌ Error cargando datos:', error);
-        // Fallback a datos estáticos
-        animateValue('kpi-invitations', 0, 5758, 2000, '', '', true);
-        animateValue('kpi-acceptance', 0, 23.7, 2000, '%');
-        animateValue('kpi-positive', 0, 102, 2000);
-        animateValue('kpi-meetings', 0, 16, 2000, '+');
-        animateValue('kpi-pipeline', 0, 540000, 2000, '', '$', true);
+        // Fallback a animaciones sin datos
+        animateValue('kpi-invitations', 0, 0, 2000, '', '', true);
+        animateValue('kpi-acceptance', 0, 0, 2000, '%');
+        animateValue('kpi-positive', 0, 0, 2000);
+        animateValue('kpi-meetings', 0, 0, 2000, '+');
+        animateValue('kpi-pipeline', 0, 0, 2000, '', '$', true);
       }
     }
 
@@ -1039,6 +1079,35 @@
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
       try {
+        // Cargar todos los deals para stats
+        const { data: allDeals, error: statsError } = await supabaseClient
+          .from('leads')
+          .select('deal_value')
+          .not('deal_value', 'is', null)
+          .gt('deal_value', 0);
+
+        if (statsError) throw statsError;
+
+        // Calcular stats
+        const totalDeals = allDeals.length;
+        const totalPipeline = allDeals.reduce((sum, d) => sum + parseFloat(d.deal_value), 0);
+        const avgDeal = totalDeals > 0 ? totalPipeline / totalDeals : 0;
+        const topDeal = allDeals.length > 0 ? Math.max(...allDeals.map(d => parseFloat(d.deal_value))) : 0;
+
+        // Actualizar UI con stats reales
+        document.getElementById('dealsSubtitle').textContent = 
+          `${totalDeals} deals activos • $${totalPipeline.toLocaleString()} USD total`;
+        document.getElementById('kpi-deals-count').textContent = `${totalDeals} deals`;
+
+        // Actualizar modal de pipeline
+        MODAL_DATA.pipeline.stats = [
+          { label: 'Deals abiertos', value: totalDeals.toLocaleString() },
+          { label: 'Valor total', value: '$' + totalPipeline.toLocaleString() },
+          { label: 'Valor promedio', value: '$' + Math.round(avgDeal).toLocaleString() },
+          { label: 'Top deal', value: '$' + topDeal.toLocaleString() }
+        ];
+
+        // Cargar top 10 deals
         const { data, error } = await supabaseClient
           .from('leads')
           .select('deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name')
@@ -1067,13 +1136,19 @@
           progress: stageToProgress[lead.deal_stage] || 50
         }));
 
-        console.log('✅ Deals cargados desde Supabase:', deals);
+        console.log('✅ Deals cargados desde Supabase:', {
+          totalDeals,
+          totalPipeline,
+          topDeals: deals
+        });
         
         // Renderizar con datos reales
         renderDealsWithData(deals);
       } catch (error) {
         console.error('❌ Error cargando deals:', error);
         // Fallback a datos estáticos
+        document.getElementById('dealsSubtitle').textContent = 'Error cargando datos';
+        document.getElementById('kpi-deals-count').textContent = '0 deals';
         renderDeals();
       }
     }
