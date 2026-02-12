@@ -1125,16 +1125,34 @@
         };
 
         // Convertir datos de Supabase al formato del dashboard
-        const deals = data.map((lead, idx) => ({
-          id: idx + 1,
-          title: lead.deal_title || `${lead.company} Deal`,
-          value: parseFloat(lead.deal_value),
-          contact: lead.first_name && lead.last_name 
-            ? `${lead.first_name} ${lead.last_name}`
-            : lead.company || 'Confidencial',
-          priority: lead.deal_value > 50000 ? 'high' : lead.deal_value > 20000 ? 'medium' : 'low',
-          progress: stageToProgress[lead.deal_stage] || 50
-        }));
+        const deals = data.map((lead, idx) => {
+          // Determinar el título
+          let title = lead.deal_title || 'Deal sin título';
+          
+          // Determinar el contacto/empresa
+          let contact = 'Confidencial';
+          if (lead.first_name && lead.last_name) {
+            contact = `${lead.first_name} ${lead.last_name}`;
+          } else if (lead.company) {
+            contact = lead.company;
+          } else if (lead.deal_title && !lead.deal_title.includes('Deal')) {
+            contact = lead.deal_title.replace(' Deal', '').replace(' deal', '');
+          }
+
+          // Si el título es muy genérico, usar company si existe
+          if (title === 'Deal sin título' && lead.company) {
+            title = `${lead.company} - Deal`;
+          }
+
+          return {
+            id: idx + 1,
+            title: title,
+            value: parseFloat(lead.deal_value),
+            contact: contact,
+            priority: lead.deal_value > 50000 ? 'high' : lead.deal_value > 20000 ? 'medium' : 'low',
+            progress: stageToProgress[lead.deal_stage] || 50
+          };
+        });
 
         console.log('✅ Deals cargados desde Supabase:', {
           totalDeals,
@@ -1188,6 +1206,22 @@
           showDealModal(deal);
         });
       });
+    }
+
+    // Modal específico para deals
+    function showDealModal(deal) {
+      const priorityText = deal.priority === 'high' ? '🔥 Alta Prioridad' : 
+                          deal.priority === 'medium' ? '⚡ Media Prioridad' : 
+                          '📌 Baja Prioridad';
+      
+      const stats = [
+        { label: 'Valor del deal', value: '$' + deal.value.toLocaleString() },
+        { label: 'Contacto', value: deal.contact },
+        { label: 'Prioridad', value: priorityText },
+        { label: 'Progreso', value: deal.progress + '%' }
+      ];
+      
+      showModal(deal.title, stats);
     }
 
     // Renderizar deals (fallback estático)
