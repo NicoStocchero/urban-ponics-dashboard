@@ -952,6 +952,12 @@
       </div>
     </div>
 
+    <!-- ============================================ -->
+    <!-- VISTAS / VIEWS -->
+    <!-- ============================================ -->
+    
+    <!-- OVERVIEW VIEW -->
+    <div class="view-section active" id="view-overview">
     <!-- KPIs Grid -->
     <div class="kpis-grid">
       <div class="kpi-card" data-type="invitations">
@@ -1048,6 +1054,107 @@
       </div>
 
       <div class="deals-grid" id="dealsGrid"></div>
+    </div>
+  </div>
+  </div><!-- #view-overview -->
+
+  <!-- COMPANIES VIEW -->
+  <div class="view-section" id="view-companies">
+    <div class="header">
+      <div class="logo-section">
+        <h1>🏢 Companies</h1>
+        <p class="subtitle">Hotels & Resorts Database</p>
+      </div>
+      <div class="update-section">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          <span data-i18n="live">LIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="companies-grid" id="companiesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; padding: 2rem;">
+      <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Loading companies data...</p>
+    </div>
+  </div>
+
+  <!-- LEADS VIEW -->
+  <div class="view-section" id="view-leads">
+    <div class="header">
+      <div class="logo-section">
+        <h1>👥 Leads</h1>
+        <p class="subtitle">Contact Database (7,352 leads)</p>
+      </div>
+      <div class="update-section">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          <span data-i18n="live">LIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="leadsTable" style="padding: 2rem;">
+      <p style="color: var(--text-muted); text-align: center;">Loading leads data...</p>
+    </div>
+  </div>
+
+  <!-- MEETINGS VIEW -->
+  <div class="view-section" id="view-meetings">
+    <div class="header">
+      <div class="logo-section">
+        <h1>📅 Meetings</h1>
+        <p class="subtitle">Scheduled Meetings (16 total)</p>
+      </div>
+      <div class="update-section">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          <span data-i18n="live">LIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="meetingsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; padding: 2rem;">
+      <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Loading meetings data...</p>
+    </div>
+  </div>
+
+  <!-- CAMPAIGNS VIEW -->
+  <div class="view-section" id="view-campaigns">
+    <div class="header">
+      <div class="logo-section">
+        <h1>📈 Campaigns</h1>
+        <p class="subtitle">Active Campaigns (11 total)</p>
+      </div>
+      <div class="update-section">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          <span data-i18n="live">LIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="campaignsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; padding: 2rem;">
+      <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Loading campaigns data...</p>
+    </div>
+  </div>
+
+  <!-- DEALS/PIPELINE VIEW -->
+  <div class="view-section" id="view-deals">
+    <div class="header">
+      <div class="logo-section">
+        <h1>💰 Pipeline</h1>
+        <p class="subtitle">Deals & Opportunities</p>
+      </div>
+      <div class="update-section">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          <span data-i18n="live">LIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="dealsView" style="padding: 2rem;">
+      <p style="color: var(--text-muted); text-align: center;">Loading deals data...</p>
     </div>
   </div>
 
@@ -1966,6 +2073,182 @@
         console.log('Navegando a:', view);
       });
     });
+
+    function renderCampaigns(campaigns) {
+      const grid = document.getElementById('campaignsGrid');
+      grid.innerHTML = campaigns.map((campaign, idx) => {
+        const acceptanceRate = ((campaign.accepted / campaign.total) * 100).toFixed(1);
+        const positiveRate = campaign.accepted > 0 ? ((campaign.positive / campaign.accepted) * 100).toFixed(1) : 0;
+        
+        return `
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+              <div style="flex: 1;">
+                <h3 style="color: var(--gold-light); font-size: 1rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif; line-height: 1.4;">
+                  ${campaign.name}
+                </h3>
+              </div>
+              <div style="background: ${idx < 3 ? 'linear-gradient(135deg, var(--gold), var(--gold-light))' : 'rgba(184,168,130,0.1)'}; color: ${idx < 3 ? '#000' : 'var(--gold)'}; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">
+                #${idx + 1}
+              </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <div style="color: var(--text-muted); font-size: 0.75rem;">Total</div>
+                <div style="color: white; font-weight: 600; font-size: 1.25rem;">${campaign.total}</div>
+              </div>
+              <div>
+                <div style="color: var(--text-muted); font-size: 0.75rem;">Accepted</div>
+                <div style="color: var(--green); font-weight: 600; font-size: 1.25rem;">${campaign.accepted || 0}</div>
+              </div>
+              <div>
+                <div style="color: var(--text-muted); font-size: 0.75rem;">Meetings</div>
+                <div style="color: var(--gold); font-weight: 600; font-size: 1.25rem;">${campaign.meeting || 0}</div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.5rem;">
+                  <span style="color: var(--text-muted);">Acceptance</span>
+                  <span style="color: var(--gold);">${acceptanceRate}%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="--progress: ${acceptanceRate}%"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.5rem;">
+                  <span style="color: var(--text-muted);">Positive Rate</span>
+                  <span style="color: var(--green);">${positiveRate}%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="--progress: ${positiveRate}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding-top: 1rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <div style="padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 0.75rem;">
+                <span style="color: var(--text-muted);">Messaged:</span>
+                <span style="color: white; font-weight: 600; margin-left: 0.25rem;">${campaign.messaged || 0}</span>
+              </div>
+              <div style="padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 0.75rem;">
+                <span style="color: var(--text-muted);">Positive:</span>
+                <span style="color: var(--gold); font-weight: 600; margin-left: 0.25rem;">${campaign.positive || 0}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadDealsFullData() {
+      try {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('*')
+          .or('status.eq.meeting,status.eq.positive');
+
+        if (error) throw error;
+
+        renderDealsView(data);
+      } catch (error) {
+        console.error('Error loading deals:', error);
+        document.getElementById('dealsView').innerHTML = 
+          `<p style="color: var(--text-muted);">Error loading deals data</p>`;
+      }
+    }
+
+    function renderDealsView(deals) {
+      const container = document.getElementById('dealsView');
+      
+      const meetings = deals.filter(d => d.status === 'meeting');
+      const positive = deals.filter(d => d.status === 'positive');
+
+      container.innerHTML = `
+        <div style="margin-bottom: 2rem;">
+          <h2 style="color: var(--gold); font-size: 1.5rem; margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">
+            🎯 Hot Opportunities
+          </h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, transparent 100%); border: 1px solid var(--green); border-radius: 12px; padding: 1.5rem;">
+              <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Meetings Scheduled</div>
+              <div style="color: var(--green); font-size: 2.5rem; font-weight: 700; font-family: 'Space Grotesk', monospace;">${meetings.length}</div>
+            </div>
+            <div style="background: linear-gradient(135deg, rgba(184,168,130,0.1) 0%, transparent 100%); border: 1px solid var(--gold); border-radius: 12px; padding: 1.5rem;">
+              <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Positive Responses</div>
+              <div style="color: var(--gold); font-size: 2.5rem; font-weight: 700; font-family: 'Space Grotesk', monospace;">${positive.length}</div>
+            </div>
+            <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, transparent 100%); border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem;">
+              <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total Pipeline</div>
+              <div style="color: #3b82f6; font-size: 2.5rem; font-weight: 700; font-family: 'Space Grotesk', monospace;">${deals.length}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+          <h3 style="color: var(--gold-light); font-size: 1.25rem; margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">
+            📅 Meetings (${meetings.length})
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem;">
+            ${meetings.length > 0 ? meetings.map(meeting => `
+              <div style="background: var(--card-bg); border: 1px solid var(--green); border-radius: 12px; padding: 1.5rem;">
+                <h4 style="color: var(--green); font-size: 1.125rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">
+                  ${meeting.first_name} ${meeting.last_name}
+                </h4>
+                <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${meeting.position || 'No position'}</div>
+                <div style="color: white; font-weight: 500; margin-bottom: 1rem;">${meeting.company || 'No company'}</div>
+                ${meeting.email ? `
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span style="color: var(--text-muted); font-size: 0.875rem;">${meeting.email}</span>
+                  </div>
+                ` : ''}
+                ${meeting.campaign ? `
+                  <div style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(34,197,94,0.05); border-radius: 6px; font-size: 0.75rem; color: var(--green);">
+                    ${meeting.campaign}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1;">No meetings yet</p>'}
+          </div>
+        </div>
+
+        <div>
+          <h3 style="color: var(--gold-light); font-size: 1.25rem; margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">
+            ⭐ Positive Responses (${positive.length})
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem;">
+            ${positive.length > 0 ? positive.map(lead => `
+              <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+                <h4 style="color: var(--gold-light); font-size: 1.125rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">
+                  ${lead.first_name} ${lead.last_name}
+                </h4>
+                <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${lead.position || 'No position'}</div>
+                <div style="color: white; font-weight: 500; margin-bottom: 1rem;">${lead.company || 'No company'}</div>
+                ${lead.email ? `
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span style="color: var(--text-muted); font-size: 0.875rem;">${lead.email}</span>
+                  </div>
+                ` : ''}
+                ${lead.campaign ? `
+                  <div style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(184,168,130,0.05); border-radius: 6px; font-size: 0.75rem; color: var(--gold);">
+                    ${lead.campaign}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1;">No positive responses yet</p>'}
+          </div>
+        </div>
+      `;
+    }
 
     console.log('Dashboard loaded successfully!');
   </script>
