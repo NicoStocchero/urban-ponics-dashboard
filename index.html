@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Ponics - Investor Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  
+  <style>
+    :root {
+      --gold: #B8A882;
+      --gold-light: #d4c4a0;
+      --gold-dark: #9d8e6d;
+      --green: #22c55e;
+      --green-light: #4ade80;
+      --blue: #3b82f6;
+      --bg-black: #000000;
+      --bg-dark: #0a0a0a;
+      --bg-card: rgba(184, 168, 130, 0.05);
+      --border: rgba(184, 168, 130, 0.15);
+      --border-hover: rgba(184, 168, 130, 0.4);
+      --text-primary: #ffffff;
+      --text-muted: #888888;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-black);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(184, 168, 130, 0.03) 0%, transparent 50%);
+      animation: pulse 15s ease-in-out infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .dashboard {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 2rem;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      padding: 1.5rem 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo-img {
+      height: 50px;
+      filter: brightness(1.1);
+      transition: all 0.3s;
+    }
+
+    .logo-img:hover {
+      filter: brightness(1.3) drop-shadow(0 0 20px rgba(184, 168, 130, 0.5));
+      transform: scale(1.05);
+    }
+
+    .title-section h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .update-section {
+      text-align: right;
+    }
+
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--green);
+      margin-bottom: 0.5rem;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+    }
+
+    .update-time {
+      font-size: 0.875rem;
+      color: var(--gold);
+      font-weight: 600;
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    /* KPIs Grid */
+    .kpis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .kpi-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--border-hover);
+      box-shadow: 0 20px 60px rgba(184, 168, 130, 0.2);
+    }
+
+    .kpi-card:hover::before {
+      opacity: 1;
+    }
+
+    .kpi-card:active {
+      transform: translateY(-6px) scale(1.01);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .kpi-card:nth-child(1) { animation-delay: 0s; }
+    .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+    .kpi-card:nth-child(3) { animation-delay: 0.2s; }
+    .kpi-card:nth-child(4) { animation-delay: 0.3s; }
+    .kpi-card:nth-child(5) { animation-delay: 0.4s; }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.1), rgba(184, 168, 130, 0.05));
+      border-radius: 12px;
+      color: var(--gold);
+    }
+
+    .kpi-trend {
+      font-size: 0.75rem;
+      color: var(--green);
+      background: rgba(34, 197, 94, 0.1);
+      padding: 0.375rem 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    .kpi-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      animation: fadeInUp 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--gold);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .section-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(184, 168, 130, 0.05);
+      padding: 0.375rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .filter-btn {
+      padding: 0.625rem 1.25rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .filter-btn:hover {
+      color: var(--gold);
+      background: rgba(184, 168, 130, 0.1);
+    }
+
+    .filter-btn.active {
+      background: var(--gold);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(184, 168, 130, 0.3);
+    }
+
+    #performanceChart {
+      margin-top: 2rem;
+    }
+
+    /* Deals Grid */
+    .deals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .deal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .deal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .deal-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      border-color: var(--border-hover);
+      box-shadow: 0 15px 40px rgba(184, 168, 130, 0.15);
+    }
+
+    .deal-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .deal-card:active {
+      transform: translateY(-3px) scale(1.01);
+    }
+
+    .deal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .deal-company {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .deal-priority {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .priority-hot {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+
+    .priority-high {
+      background: rgba(59, 130, 246, 0.15);
+      color: #3b82f6;
+    }
+
+    .priority-medium {
+      background: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+    }
+
+    .deal-contact {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .deal-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--gold);
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    .deal-progress {
+      margin-top: 1rem;
+      height: 4px;
+      background: rgba(184, 168, 130, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .deal-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--green));
+      border-radius: 2px;
+      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, rgba(10, 10, 10, 0.98), rgba(20, 20, 20, 0.98));
+      border: 1px solid var(--border-hover);
+      border-radius: 24px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(184, 168, 130, 0.1);
+      color: var(--gold);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: rgba(184, 168, 130, 0.2);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      color: var(--text-primary);
+    }
+
+    .modal-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem;
+      background: rgba(184, 168, 130, 0.03);
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s;
+    }
+
+    .modal-stat:hover {
+      background: rgba(184, 168, 130, 0.06);
+      transform: translateX(5px);
+    }
+
+    .modal-stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .modal-stat-value {
+      color: var(--gold);
+      font-weight: 700;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 1.125rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .kpis-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-value {
+        font-size: 2.5rem;
+      }
+
+      .deals-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-buttons {
+        width: 100%;
+      }
+
+      .filter-btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-section">
+        <img src="urbanponicsLogoHorizontal.png" alt="Urban Ponics" class="logo-img">
+        <div class="title-section">
+          <h1>Investor Dashboard</h1>
+          <p class="subtitle">Real-time Sales Intelligence</p>
+        </div>
+      </div>
+      <div class="update-section">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          LIVE
+        </div>
+        <div class="update-time" id="updateTime"></div>
+      </div>
+    </div>
+
+    <!-- KPIs Grid -->
+    <div class="kpis-grid">
+      <div class="kpi-card" data-type="invitations">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </div>
+          <div class="kpi-trend">+431%</div>
+        </div>
+        <div class="kpi-value" id="kpi-invitations">0</div>
+        <div class="kpi-label">Invitaciones Enviadas</div>
+      </div>
+
+      <div class="kpi-card" data-type="acceptance">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+          </div>
+          <div class="kpi-trend">Benchmark ✓</div>
+        </div>
+        <div class="kpi-value" id="kpi-acceptance">0%</div>
+        <div class="kpi-label">Tasa Aceptación</div>
+      </div>
+
+      <div class="kpi-card" data-type="positive">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="kpi-trend">+168%</div>
+        </div>
+        <div class="kpi-value" id="kpi-positive">0</div>
+        <div class="kpi-label">Respuestas Positivas</div>
+      </div>
+
+      <div class="kpi-card" data-type="meetings">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div class="kpi-trend">+167%</div>
+        </div>
+        <div class="kpi-value" id="kpi-meetings">0+</div>
+        <div class="kpi-label">Reuniones Agendadas</div>
+      </div>
+
+      <div class="kpi-card" data-type="pipeline">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="kpi-trend">64 deals</div>
+        </div>
+        <div class="kpi-value" id="kpi-pipeline">$0</div>
+        <div class="kpi-label">Pipeline Total</div>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Performance Timeline 2026</h2>
+          <p class="section-subtitle">Tendencia de invitaciones, aceptaciones y respuestas positivas</p>
+        </div>
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-period="Q1">Q1</button>
+          <button class="filter-btn" data-period="Q2">Q2</button>
+          <button class="filter-btn" data-period="Q3">Q3</button>
+          <button class="filter-btn" data-period="Q4">Q4</button>
+        </div>
+      </div>
+
+      <div id="performanceChart"></div>
+    </div>
+
+    <!-- Deals Grid -->
+    <div>
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Top 10 Open Deals</h2>
+          <p class="section-subtitle">64 deals activos • $540,000 USD total</p>
+        </div>
+      </div>
+
+      <div class="deals-grid" id="dealsGrid"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle"></h3>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // Datos por período
+    const DATA_BY_PERIOD = {
+      'Q1': {
+        categories: ['Ene', 'Feb', 'Mar'],
+        invitations: [850, 1420, 1680],
+        accepted: [195, 342, 405],
+        positive: [18, 31, 38]
+      },
+      'Q2': {
+        categories: ['Abr', 'May', 'Jun'],
+        invitations: [1250, 890, 668],
+        accepted: [298, 212, 159],
+        positive: [26, 19, 14]
+      },
+      'Q3': {
+        categories: ['Jul', 'Ago', 'Sep'],
+        invitations: [420, 380, 520],
+        accepted: [98, 89, 125],
+        positive: [9, 8, 11]
+      },
+      'Q4': {
+        categories: ['Oct', 'Nov', 'Dic'],
+        invitations: [650, 780, 920],
+        accepted: [156, 187, 221],
+        positive: [14, 17, 20]
+      }
+    };
+
+    const DEALS_DATA = [
+      { company: 'Jazamango', value: '$250,000', contact: '-', priority: '🔥 Hot', progress: 85, class: 'priority-hot' },
+      { company: 'DAR AL OMRAN', value: '$100,000', contact: '-', priority: '🔥 Hot', progress: 75, class: 'priority-hot' },
+      { company: 'Cheval Blanc', value: '$50,000', contact: 'Jan Valasek (GM)', priority: '🔥 Hot', progress: 90, class: 'priority-hot' },
+      { company: 'Four Seasons Landaa', value: '$40,000', contact: 'Farhan Arif', priority: '🔥 Hot', progress: 80, class: 'priority-hot' },
+      { company: 'Four Seasons Thailand', value: '$40,000', contact: 'Anthony Tschudin', priority: '⚡ Alta', progress: 70, class: 'priority-high' },
+      { company: 'NEOM (Sharma Valley)', value: '$25,000', contact: 'Marc Ehler', priority: '⚡ Alta', progress: 65, class: 'priority-high' },
+      { company: 'Attitude Hotels', value: '$20,000', contact: 'Aurelie + Juliette', priority: '🔥 Hot', progress: 85, class: 'priority-hot' },
+      { company: 'Six Senses', value: '$20,000', contact: 'Daniel Weinberg', priority: '🔥 Hot', progress: 80, class: 'priority-hot' },
+      { company: 'Majid Al Futtaim', value: '$15,000', contact: 'Masato Kametani', priority: '📊 Media', progress: 55, class: 'priority-medium' },
+      { company: 'Red Sea Global', value: '$12,000', contact: 'Stephen Cheesebrough', priority: '📊 Media', progress: 60, class: 'priority-medium' }
+    ];
+
+    const MODAL_DATA = {
+      invitations: {
+        title: 'Invitaciones Enviadas',
+        stats: [
+          { label: 'Lemlist', value: '3,200' },
+          { label: 'Sales Robot', value: '2,558' },
+          { label: 'Últimas 24h', value: '+156' },
+          { label: 'Promedio diario', value: '~92' }
+        ]
+      },
+      acceptance: {
+        title: 'Tasa de Aceptación',
+        stats: [
+          { label: 'Actual', value: '23.7%' },
+          { label: 'Benchmark Min', value: '25%' },
+          { label: 'Benchmark Max', value: '35%' },
+          { label: 'Tendencia', value: '↗ Mejorando' }
+        ]
+      },
+      positive: {
+        title: 'Respuestas Positivas',
+        stats: [
+          { label: 'Total', value: '102' },
+          { label: 'Tasa conversión', value: '26%' },
+          { label: 'Promedio industria', value: '15-20%' },
+          { label: 'Status', value: '✅ Excelente' }
+        ]
+      },
+      meetings: {
+        title: 'Reuniones Agendadas',
+        stats: [
+          { label: 'Esta semana', value: '4' },
+          { label: 'Este mes', value: '16+' },
+          { label: 'Próximas', value: '3 programadas' },
+          { label: 'Tasa conversión', value: '15.7%' }
+        ]
+      },
+      pipeline: {
+        title: 'Pipeline Total',
+        stats: [
+          { label: 'Deals abiertos', value: '64' },
+          { label: 'Valor promedio', value: '$8,438' },
+          { label: 'Top deal', value: '$250,000' },
+          { label: 'Últimos 30 días', value: '+$120K' }
+        ]
+      }
+    };
+
+    let chart;
+    let currentPeriod = 'Q1';
+
+    // Actualizar fecha/hora
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('updateTime').textContent = now.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    updateTime();
+    setInterval(updateTime, 60000);
+
+    // Animar KPIs
+    function animateValue(id, start, end, duration, suffix = '', prefix = '', format = false) {
+      const obj = document.getElementById(id);
+      const range = end - start;
+      const increment = range / 60;
+      let current = start;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= end) {
+          current = end;
+          clearInterval(timer);
+        }
+        
+        const displayValue = format 
+          ? `${prefix}${Math.floor(current).toLocaleString()}${suffix}`
+          : `${prefix}${current.toFixed(suffix === '%' ? 1 : 0)}${suffix}`;
+        
+        obj.textContent = displayValue;
+      }, duration / 60);
+    }
+
+    // Iniciar animaciones KPIs
+    setTimeout(() => {
+      animateValue('kpi-invitations', 0, 5758, 2000, '', '', true);
+      animateValue('kpi-acceptance', 0, 23.7, 2000, '%');
+      animateValue('kpi-positive', 0, 102, 2000);
+      animateValue('kpi-meetings', 0, 16, 2000, '+');
+      animateValue('kpi-pipeline', 0, 540000, 2000, '', '$', true);
+    }, 800);
+
+    // Crear gráfico con ApexCharts
+    function createChart(period) {
+      const data = DATA_BY_PERIOD[period];
+
+      const options = {
+        series: [
+          {
+            name: 'Invitaciones',
+            data: data.invitations
+          },
+          {
+            name: 'Aceptadas',
+            data: data.accepted
+          },
+          {
+            name: 'Positivas',
+            data: data.positive
+          }
+        ],
+        chart: {
+          type: 'area',
+          height: 400,
+          background: 'transparent',
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: false
+          },
+          animations: {
+            enabled: true,
+            easing: 'easeinout',
+            speed: 800,
+            animateGradually: {
+              enabled: true,
+              delay: 150
+            },
+            dynamicAnimation: {
+              enabled: true,
+              speed: 350
+            }
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 3
+        },
+        xaxis: {
+          categories: data.categories,
+          labels: {
+            style: {
+              colors: '#888888',
+              fontSize: '12px',
+              fontFamily: 'Space Grotesk, monospace',
+              fontWeight: 600
+            }
+          },
+          axisBorder: {
+            show: false
+          },
+          axisTicks: {
+            show: false
+          }
+        },
+        yaxis: {
+          labels: {
+            style: {
+              colors: '#888888',
+              fontSize: '12px',
+              fontFamily: 'Space Grotesk, monospace'
+            }
+          }
+        },
+        colors: ['#B8A882', '#22c55e', '#3b82f6'],
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.4,
+            opacityTo: 0.1,
+            stops: [0, 90, 100]
+          }
+        },
+        grid: {
+          borderColor: 'rgba(184, 168, 130, 0.1)',
+          strokeDashArray: 3
+        },
+        legend: {
+          position: 'top',
+          horizontalAlign: 'left',
+          labels: {
+            colors: '#888888'
+          },
+          markers: {
+            width: 12,
+            height: 12,
+            radius: 3
+          },
+          itemMargin: {
+            horizontal: 20
+          }
+        },
+        tooltip: {
+          theme: 'dark',
+          x: {
+            show: true,
+            formatter: function(val) {
+              return val + ' 2026';
+            }
+          },
+          y: {
+            formatter: function(val) {
+              return val.toLocaleString();
+            }
+          },
+          style: {
+            fontSize: '12px',
+            fontFamily: 'Inter, sans-serif'
+          }
+        }
+      };
+
+      if (chart) {
+        chart.destroy();
+      }
+
+      chart = new ApexCharts(document.querySelector("#performanceChart"), options);
+      chart.render();
+    }
+
+    // Inicializar gráfico
+    createChart('Q1');
+
+    // Event listeners para filtros
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        console.log('Filter clicked:', this.dataset.period);
+        
+        // Actualizar botones activos
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Actualizar gráfico
+        const period = this.dataset.period;
+        currentPeriod = period;
+        createChart(period);
+      });
+    });
+
+    // Renderizar deals
+    function renderDeals() {
+      const grid = document.getElementById('dealsGrid');
+      grid.innerHTML = DEALS_DATA.map((deal, idx) => `
+        <div class="deal-card" data-deal='${JSON.stringify(deal)}'>
+          <div class="deal-header">
+            <div class="deal-company">${deal.company}</div>
+            <div class="deal-priority ${deal.class}">${deal.priority}</div>
+          </div>
+          <div class="deal-contact">${deal.contact}</div>
+          <div class="deal-value">${deal.value}</div>
+          <div class="deal-progress">
+            <div class="deal-progress-bar" style="width: ${deal.progress}%"></div>
+          </div>
+        </div>
+      `).join('');
+
+      // Event listeners para deals
+      document.querySelectorAll('.deal-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const deal = JSON.parse(this.dataset.deal);
+          console.log('Deal clicked:', deal.company);
+          showModal(deal.company, [
+            { label: 'Valor', value: deal.value },
+            { label: 'Contacto', value: deal.contact },
+            { label: 'Prioridad', value: deal.priority },
+            { label: 'Progreso', value: `${deal.progress}%` }
+          ]);
+        });
+      });
+    }
+
+    renderDeals();
+
+    // Event listeners para KPIs
+    document.querySelectorAll('.kpi-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const type = this.dataset.type;
+        console.log('KPI clicked:', type);
+        const data = MODAL_DATA[type];
+        if (data) {
+          showModal(data.title, data.stats);
+        }
+      });
+    });
+
+    // Funciones para modal
+    function showModal(title, stats) {
+      console.log('Showing modal:', title);
+      const modal = document.getElementById('modal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+
+      modalTitle.textContent = title;
+      modalBody.innerHTML = stats.map(stat => `
+        <div class="modal-stat">
+          <span class="modal-stat-label">${stat.label}</span>
+          <span class="modal-stat-value">${stat.value}</span>
+        </div>
+      `).join('');
+
+      modal.classList.add('show');
+    }
+
+    function closeModal() {
+      console.log('Closing modal');
+      document.getElementById('modal').classList.remove('show');
+    }
+
+    // Event listeners para cerrar modal
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // También cerrar con ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    console.log('Dashboard loaded successfully!');
+  </script>
+</body>
+</html>

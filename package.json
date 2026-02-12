@@ -1,0 +1,17 @@
+{
+  "name": "urban-ponics-dashboard",
+  "version": "1.0.0",
+  "description": "Urban Ponics Investor Dashboard - Real-time Sales Intelligence",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "dashboard",
+    "urban-ponics",
+    "sales",
+    "analytics"
+  ],
+  "author": "Urban Ponics",
+  "license": "MIT"
+}
