@@ -115,6 +115,42 @@
 
     .update-section {
       text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .language-selector {
+      display: flex;
+      gap: 0.25rem;
+      background: rgba(184, 168, 130, 0.05);
+      padding: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.375rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    .lang-btn:hover {
+      background: rgba(184, 168, 130, 0.1);
+      color: var(--gold-light);
+    }
+
+    .lang-btn.active {
+      background: var(--gold);
+      color: #000000;
     }
 
     .live-indicator {
@@ -586,9 +622,14 @@
         </div>
       </div>
       <div class="update-section">
+        <div class="language-selector">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="es">ES</button>
+          <button class="lang-btn" data-lang="nl">NL</button>
+        </div>
         <div class="live-indicator">
           <span class="live-dot"></span>
-          LIVE
+          <span data-i18n="live">LIVE</span>
         </div>
         <div class="update-time" id="updateTime"></div>
       </div>
@@ -749,54 +790,303 @@
     // MODAL_DATA - Se actualiza dinámicamente desde Supabase
     let MODAL_DATA = {
       invitations: {
-        title: 'Invitaciones Enviadas',
+        title: 'Invitations Sent',
         stats: [
-          { label: 'Total', value: 'Cargando...' },
-          { label: 'Últimas 24h', value: 'Cargando...' },
-          { label: 'Promedio diario', value: 'Cargando...' },
-          { label: 'Status', value: '⏳ Cargando' }
+          { label: 'Total', value: 'Loading...' },
+          { label: 'Last 24h', value: 'Loading...' },
+          { label: 'Daily avg', value: 'Loading...' },
+          { label: 'Status', value: '⏳ Loading' }
         ]
       },
       acceptance: {
-        title: 'Tasa de Aceptación',
+        title: 'Acceptance Rate',
         stats: [
-          { label: 'Actual', value: 'Cargando...' },
-          { label: 'Benchmark Min', value: '25%' },
-          { label: 'Benchmark Max', value: '35%' },
-          { label: 'Tendencia', value: 'Calculando...' }
+          { label: 'Current', value: 'Loading...' },
+          { label: 'Min Benchmark', value: '25%' },
+          { label: 'Max Benchmark', value: '35%' },
+          { label: 'Trend', value: 'Calculating...' }
         ]
       },
       positive: {
-        title: 'Respuestas Positivas',
+        title: 'Positive Responses',
         stats: [
-          { label: 'Total', value: 'Cargando...' },
-          { label: 'Tasa conversión', value: 'Cargando...' },
-          { label: 'Promedio industria', value: '15-20%' },
-          { label: 'Status', value: '⏳ Cargando' }
+          { label: 'Total', value: 'Loading...' },
+          { label: 'Conversion rate', value: 'Loading...' },
+          { label: 'Industry avg', value: '15-20%' },
+          { label: 'Status', value: '⏳ Loading' }
         ]
       },
       meetings: {
-        title: 'Reuniones Agendadas',
+        title: 'Meetings Scheduled',
         stats: [
-          { label: 'Total', value: 'Cargando...' },
-          { label: 'Tasa conversión', value: 'Cargando...' },
-          { label: 'Próximas', value: 'Cargando...' },
-          { label: 'Status', value: '⏳ Cargando' }
+          { label: 'Total', value: 'Loading...' },
+          { label: 'Conversion rate', value: 'Loading...' },
+          { label: 'Upcoming', value: 'Loading...' },
+          { label: 'Status', value: '⏳ Loading' }
         ]
       },
       pipeline: {
-        title: 'Pipeline Total',
+        title: 'Total Pipeline',
         stats: [
-          { label: 'Deals abiertos', value: 'Cargando...' },
-          { label: 'Valor promedio', value: 'Cargando...' },
-          { label: 'Total pipeline', value: 'Cargando...' },
-          { label: 'Status', value: '⏳ Cargando' }
+          { label: 'Open deals', value: 'Loading...' },
+          { label: 'Average value', value: 'Loading...' },
+          { label: 'Total pipeline', value: 'Loading...' },
+          { label: 'Status', value: '⏳ Loading' }
         ]
       }
     };
 
     let chart;
     let currentPeriod = 'Q1';
+    let currentLang = localStorage.getItem('dashboard_lang') || 'en';
+
+    // Sistema de traducciones
+    const translations = {
+      en: {
+        // Header
+        dashboardTitle: 'Investor Dashboard',
+        dashboardSubtitle: 'Real-time Sales Intelligence',
+        live: 'LIVE',
+        
+        // KPIs
+        invitationsSent: 'Invitations Sent',
+        acceptanceRate: 'Acceptance Rate',
+        positiveResponses: 'Positive Responses',
+        meetingsScheduled: 'Meetings Scheduled',
+        totalPipeline: 'Total Pipeline',
+        benchmark: 'Benchmark',
+        deals: 'deals',
+        
+        // Chart Section
+        performanceTimeline: 'Performance Timeline',
+        invitations: 'Invitations',
+        accepted: 'Accepted',
+        positive: 'Positive',
+        
+        // Deals Section
+        topDeals: 'Top 10 Open Deals',
+        dealsActive: 'deals active',
+        total: 'total',
+        progress: 'Progress',
+        high: 'High',
+        medium: 'Medium',
+        low: 'Low',
+        
+        // Modal
+        close: 'Close',
+        loading: 'Loading...',
+        actual: 'Current',
+        benchmarkMin: 'Min Benchmark',
+        benchmarkMax: 'Max Benchmark',
+        trend: 'Trend',
+        excellent: 'Excellent',
+        good: 'Good',
+        improving: 'Improving',
+        pending: 'Pending',
+        industryAvg: 'Industry Average',
+        status: 'Status',
+        totalSent: 'Total sent',
+        acceptedCount: 'Accepted',
+        conversionRate: 'Conversion rate',
+        avgDealValue: 'Average value',
+        openDeals: 'Open deals',
+        totalScheduled: 'Total scheduled',
+        fromPositive: 'From positive',
+        active: 'Active',
+        
+        // Modal Titles
+        modalInvitationsTitle: 'Invitations Sent',
+        modalAcceptanceTitle: 'Acceptance Rate',
+        modalPositiveTitle: 'Positive Responses',
+        modalMeetingsTitle: 'Meetings Scheduled',
+        modalPipelineTitle: 'Total Pipeline'
+      },
+      es: {
+        // Header
+        dashboardTitle: 'Dashboard Inversores',
+        dashboardSubtitle: 'Inteligencia de Ventas en Tiempo Real',
+        live: 'EN VIVO',
+        
+        // KPIs
+        invitationsSent: 'Invitaciones Enviadas',
+        acceptanceRate: 'Tasa de Aceptación',
+        positiveResponses: 'Respuestas Positivas',
+        meetingsScheduled: 'Reuniones Agendadas',
+        totalPipeline: 'Pipeline Total',
+        benchmark: 'Referencia',
+        deals: 'deals',
+        
+        // Chart Section
+        performanceTimeline: 'Línea de Tiempo',
+        invitations: 'Invitaciones',
+        accepted: 'Aceptadas',
+        positive: 'Positivas',
+        
+        // Deals Section
+        topDeals: 'Top 10 Deals Abiertos',
+        dealsActive: 'deals activos',
+        total: 'total',
+        progress: 'Progreso',
+        high: 'Alta',
+        medium: 'Media',
+        low: 'Baja',
+        
+        // Modal
+        close: 'Cerrar',
+        loading: 'Cargando...',
+        actual: 'Actual',
+        benchmarkMin: 'Mínimo Referencia',
+        benchmarkMax: 'Máximo Referencia',
+        trend: 'Tendencia',
+        excellent: 'Excelente',
+        good: 'Bueno',
+        improving: 'Mejorando',
+        pending: 'Pendiente',
+        industryAvg: 'Promedio industria',
+        status: 'Estado',
+        totalSent: 'Total enviadas',
+        acceptedCount: 'Aceptadas',
+        conversionRate: 'Tasa conversión',
+        avgDealValue: 'Valor promedio',
+        openDeals: 'Deals abiertos',
+        totalScheduled: 'Total agendadas',
+        fromPositive: 'De positivos',
+        active: 'Activo',
+        
+        // Modal Titles
+        modalInvitationsTitle: 'Invitaciones Enviadas',
+        modalAcceptanceTitle: 'Tasa de Aceptación',
+        modalPositiveTitle: 'Respuestas Positivas',
+        modalMeetingsTitle: 'Reuniones Agendadas',
+        modalPipelineTitle: 'Pipeline Total'
+      },
+      nl: {
+        // Header
+        dashboardTitle: 'Investeerders Dashboard',
+        dashboardSubtitle: 'Real-time Verkoop Intelligentie',
+        live: 'LIVE',
+        
+        // KPIs
+        invitationsSent: 'Uitnodigingen Verzonden',
+        acceptanceRate: 'Acceptatiepercentage',
+        positiveResponses: 'Positieve Reacties',
+        meetingsScheduled: 'Geplande Vergaderingen',
+        totalPipeline: 'Totale Pipeline',
+        benchmark: 'Benchmark',
+        deals: 'deals',
+        
+        // Chart Section
+        performanceTimeline: 'Prestatie Tijdlijn',
+        invitations: 'Uitnodigingen',
+        accepted: 'Geaccepteerd',
+        positive: 'Positief',
+        
+        // Deals Section
+        topDeals: 'Top 10 Open Deals',
+        dealsActive: 'actieve deals',
+        total: 'totaal',
+        progress: 'Voortgang',
+        high: 'Hoog',
+        medium: 'Gemiddeld',
+        low: 'Laag',
+        
+        // Modal
+        close: 'Sluiten',
+        loading: 'Laden...',
+        actual: 'Actueel',
+        benchmarkMin: 'Min Benchmark',
+        benchmarkMax: 'Max Benchmark',
+        trend: 'Trend',
+        excellent: 'Uitstekend',
+        good: 'Goed',
+        improving: 'Verbeterend',
+        pending: 'In afwachting',
+        industryAvg: 'Industrie gemiddelde',
+        status: 'Status',
+        totalSent: 'Totaal verzonden',
+        acceptedCount: 'Geaccepteerd',
+        conversionRate: 'Conversie percentage',
+        avgDealValue: 'Gemiddelde waarde',
+        openDeals: 'Open deals',
+        totalScheduled: 'Totaal gepland',
+        fromPositive: 'Van positief',
+        active: 'Actief',
+        
+        // Modal Titles
+        modalInvitationsTitle: 'Uitnodigingen Verzonden',
+        modalAcceptanceTitle: 'Acceptatiepercentage',
+        modalPositiveTitle: 'Positieve Reacties',
+        modalMeetingsTitle: 'Geplande Vergaderingen',
+        modalPipelineTitle: 'Totale Pipeline'
+      }
+    };
+
+    // Función para traducir
+    function t(key) {
+      return translations[currentLang][key] || key;
+    }
+
+    // Función para cambiar idioma
+    function changeLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('dashboard_lang', lang);
+      
+      // Actualizar botones
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      
+      // Actualizar todos los textos
+      updateAllTexts();
+    }
+
+    // Función para actualizar todos los textos
+    function updateAllTexts() {
+      // Header
+      document.querySelector('.title-section h1').textContent = t('dashboardTitle');
+      document.querySelector('.subtitle').textContent = t('dashboardSubtitle');
+      document.querySelector('[data-i18n="live"]').textContent = t('live');
+      
+      // KPIs labels
+      const kpiLabels = {
+        'invitations': 'invitationsSent',
+        'acceptance': 'acceptanceRate',
+        'positive': 'positiveResponses',
+        'meetings': 'meetingsScheduled',
+        'pipeline': 'totalPipeline'
+      };
+      
+      document.querySelectorAll('.kpi-card').forEach(card => {
+        const type = card.dataset.type;
+        const label = card.querySelector('.kpi-label');
+        if (label && kpiLabels[type]) {
+          label.textContent = t(kpiLabels[type]);
+        }
+      });
+      
+      // Section titles
+      document.querySelector('.section-title').textContent = t('performanceTimeline');
+      document.querySelectorAll('.section-title')[1].textContent = t('topDeals');
+      
+      // Recargar gráfico con labels traducidos
+      createChart(currentPeriod);
+      
+      // Actualizar subtitle de deals si existe
+      const dealsSubtitle = document.getElementById('dealsSubtitle');
+      if (dealsSubtitle && dealsSubtitle.textContent !== 'Cargando...' && dealsSubtitle.textContent !== 'Loading...' && dealsSubtitle.textContent !== 'Laden...') {
+        const match = dealsSubtitle.textContent.match(/(\d+).*\$([\d,]+)/);
+        if (match) {
+          dealsSubtitle.textContent = `${match[1]} ${t('dealsActive')} • $${match[2]} USD ${t('total')}`;
+        }
+      }
+      
+      // Actualizar títulos de modales
+      MODAL_DATA.invitations.title = t('modalInvitationsTitle');
+      MODAL_DATA.acceptance.title = t('modalAcceptanceTitle');
+      MODAL_DATA.positive.title = t('modalPositiveTitle');
+      MODAL_DATA.meetings.title = t('modalMeetingsTitle');
+      MODAL_DATA.pipeline.title = t('modalPipelineTitle');
+    }
 
     // Inicializar Supabase
     const SUPABASE_URL = 'https://mwbkrkoeltsbkbguoemo.supabase.co';
@@ -837,33 +1127,33 @@
 
         // Actualizar MODAL_DATA con valores reales
         MODAL_DATA.invitations.stats = [
-          { label: 'Total enviadas', value: invitations.toLocaleString() },
-          { label: 'Aceptadas', value: accepted.toLocaleString() },
-          { label: 'Tasa aceptación', value: acceptance.toFixed(1) + '%' },
-          { label: 'Status', value: acceptance > 25 ? '✅ Excelente' : '⚠️ Mejorable' }
+          { label: t('totalSent'), value: invitations.toLocaleString() },
+          { label: t('acceptedCount'), value: accepted.toLocaleString() },
+          { label: t('acceptanceRate'), value: acceptance.toFixed(1) + '%' },
+          { label: t('status'), value: acceptance > 25 ? '✅ ' + t('excellent') : '⚠️ ' + t('improving') }
         ];
 
         MODAL_DATA.acceptance.stats = [
-          { label: 'Actual', value: acceptance.toFixed(1) + '%' },
-          { label: 'Benchmark Min', value: '25%' },
-          { label: 'Benchmark Max', value: '35%' },
-          { label: 'Tendencia', value: acceptance > 30 ? '↗ Excelente' : acceptance > 25 ? '→ Bueno' : '↘ Mejorar' }
+          { label: t('actual'), value: acceptance.toFixed(1) + '%' },
+          { label: t('benchmarkMin'), value: '25%' },
+          { label: t('benchmarkMax'), value: '35%' },
+          { label: t('trend'), value: acceptance > 30 ? '↗ ' + t('excellent') : acceptance > 25 ? '→ ' + t('good') : '↘ ' + t('improving') }
         ];
 
         const positiveRate = accepted > 0 ? ((positive / accepted) * 100).toFixed(1) : 0;
         MODAL_DATA.positive.stats = [
-          { label: 'Total', value: positive.toLocaleString() },
-          { label: 'Tasa conversión', value: positiveRate + '%' },
-          { label: 'Promedio industria', value: '15-20%' },
-          { label: 'Status', value: positiveRate > 20 ? '✅ Excelente' : positiveRate > 15 ? '→ Bueno' : '↘ Mejorar' }
+          { label: t('total'), value: positive.toLocaleString() },
+          { label: t('conversionRate'), value: positiveRate + '%' },
+          { label: t('industryAvg'), value: '15-20%' },
+          { label: t('status'), value: positiveRate > 20 ? '✅ ' + t('excellent') : positiveRate > 15 ? '→ ' + t('good') : '↘ ' + t('improving') }
         ];
 
         const meetingRate = positive > 0 ? ((meetings / positive) * 100).toFixed(1) : 0;
         MODAL_DATA.meetings.stats = [
-          { label: 'Total agendadas', value: meetings.toLocaleString() },
-          { label: 'De positivos', value: positive.toLocaleString() },
-          { label: 'Tasa conversión', value: meetingRate + '%' },
-          { label: 'Status', value: meetings > 0 ? '✅ Activo' : '⏳ Pendiente' }
+          { label: t('totalScheduled'), value: meetings.toLocaleString() },
+          { label: t('fromPositive'), value: positive.toLocaleString() },
+          { label: t('conversionRate'), value: meetingRate + '%' },
+          { label: t('status'), value: meetings > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
         // Estos se actualizan desde loadDealsFromSupabase
@@ -931,15 +1221,15 @@
       const options = {
         series: [
           {
-            name: 'Invitaciones',
+            name: t('invitations'),
             data: data.invitations
           },
           {
-            name: 'Aceptadas',
+            name: t('accepted'),
             data: data.accepted
           },
           {
-            name: 'Positivas',
+            name: t('positive'),
             data: data.positive
           }
         ],
@@ -1096,15 +1386,15 @@
 
         // Actualizar UI con stats reales
         document.getElementById('dealsSubtitle').textContent = 
-          `${totalDeals} deals activos • $${totalPipeline.toLocaleString()} USD total`;
-        document.getElementById('kpi-deals-count').textContent = `${totalDeals} deals`;
+          `${totalDeals} ${t('dealsActive')} • $${totalPipeline.toLocaleString()} USD ${t('total')}`;
+        document.getElementById('kpi-deals-count').textContent = `${totalDeals} ${t('deals')}`;
 
         // Actualizar modal de pipeline
         MODAL_DATA.pipeline.stats = [
-          { label: 'Deals abiertos', value: totalDeals.toLocaleString() },
-          { label: 'Valor total', value: '$' + totalPipeline.toLocaleString() },
-          { label: 'Valor promedio', value: '$' + Math.round(avgDeal).toLocaleString() },
-          { label: 'Top deal', value: '$' + topDeal.toLocaleString() }
+          { label: t('openDeals'), value: totalDeals.toLocaleString() },
+          { label: t('total'), value: '$' + totalPipeline.toLocaleString() },
+          { label: t('avgDealValue'), value: '$' + Math.round(avgDeal).toLocaleString() },
+          { label: t('status'), value: totalDeals > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
         // Cargar top 10 deals
@@ -1174,6 +1464,13 @@
     // Renderizar deals con datos personalizados
     function renderDealsWithData(dealsData) {
       const grid = document.getElementById('dealsGrid');
+      
+      const priorityLabels = {
+        'high': '🔥 ' + t('high'),
+        'medium': '⚡ ' + t('medium'),
+        'low': '📌 ' + t('low')
+      };
+      
       grid.innerHTML = dealsData.map((deal, idx) => `
         <div class="deal-card" data-deal='${JSON.stringify(deal)}'>
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
@@ -1181,14 +1478,14 @@
               <div style="font-family: 'Space Grotesk', monospace; font-weight: 600; font-size: 14px; margin-bottom: 4px;">${deal.title}</div>
               <div style="color: var(--text-muted); font-size: 12px;">${deal.contact}</div>
             </div>
-            <span class="priority-badge ${deal.priority}">${deal.priority === 'high' ? '🔥 Alta' : deal.priority === 'medium' ? '⚡ Media' : '📌 Baja'}</span>
+            <span class="priority-badge ${deal.priority}">${priorityLabels[deal.priority]}</span>
           </div>
           <div style="font-size: 24px; font-weight: 700; color: var(--gold); margin-bottom: 12px;">
             $${deal.value.toLocaleString()}
           </div>
           <div style="margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
-              <span>Progreso</span>
+              <span>${t('progress')}</span>
               <span>${deal.progress}%</span>
             </div>
             <div class="progress-bar">
@@ -1308,6 +1605,16 @@
         closeModal();
       }
     });
+
+    // Event listeners para selector de idioma
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        changeLanguage(this.dataset.lang);
+      });
+    });
+
+    // Inicializar idioma guardado
+    changeLanguage(currentLang);
 
     console.log('Dashboard loaded successfully!');
   </script>
