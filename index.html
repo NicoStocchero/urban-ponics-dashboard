@@ -1036,7 +1036,86 @@
       });
     });
 
-    // Renderizar deals
+    // Cargar deals desde Supabase
+    async function loadDealsFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name')
+          .not('deal_value', 'is', null)
+          .gt('deal_value', 0)
+          .order('deal_value', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
+
+        // Mapear stages a porcentajes
+        const stageToProgress = {
+          'stage_1': 10, 'stage_2': 20, 'stage_3': 30, 'stage_4': 40,
+          'stage_5': 50, 'stage_6': 60, 'stage_7': 70, 'stage_8': 80, 'stage_9': 90
+        };
+
+        // Convertir datos de Supabase al formato del dashboard
+        const deals = data.map((lead, idx) => ({
+          id: idx + 1,
+          title: lead.deal_title || `${lead.company} Deal`,
+          value: parseFloat(lead.deal_value),
+          contact: lead.first_name && lead.last_name 
+            ? `${lead.first_name} ${lead.last_name}`
+            : lead.company || 'Confidencial',
+          priority: lead.deal_value > 50000 ? 'high' : lead.deal_value > 20000 ? 'medium' : 'low',
+          progress: stageToProgress[lead.deal_stage] || 50
+        }));
+
+        console.log('✅ Deals cargados desde Supabase:', deals);
+        
+        // Renderizar con datos reales
+        renderDealsWithData(deals);
+      } catch (error) {
+        console.error('❌ Error cargando deals:', error);
+        // Fallback a datos estáticos
+        renderDeals();
+      }
+    }
+
+    // Renderizar deals con datos personalizados
+    function renderDealsWithData(dealsData) {
+      const grid = document.getElementById('dealsGrid');
+      grid.innerHTML = dealsData.map((deal, idx) => `
+        <div class="deal-card" data-deal='${JSON.stringify(deal)}'>
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div>
+              <div style="font-family: 'Space Grotesk', monospace; font-weight: 600; font-size: 14px; margin-bottom: 4px;">${deal.title}</div>
+              <div style="color: var(--text-muted); font-size: 12px;">${deal.contact}</div>
+            </div>
+            <span class="priority-badge ${deal.priority}">${deal.priority === 'high' ? '🔥 Alta' : deal.priority === 'medium' ? '⚡ Media' : '📌 Baja'}</span>
+          </div>
+          <div style="font-size: 24px; font-weight: 700; color: var(--gold); margin-bottom: 12px;">
+            $${deal.value.toLocaleString()}
+          </div>
+          <div style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
+              <span>Progreso</span>
+              <span>${deal.progress}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="--progress: ${deal.progress}%"></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Re-agregar event listeners
+      document.querySelectorAll('.deal-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const deal = JSON.parse(this.dataset.deal);
+          console.log('Deal clicked:', deal.title);
+          showDealModal(deal);
+        });
+      });
+    }
+
+    // Renderizar deals (fallback estático)
     function renderDeals() {
       const grid = document.getElementById('dealsGrid');
       grid.innerHTML = DEALS_DATA.map((deal, idx) => `
@@ -1068,7 +1147,8 @@
       });
     }
 
-    renderDeals();
+    // Cargar deals desde Supabase
+    loadDealsFromSupabase();
 
     // Event listeners para KPIs
     document.querySelectorAll('.kpi-card').forEach(card => {
