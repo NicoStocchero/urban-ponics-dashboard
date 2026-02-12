@@ -6,6 +6,7 @@
   <title>Urban Ponics - Investor Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
     :root {
@@ -796,6 +797,53 @@
     let chart;
     let currentPeriod = 'Q1';
 
+    // Inicializar Supabase
+    const SUPABASE_URL = 'https://mwbkrkoeltsbkbguoemo.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13Ymtya29lbHRzYmtiZ3VvZW1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTg5MzMsImV4cCI6MjA4NjQ3NDkzM30.3DrznzqfbNP3RPYOGcj5uXiqPsSzFnWc5AoKyLk0OS8';
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Cargar datos reales desde Supabase
+    async function loadMetricsFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('metrics')
+          .select('*');
+
+        if (error) throw error;
+
+        // Crear un objeto con las métricas
+        const metrics = {};
+        data.forEach(item => {
+          metrics[item.metric_name] = parseFloat(item.metric_value);
+        });
+
+        // Actualizar KPIs con datos reales
+        const invitations = metrics.invitations_sent || 46;
+        const acceptance = metrics.acceptance_rate || 87;
+        const positive = metrics.qualified_interested || 5;
+        const meetings = metrics.meetings_scheduled || 0;
+        const pipeline = metrics.total_pipeline || 219000;
+
+        // Animar con los valores reales
+        animateValue('kpi-invitations', 0, invitations, 2000, '', '', true);
+        animateValue('kpi-acceptance', 0, acceptance, 2000, '%');
+        animateValue('kpi-positive', 0, positive, 2000);
+        animateValue('kpi-meetings', 0, meetings, 2000, '+');
+        animateValue('kpi-pipeline', 0, pipeline, 2000, '', '$', true);
+
+        console.log('✅ Datos cargados desde Supabase:', metrics);
+      } catch (error) {
+        console.error('❌ Error cargando datos:', error);
+        // Fallback a datos estáticos
+        animateValue('kpi-invitations', 0, 5758, 2000, '', '', true);
+        animateValue('kpi-acceptance', 0, 23.7, 2000, '%');
+        animateValue('kpi-positive', 0, 102, 2000);
+        animateValue('kpi-meetings', 0, 16, 2000, '+');
+        animateValue('kpi-pipeline', 0, 540000, 2000, '', '$', true);
+      }
+    }
+
     // Actualizar fecha/hora
     function updateTime() {
       const now = new Date();
@@ -831,13 +879,9 @@
       }, duration / 60);
     }
 
-    // Iniciar animaciones KPIs
+    // Cargar datos reales desde Supabase
     setTimeout(() => {
-      animateValue('kpi-invitations', 0, 5758, 2000, '', '', true);
-      animateValue('kpi-acceptance', 0, 23.7, 2000, '%');
-      animateValue('kpi-positive', 0, 102, 2000);
-      animateValue('kpi-meetings', 0, 16, 2000, '+');
-      animateValue('kpi-pipeline', 0, 540000, 2000, '', '$', true);
+      loadMetricsFromSupabase();
     }, 800);
 
     // Crear gráfico con ApexCharts
