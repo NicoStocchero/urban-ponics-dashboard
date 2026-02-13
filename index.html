@@ -300,7 +300,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 3rem;
+      margin-bottom: 1.5rem;
       padding: 1.5rem 2rem;
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -2094,6 +2094,10 @@
             loadCampaignsFromSupabase();
           } else if (view === 'deals') {
             loadDealsFullData();
+          } else if (view === 'companies') {
+            loadCompaniesFromSupabase();
+          } else if (view === 'leads') {
+            loadLeadsFromSupabase();
           }
         }
       });
@@ -2103,6 +2107,8 @@
     setTimeout(() => {
       loadCampaignsFromSupabase(); // Cargar campañas desde el inicio
       loadDealsFullData(); // Cargar deals desde el inicio
+      loadCompaniesFromSupabase(); // Cargar companies desde el inicio
+      loadLeadsFromSupabase(); // Cargar leads desde el inicio
     }, 1500);
 
     function renderCampaigns(campaigns) {
@@ -2226,6 +2232,154 @@
         console.error('Error loading campaigns:', error);
         document.getElementById('campaignsGrid').innerHTML = 
           `<p style="color: var(--text-muted);">Error loading campaigns data</p>`;
+      }
+    }
+
+    // Cargar companies (agrupar leads por empresa)
+    async function loadCompaniesFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('company, status');
+
+        if (error) throw error;
+
+        // Agrupar por empresa
+        const companyStats = {};
+        
+        data.forEach(lead => {
+          const company = lead.company || 'Sin empresa';
+          
+          if (!companyStats[company]) {
+            companyStats[company] = {
+              name: company,
+              total: 0,
+              accepted: 0,
+              positive: 0,
+              meeting: 0
+            };
+          }
+          
+          companyStats[company].total++;
+          if (lead.status === 'accepted') companyStats[company].accepted++;
+          if (lead.status === 'positive') companyStats[company].positive++;
+          if (lead.status === 'meeting') companyStats[company].meeting++;
+        });
+
+        // Top 50 companies
+        const companies = Object.values(companyStats)
+          .filter(c => c.name !== 'Sin empresa' && c.total > 1)
+          .sort((a, b) => {
+            if (b.meeting !== a.meeting) return b.meeting - a.meeting;
+            if (b.positive !== a.positive) return b.positive - a.positive;
+            return b.total - a.total;
+          })
+          .slice(0, 50);
+
+        // Renderizar
+        const grid = document.getElementById('companiesGrid');
+        grid.innerHTML = companies.map((company, idx) => `
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <h3 style="color: var(--gold-light); font-size: 1rem; font-family: 'Space Grotesk', sans-serif;">
+                ${company.name}
+              </h3>
+              <span style="color: var(--text-muted); font-size: 0.75rem;">#${idx + 1}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
+              <div style="text-align: center;">
+                <div style="color: var(--text-muted); font-size: 0.7rem;">Total</div>
+                <div style="color: white; font-weight: 600; font-size: 1.25rem;">${company.total}</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--text-muted); font-size: 0.7rem;">Accepted</div>
+                <div style="color: var(--green); font-weight: 600; font-size: 1.25rem;">${company.accepted}</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--text-muted); font-size: 0.7rem;">Positive</div>
+                <div style="color: var(--gold); font-weight: 600; font-size: 1.25rem;">${company.positive}</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: var(--text-muted); font-size: 0.7rem;">Meetings</div>
+                <div style="color: var(--green-light); font-weight: 600; font-size: 1.25rem;">${company.meeting}</div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+        
+        console.log('Companies cargadas:', companies.length);
+      } catch (error) {
+        console.error('Error loading companies:', error);
+        document.getElementById('companiesGrid').innerHTML = 
+          `<p style="color: var(--text-muted); text-align: center;">Error loading companies data</p>`;
+      }
+    }
+
+    // Cargar tabla de leads
+    async function loadLeadsFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('first_name, last_name, company, position, email, status, campaign')
+          .order('updated_at', { ascending: false })
+          .limit(100);
+
+        if (error) throw error;
+
+        const container = document.getElementById('leadsTable');
+        container.innerHTML = `
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Name</th>
+                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Company</th>
+                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Position</th>
+                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Status</th>
+                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Campaign</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.map(lead => {
+                  const statusColors = {
+                    'meeting': 'var(--green)',
+                    'positive': 'var(--gold)',
+                    'accepted': 'var(--blue)',
+                    'messaged': '#888',
+                    'invited': '#555'
+                  };
+                  const statusColor = statusColors[lead.status] || '#555';
+                  
+                  return `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                      <td style="padding: 1rem; color: white; font-weight: 500;">
+                        ${lead.first_name} ${lead.last_name}
+                        ${lead.email ? `<br><span style="color: var(--text-muted); font-size: 0.75rem;">${lead.email}</span>` : ''}
+                      </td>
+                      <td style="padding: 1rem; color: var(--text-muted);">${lead.company || '-'}</td>
+                      <td style="padding: 1rem; color: var(--text-muted); font-size: 0.875rem;">${lead.position || '-'}</td>
+                      <td style="padding: 1rem;">
+                        <span style="background: ${statusColor}22; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
+                          ${lead.status}
+                        </span>
+                      </td>
+                      <td style="padding: 1rem; color: var(--text-muted); font-size: 0.75rem;">${lead.campaign || '-'}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
+            Showing top 100 most recent leads • Total: 7,352 leads in database
+          </div>
+        `;
+        
+        console.log('Leads cargados:', data.length);
+      } catch (error) {
+        console.error('Error loading leads:', error);
+        document.getElementById('leadsTable').innerHTML = 
+          `<p style="color: var(--text-muted); text-align: center;">Error loading leads data</p>`;
       }
     }
 
