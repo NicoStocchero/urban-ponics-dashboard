@@ -2631,6 +2631,7 @@
 
     // Cargar tabla de leads
     async function loadLeadsFromSupabase() {
+      console.log('🔵 loadLeadsFromSupabase() INICIANDO...');
       try {
         const { data, error } = await supabaseClient
           .from('leads')
@@ -2710,6 +2711,7 @@
     }
 
     async function loadDealsFullData() {
+      console.log('🟢 loadDealsFullData() INICIANDO...');
       try {
         const { data, error} = await supabaseClient
           .from('leads')
@@ -2819,7 +2821,8 @@
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
     // Cargar todos los datos al iniciar la página
     async function initDashboard() {
-      console.log('🚀 initDashboard() LLAMADA');
+      console.log('🚀🚀🚀 initDashboard() INICIANDO 🚀🚀🚀');
+      console.log('Timestamp:', new Date().toISOString());
       
       try {
         // Cargar métricas (KPIs)
@@ -2828,16 +2831,17 @@
         console.log('✅ Métricas cargadas');
         
         // Cargar solo las vistas necesarias en paralelo
-        console.log('📋 Cargando leads y deals...');
+        console.log('📋📋📋 EJECUTANDO loadLeadsFromSupabase y loadDealsFullData...');
         await Promise.all([
           loadLeadsFromSupabase(),
           loadDealsFullData()
         ]);
-        console.log('✅ Leads y deals cargados');
+        console.log('✅✅✅ Leads y deals cargados COMPLETAMENTE');
         
         console.log('✅ Dashboard cargado completamente');
       } catch (error) {
-        console.error('❌ Error cargando dashboard:', error);
+        console.error('❌❌❌ ERROR CRÍTICO cargando dashboard:', error);
+        console.error('Error stack:', error.stack);
       }
     }
 
