@@ -243,12 +243,403 @@
     /* Vista sections */
     .view-section {
       display: block;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
       animation: fadeIn 0.4s ease-out;
     }
 
     .view-section.active {
       display: block;
+    }
+
+    /* Premium section wrapper for Leads & Pipeline */
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      animation: fadeInUp 0.6s 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
+
+    .section-card .section-header {
+      margin-bottom: 2rem;
+    }
+
+    .section-card .section-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.15), rgba(184, 168, 130, 0.05));
+      border-radius: 12px;
+      color: var(--gold);
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .section-card .section-header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .section-card .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--green);
+      background: rgba(34, 197, 94, 0.08);
+      padding: 0.375rem 0.75rem;
+      border-radius: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .section-card .live-badge .live-dot {
+      width: 6px;
+      height: 6px;
+    }
+
+    /* Premium table styles */
+    .premium-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .premium-table thead th {
+      text-align: left;
+      padding: 1rem 1.25rem;
+      color: var(--gold);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .premium-table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .premium-table tbody tr:hover {
+      background: rgba(184, 168, 130, 0.04);
+    }
+
+    .premium-table tbody td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(184, 168, 130, 0.06);
+      font-size: 0.875rem;
+    }
+
+    .premium-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.3rem 0.875rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .status-badge.meeting {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .status-badge.positive {
+      background: rgba(184, 168, 130, 0.1);
+      color: var(--gold);
+      border: 1px solid rgba(184, 168, 130, 0.2);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .status-dot.meeting {
+      background: var(--green);
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+    }
+
+    .status-dot.positive {
+      background: var(--gold);
+      box-shadow: 0 0 6px rgba(184, 168, 130, 0.5);
+    }
+
+    .leads-summary {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .leads-summary-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .leads-summary-item .count {
+      font-weight: 700;
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    /* Pipeline cards */
+    .pipeline-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .pipeline-stat-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .pipeline-stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .pipeline-stat-card .stat-label {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    .pipeline-stat-card .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', monospace;
+      line-height: 1;
+    }
+
+    .pipeline-stat-card.green {
+      border-color: rgba(34, 197, 94, 0.3);
+      background: linear-gradient(135deg, rgba(34,197,94,0.06) 0%, transparent 100%);
+    }
+
+    .pipeline-stat-card.green .stat-value {
+      color: var(--green);
+    }
+
+    .pipeline-stat-card.gold {
+      border-color: rgba(184, 168, 130, 0.3);
+      background: linear-gradient(135deg, rgba(184,168,130,0.06) 0%, transparent 100%);
+    }
+
+    .pipeline-stat-card.gold .stat-value {
+      color: var(--gold);
+    }
+
+    .pipeline-stat-card.blue {
+      border-color: rgba(59, 130, 246, 0.3);
+      background: linear-gradient(135deg, rgba(59,130,246,0.06) 0%, transparent 100%);
+    }
+
+    .pipeline-stat-card.blue .stat-value {
+      color: #3b82f6;
+    }
+
+    .pipeline-subsection {
+      margin-bottom: 2.5rem;
+    }
+
+    .pipeline-subsection-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pipeline-subsection-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: var(--gold);
+    }
+
+    .pipeline-subsection-icon.green {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--green);
+    }
+
+    .pipeline-subsection-icon.gold {
+      background: rgba(184, 168, 130, 0.1);
+      color: var(--gold);
+    }
+
+    .pipeline-subsection-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .pipeline-subsection-count {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.25rem 0.625rem;
+      border-radius: 6px;
+      background: rgba(184, 168, 130, 0.1);
+      color: var(--gold);
+    }
+
+    .pipeline-contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .pipeline-contact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pipeline-contact-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .pipeline-contact-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .pipeline-contact-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .pipeline-contact-card.meeting-card::before {
+      background: var(--green);
+    }
+
+    .pipeline-contact-card.meeting-card {
+      border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .pipeline-contact-card.positive-card::before {
+      background: var(--gold);
+    }
+
+    .pipeline-contact-card .contact-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 0.375rem;
+    }
+
+    .pipeline-contact-card.meeting-card .contact-name {
+      color: var(--green);
+    }
+
+    .pipeline-contact-card.positive-card .contact-name {
+      color: var(--gold-light);
+    }
+
+    .pipeline-contact-card .contact-position {
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .pipeline-contact-card .contact-company {
+      color: var(--text-primary);
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .pipeline-contact-card .contact-email {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .pipeline-contact-card .contact-campaign {
+      margin-top: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      display: inline-block;
+      letter-spacing: 0.02em;
+    }
+
+    .pipeline-contact-card.meeting-card .contact-campaign {
+      background: rgba(34, 197, 94, 0.06);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, 0.15);
+    }
+
+    .pipeline-contact-card.positive-card .contact-campaign {
+      background: rgba(184, 168, 130, 0.06);
+      color: var(--gold);
+      border: 1px solid rgba(184, 168, 130, 0.15);
+    }
+
+    /* Loading skeleton */
+    .loading-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .skeleton-row {
+      height: 48px;
+      background: linear-gradient(90deg, rgba(184,168,130,0.03) 25%, rgba(184,168,130,0.08) 50%, rgba(184,168,130,0.03) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-shimmer 1.5s infinite;
+      border-radius: 10px;
+    }
+
+    @keyframes skeleton-shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
     @keyframes fadeIn {
@@ -976,41 +1367,69 @@
   <!-- COMPANIES VIEW -->
   <!-- LEADS VIEW -->
   <div class="view-section" id="view-leads">
-    <div class="header">
-      <div class="logo-section">
-        <h1>👥 Leads</h1>
-        <p class="subtitle">Positive Responses & Meetings</p>
-      </div>
-      <div class="update-section">
-        <div class="live-indicator">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Qualified Leads</h2>
+            <p class="section-subtitle">Positive Responses & Scheduled Meetings</p>
+          </div>
+        </div>
+        <div class="live-badge">
           <span class="live-dot"></span>
-          <span data-i18n="live">LIVE</span>
+          LIVE
         </div>
       </div>
-    </div>
 
-    <div id="leadsTable" style="padding: 2rem;">
-      <p style="color: var(--text-muted); text-align: center;">Loading leads data...</p>
+      <div id="leadsTable">
+        <div class="loading-skeleton">
+          <div class="skeleton-row" style="width: 100%; height: 40px;"></div>
+          <div class="skeleton-row" style="width: 100%; height: 52px;"></div>
+          <div class="skeleton-row" style="width: 95%; height: 52px;"></div>
+          <div class="skeleton-row" style="width: 98%; height: 52px;"></div>
+          <div class="skeleton-row" style="width: 92%; height: 52px;"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- DEALS/PIPELINE VIEW -->
   <div class="view-section" id="view-deals">
-    <div class="header">
-      <div class="logo-section">
-        <h1>💰 Pipeline</h1>
-        <p class="subtitle">Deals & Opportunities</p>
-      </div>
-      <div class="update-section">
-        <div class="live-indicator">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="section-title">Pipeline</h2>
+            <p class="section-subtitle">Deals & Opportunities</p>
+          </div>
+        </div>
+        <div class="live-badge">
           <span class="live-dot"></span>
-          <span data-i18n="live">LIVE</span>
+          LIVE
         </div>
       </div>
-    </div>
 
-    <div id="dealsView" style="padding: 2rem;">
-      <p style="color: var(--text-muted); text-align: center;">Loading deals data...</p>
+      <div id="dealsView">
+        <div class="loading-skeleton">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem;">
+            <div class="skeleton-row" style="height: 100px; border-radius: 16px;"></div>
+            <div class="skeleton-row" style="height: 100px; border-radius: 16px;"></div>
+            <div class="skeleton-row" style="height: 100px; border-radius: 16px;"></div>
+          </div>
+          <div class="skeleton-row" style="width: 100%; height: 120px; border-radius: 14px;"></div>
+          <div class="skeleton-row" style="width: 100%; height: 120px; border-radius: 14px;"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2192,38 +2611,38 @@
 
         if (error) throw error;
 
+        const meetingCount = data.filter(l => l.status === 'meeting').length;
+        const positiveCount = data.filter(l => l.status === 'positive').length;
+
         const container = document.getElementById('leadsTable');
         container.innerHTML = `
           <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
+            <table class="premium-table">
               <thead>
-                <tr style="border-bottom: 2px solid var(--border);">
-                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Name</th>
-                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Company</th>
-                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Position</th>
-                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Email</th>
-                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Status</th>
+                <tr>
+                  <th>Name</th>
+                  <th>Company</th>
+                  <th>Position</th>
+                  <th>Email</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 ${data.map(lead => {
-                  const statusColors = {
-                    'meeting': 'var(--green)',
-                    'positive': 'var(--gold)'
-                  };
-                  const statusColor = statusColors[lead.status] || '#555';
-                  const statusLabel = lead.status === 'meeting' ? '🎯 Meeting' : '⭐ Positive';
-                  
+                  const statusClass = lead.status === 'meeting' ? 'meeting' : 'positive';
+                  const statusLabel = lead.status === 'meeting' ? 'Meeting' : 'Positive';
+
                   return `
-                    <tr style="border-bottom: 1px solid var(--border);">
-                      <td style="padding: 1rem; color: white; font-weight: 500;">
+                    <tr>
+                      <td style="color: var(--text-primary); font-weight: 500;">
                         ${lead.first_name} ${lead.last_name}
                       </td>
-                      <td style="padding: 1rem; color: var(--text-muted);">${lead.company || '-'}</td>
-                      <td style="padding: 1rem; color: var(--text-muted); font-size: 0.875rem;">${lead.position || '-'}</td>
-                      <td style="padding: 1rem; color: var(--text-muted); font-size: 0.875rem;">${lead.email || '-'}</td>
-                      <td style="padding: 1rem;">
-                        <span style="background: ${statusColor}22; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                      <td style="color: var(--text-muted);">${lead.company || '-'}</td>
+                      <td style="color: var(--text-muted);">${lead.position || '-'}</td>
+                      <td style="color: var(--text-muted);">${lead.email || '-'}</td>
+                      <td>
+                        <span class="status-badge ${statusClass}">
+                          <span class="status-dot ${statusClass}"></span>
                           ${statusLabel}
                         </span>
                       </td>
@@ -2233,16 +2652,31 @@
               </tbody>
             </table>
           </div>
-          <div style="margin-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
-            ${data.length} qualified leads (${data.filter(l => l.status === 'meeting').length} meetings + ${data.filter(l => l.status === 'positive').length} positive responses)
+          <div class="leads-summary">
+            <div class="leads-summary-item">
+              <span class="status-dot meeting"></span>
+              <span class="count" style="color: var(--green);">${meetingCount}</span> meetings
+            </div>
+            <div class="leads-summary-item">
+              <span class="status-dot positive"></span>
+              <span class="count" style="color: var(--gold);">${positiveCount}</span> positive
+            </div>
+            <div class="leads-summary-item" style="color: var(--text-muted);">
+              <span class="count" style="color: var(--text-primary);">${data.length}</span> total qualified
+            </div>
           </div>
         `;
         
         console.log('✅ Qualified leads cargados:', data.length);
       } catch (error) {
         console.error('Error loading leads:', error);
-        document.getElementById('leadsTable').innerHTML = 
-          `<p style="color: var(--text-muted); text-align: center;">Error loading leads data</p>`;
+        document.getElementById('leadsTable').innerHTML =
+          `<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.875rem;">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block; opacity: 0.4;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Unable to load leads data
+          </div>`;
       }
     }
 
@@ -2259,95 +2693,95 @@
         renderDealsView(data);
       } catch (error) {
         console.error('Error loading deals:', error);
-        document.getElementById('dealsView').innerHTML = 
-          `<p style="color: var(--text-muted);">Error loading deals data</p>`;
+        document.getElementById('dealsView').innerHTML =
+          `<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.875rem;">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block; opacity: 0.4;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Unable to load pipeline data
+          </div>`;
       }
     }
 
     function renderDealsView(deals) {
       const container = document.getElementById('dealsView');
-      
+
       const meetings = deals.filter(d => d.status === 'meeting');
       const positive = deals.filter(d => d.status === 'positive');
 
       container.innerHTML = `
-        <div style="margin-bottom: 2rem;">
-          <h2 style="color: var(--gold); font-size: 1.5rem; margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">
-            🎯 Hot Opportunities
-          </h2>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-            <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, transparent 100%); border: 1px solid var(--green); border-radius: 12px; padding: 1.5rem;">
-              <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Meetings Scheduled</div>
-              <div style="color: var(--green); font-size: 2.5rem; font-weight: 700; font-family: 'Space Grotesk', monospace;">${meetings.length}</div>
-            </div>
-            <div style="background: linear-gradient(135deg, rgba(184,168,130,0.1) 0%, transparent 100%); border: 1px solid var(--gold); border-radius: 12px; padding: 1.5rem;">
-              <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Positive Responses</div>
-              <div style="color: var(--gold); font-size: 2.5rem; font-weight: 700; font-family: 'Space Grotesk', monospace;">${positive.length}</div>
-            </div>
-            <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, transparent 100%); border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem;">
-              <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total Pipeline</div>
-              <div style="color: #3b82f6; font-size: 2.5rem; font-weight: 700; font-family: 'Space Grotesk', monospace;">${deals.length}</div>
-            </div>
+        <div class="pipeline-stats-grid">
+          <div class="pipeline-stat-card green">
+            <div class="stat-label">Meetings Scheduled</div>
+            <div class="stat-value">${meetings.length}</div>
+          </div>
+          <div class="pipeline-stat-card gold">
+            <div class="stat-label">Positive Responses</div>
+            <div class="stat-value">${positive.length}</div>
+          </div>
+          <div class="pipeline-stat-card blue">
+            <div class="stat-label">Total Pipeline</div>
+            <div class="stat-value">${deals.length}</div>
           </div>
         </div>
 
-        <div style="margin-bottom: 2rem;">
-          <h3 style="color: var(--gold-light); font-size: 1.25rem; margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">
-            📅 Meetings (${meetings.length})
-          </h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem;">
+        <div class="pipeline-subsection">
+          <div class="pipeline-subsection-header">
+            <div class="pipeline-subsection-icon green">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <span class="pipeline-subsection-title">Meetings</span>
+            <span class="pipeline-subsection-count">${meetings.length}</span>
+          </div>
+          <div class="pipeline-contact-grid">
             ${meetings.length > 0 ? meetings.map(meeting => `
-              <div style="background: var(--card-bg); border: 1px solid var(--green); border-radius: 12px; padding: 1.5rem;">
-                <h4 style="color: var(--green); font-size: 1.125rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">
-                  ${meeting.first_name} ${meeting.last_name}
-                </h4>
-                ${meeting.position ? `<div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${meeting.position}</div>` : ''}
-                ${meeting.company ? `<div style="color: white; font-weight: 500; margin-bottom: 1rem;">${meeting.company}</div>` : ''}
+              <div class="pipeline-contact-card meeting-card">
+                <div class="contact-name">${meeting.first_name} ${meeting.last_name}</div>
+                ${meeting.position ? `<div class="contact-position">${meeting.position}</div>` : ''}
+                ${meeting.company ? `<div class="contact-company">${meeting.company}</div>` : ''}
                 ${meeting.email ? `
-                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+                  <div class="contact-email">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    <span style="color: var(--text-muted); font-size: 0.875rem;">${meeting.email}</span>
+                    ${meeting.email}
                   </div>
                 ` : ''}
-                ${meeting.campaign ? `
-                  <div style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(34,197,94,0.05); border-radius: 6px; font-size: 0.75rem; color: var(--green);">
-                    ${meeting.campaign}
-                  </div>
-                ` : ''}
+                ${meeting.campaign ? `<div class="contact-campaign">${meeting.campaign}</div>` : ''}
               </div>
-            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1;">No meetings yet</p>'}
+            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0;">No meetings scheduled yet</p>'}
           </div>
         </div>
 
-        <div>
-          <h3 style="color: var(--gold-light); font-size: 1.25rem; margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">
-            ⭐ Positive Responses (${positive.length})
-          </h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem;">
+        <div class="pipeline-subsection">
+          <div class="pipeline-subsection-header">
+            <div class="pipeline-subsection-icon gold">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="pipeline-subsection-title">Positive Responses</span>
+            <span class="pipeline-subsection-count">${positive.length}</span>
+          </div>
+          <div class="pipeline-contact-grid">
             ${positive.length > 0 ? positive.map(lead => `
-              <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
-                <h4 style="color: var(--gold-light); font-size: 1.125rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">
-                  ${lead.first_name} ${lead.last_name}
-                </h4>
-                ${lead.position ? `<div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${lead.position}</div>` : ''}
-                ${lead.company ? `<div style="color: white; font-weight: 500; margin-bottom: 1rem;">${lead.company}</div>` : ''}
+              <div class="pipeline-contact-card positive-card">
+                <div class="contact-name">${lead.first_name} ${lead.last_name}</div>
+                ${lead.position ? `<div class="contact-position">${lead.position}</div>` : ''}
+                ${lead.company ? `<div class="contact-company">${lead.company}</div>` : ''}
                 ${lead.email ? `
-                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+                  <div class="contact-email">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    <span style="color: var(--text-muted); font-size: 0.875rem;">${lead.email}</span>
+                    ${lead.email}
                   </div>
                 ` : ''}
-                ${lead.campaign ? `
-                  <div style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(184,168,130,0.05); border-radius: 6px; font-size: 0.75rem; color: var(--gold);">
-                    ${lead.campaign}
-                  </div>
-                ` : ''}
+                ${lead.campaign ? `<div class="contact-campaign">${lead.campaign}</div>` : ''}
               </div>
-            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1;">No positive responses yet</p>'}
+            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0;">No positive responses yet</p>'}
           </div>
         </div>
       `;
