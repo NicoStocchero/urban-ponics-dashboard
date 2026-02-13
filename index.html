@@ -1030,6 +1030,9 @@
   </div><!-- .dashboard-layout -->
 
   <script>
+    console.log('🚀 SCRIPT INICIADO');
+    console.log('Supabase disponible:', typeof supabase !== 'undefined');
+    
     // Datos por período
     const DATA_BY_PERIOD = {
       'Q1': {
@@ -2353,17 +2356,21 @@
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
     // Cargar todos los datos al iniciar la página
     async function initDashboard() {
-      console.log('🚀 Iniciando dashboard...');
+      console.log('🚀 initDashboard() LLAMADA');
       
       try {
         // Cargar métricas (KPIs)
+        console.log('📊 Cargando métricas...');
         await loadMetricsFromSupabase();
+        console.log('✅ Métricas cargadas');
         
         // Cargar solo las vistas necesarias en paralelo
+        console.log('📋 Cargando leads y deals...');
         await Promise.all([
           loadLeadsFromSupabase(),
           loadDealsFullData()
         ]);
+        console.log('✅ Leads y deals cargados');
         
         console.log('✅ Dashboard cargado completamente');
       } catch (error) {
@@ -2372,13 +2379,18 @@
     }
 
     // Ejecutar cuando el DOM esté listo
+    console.log('📌 Configurando inicialización...');
+    console.log('document.readyState:', document.readyState);
+    
     if (document.readyState === 'loading') {
+      console.log('⏳ DOM cargando, esperando DOMContentLoaded...');
       document.addEventListener('DOMContentLoaded', initDashboard);
     } else {
+      console.log('✅ DOM listo, ejecutando inmediatamente...');
       initDashboard();
     }
 
-    console.log('Dashboard script loaded');
+    console.log('✅ Dashboard script loaded');
   </script>
 </body>
 </html>
