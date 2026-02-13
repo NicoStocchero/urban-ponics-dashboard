@@ -1777,18 +1777,34 @@
         console.log('🔥🔥🔥 FUNCIÓN EJECUTÁNDOSE - TIMESTAMP: ' + new Date().toISOString() + ' 🔥🔥🔥');
         console.log('📊 ========== CARGANDO MÉTRICAS LIVE ==========');
         
-        // Query para obtener status y deal_value (SIN LÍMITE - traer TODOS)
-        const { data: allLeads, error } = await supabaseClient
-          .from('leads')
-          .select('status, deal_value')
-          .limit(10000); // Traer hasta 10,000 leads (más que suficiente)
+        // ========== PAGINACIÓN: Traer TODOS los leads sin límite fijo ==========
+        let allLeads = [];
+        let page = 0;
+        const pageSize = 1000; // Traer de 1000 en 1000
+        let hasMore = true;
 
-        if (error) {
-          console.error('❌ Error en query Supabase:', error);
-          throw error;
+        while (hasMore) {
+          const { data, error } = await supabaseClient
+            .from('leads')
+            .select('status, deal_value')
+            .range(page * pageSize, (page + 1) * pageSize - 1);
+
+          if (error) {
+            console.error('❌ Error en query Supabase (página ' + page + '):', error);
+            throw error;
+          }
+
+          if (data && data.length > 0) {
+            allLeads = allLeads.concat(data);
+            console.log('📄 Página ' + page + ' cargada: ' + data.length + ' leads');
+            page++;
+            hasMore = data.length === pageSize; // Si trae menos que pageSize, es la última página
+          } else {
+            hasMore = false;
+          }
         }
 
-        console.log('📦 Total leads en DB:', allLeads.length);
+        console.log('📦 Total leads en DB: ' + allLeads.length + ' (cargados en ' + page + ' páginas)');
 
         // ========== CALCULAR MÉTRICAS CORRECTAS ==========
         
@@ -1929,15 +1945,33 @@
     // Cargar datos REALES de Q4 2025 desde Supabase
     async function loadChartDataFromSupabase() {
       try {
-        const { data, error } = await supabaseClient
-          .from('leads')
-          .select('invited_date, status')
-          .not('invited_date', 'is', null)
-          .gte('invited_date', '2025-10-01')
-          .lt('invited_date', '2026-01-01')
-          .limit(10000);
+        // Paginación para Q4 2025
+        let allData = [];
+        let page = 0;
+        const pageSize = 1000;
+        let hasMore = true;
 
-        if (error) throw error;
+        while (hasMore) {
+          const { data, error } = await supabaseClient
+            .from('leads')
+            .select('invited_date, status')
+            .not('invited_date', 'is', null)
+            .gte('invited_date', '2025-10-01')
+            .lt('invited_date', '2026-01-01')
+            .range(page * pageSize, (page + 1) * pageSize - 1);
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            allData = allData.concat(data);
+            page++;
+            hasMore = data.length === pageSize;
+          } else {
+            hasMore = false;
+          }
+        }
+
+        const data = allData;
 
         // Agrupar por mes
         const months = { 10: {inv:0, acc:0, pos:0}, 11: {inv:0, acc:0, pos:0}, 12: {inv:0, acc:0, pos:0} };
