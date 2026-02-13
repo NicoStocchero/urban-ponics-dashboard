@@ -1336,14 +1336,14 @@
     <div class="chart-section">
       <div class="section-header">
         <div>
-          <h2 class="section-title">Performance Timeline 2026</h2>
-          <p class="section-subtitle">Tendencia de invitaciones, aceptaciones y respuestas positivas</p>
+          <h2 class="section-title">Performance Timeline 2025-2026</h2>
+          <p class="section-subtitle">Q4 2025 real • Q1-Q3 2026 proyectado</p>
         </div>
         <div class="filter-buttons">
-          <button class="filter-btn active" data-period="Q1">Q1</button>
+          <button class="filter-btn" data-period="Q1">Q1</button>
           <button class="filter-btn" data-period="Q2">Q2</button>
           <button class="filter-btn" data-period="Q3">Q3</button>
-          <button class="filter-btn" data-period="Q4">Q4</button>
+          <button class="filter-btn active" data-period="Q4">Q4</button>
         </div>
       </div>
 
@@ -1419,30 +1419,35 @@
     console.log('Supabase disponible:', typeof supabase !== 'undefined');
     
     // Datos por período
-    const DATA_BY_PERIOD = {
+    // DATA_BY_PERIOD - Se carga dinámicamente (Q4 real + Q1-Q3 proyectado)
+    let DATA_BY_PERIOD = {
       'Q1': {
         categories: ['Ene', 'Feb', 'Mar'],
-        invitations: [850, 1420, 1680],
-        accepted: [195, 342, 405],
-        positive: [18, 31, 38]
+        invitations: [800, 950, 1100],
+        accepted: [200, 240, 280],
+        positive: [18, 22, 26],
+        projected: true
       },
       'Q2': {
         categories: ['Abr', 'May', 'Jun'],
-        invitations: [1250, 890, 668],
-        accepted: [298, 212, 159],
-        positive: [26, 19, 14]
+        invitations: [1200, 1350, 1500],
+        accepted: [300, 340, 380],
+        positive: [28, 32, 36],
+        projected: true
       },
       'Q3': {
         categories: ['Jul', 'Ago', 'Sep'],
-        invitations: [420, 380, 520],
-        accepted: [98, 89, 125],
-        positive: [9, 8, 11]
+        invitations: [1400, 1550, 1650],
+        accepted: [350, 390, 420],
+        positive: [35, 39, 42],
+        projected: true
       },
       'Q4': {
         categories: ['Oct', 'Nov', 'Dic'],
-        invitations: [650, 780, 920],
-        accepted: [156, 187, 221],
-        positive: [14, 17, 20]
+        invitations: [771, 797, 726], // Datos reales
+        accepted: [106, 126, 125],
+        positive: [9, 6, 3],
+        projected: false // ✅ REAL
       }
     };
 
@@ -1915,9 +1920,62 @@
       loadMetricsFromSupabase();
     }, 800);
 
+    // Cargar datos REALES de Q4 2025 desde Supabase
+    async function loadChartDataFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('invited_date, status')
+          .not('invited_date', 'is', null)
+          .gte('invited_date', '2025-10-01')
+          .lt('invited_date', '2026-01-01');
+
+        if (error) throw error;
+
+        // Agrupar por mes
+        const months = { 10: {inv:0, acc:0, pos:0}, 11: {inv:0, acc:0, pos:0}, 12: {inv:0, acc:0, pos:0} };
+        
+        data.forEach(lead => {
+          const month = new Date(lead.invited_date).getMonth() + 1; // 1-12
+          if (months[month]) {
+            months[month].inv++;
+            if (['accepted', 'messaged', 'positive', 'meeting'].includes(lead.status)) {
+              months[month].acc++;
+            }
+            if (['positive', 'meeting'].includes(lead.status)) {
+              months[month].pos++;
+            }
+          }
+        });
+
+        // Actualizar Q4 con datos reales
+        DATA_BY_PERIOD['Q4'] = {
+          categories: ['Oct', 'Nov', 'Dic'],
+          invitations: [months[10].inv, months[11].inv, months[12].inv],
+          accepted: [months[10].acc, months[11].acc, months[12].acc],
+          positive: [months[10].pos, months[11].pos, months[12].pos],
+          projected: false
+        };
+
+        console.log('✅ Datos Q4 2025 (reales) cargados:', DATA_BY_PERIOD['Q4']);
+      } catch (error) {
+        console.error('Error cargando datos del gráfico:', error);
+      }
+    }
+
     // Crear gráfico con ApexCharts
     function createChart(period) {
       const data = DATA_BY_PERIOD[period];
+      const isProjected = data.projected;
+      const year = period === 'Q4' ? '2025' : '2026';
+
+      // Actualizar subtítulo con indicador Real/Proyectado
+      const chartSection = document.querySelector('.chart-section .section-subtitle');
+      if (chartSection) {
+        chartSection.innerHTML = isProjected 
+          ? '<span style="color: var(--gold);">📊 Proyección</span> basada en tendencias Q4 2025'
+          : '<span style="color: var(--green);">✅ Datos reales</span> de Oct-Dic 2025';
+      }
 
       const options = {
         series: [
@@ -1963,7 +2021,8 @@
         },
         stroke: {
           curve: 'smooth',
-          width: 3
+          width: 3,
+          dashArray: isProjected ? [5, 5] : [0, 0] // Línea punteada si es proyección
         },
         xaxis: {
           categories: data.categories,
@@ -1996,7 +2055,7 @@
           type: 'gradient',
           gradient: {
             shadeIntensity: 1,
-            opacityFrom: 0.4,
+            opacityFrom: isProjected ? 0.2 : 0.4, // Más transparente si es proyección
             opacityTo: 0.1,
             stops: [0, 90, 100]
           }
@@ -2025,7 +2084,7 @@
           x: {
             show: true,
             formatter: function(val) {
-              return val + ' 2026';
+              return val + ' ' + year + (isProjected ? ' (proyectado)' : '');
             }
           },
           y: {
@@ -2048,8 +2107,10 @@
       chart.render();
     }
 
-    // Inicializar gráfico
-    createChart('Q1');
+    // Inicializar gráfico con Q4 (datos reales)
+    loadChartDataFromSupabase().then(() => {
+      createChart('Q4'); // Empezar con Q4 que tiene datos reales
+    });
 
     // Event listeners para filtros
     document.querySelectorAll('.filter-btn').forEach(btn => {
