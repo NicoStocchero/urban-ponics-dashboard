@@ -1,12 +1,4 @@
 {
-  "buildCommand": "npm run build",
-  "framework": "nextjs",
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/es"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",

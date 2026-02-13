@@ -15,10 +15,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    // Use system TLS certificates for Turbopack
-    turbopackUseSystemTlsCerts: true,
-  },
 }
 
 export default withNextIntl(nextConfig)
