@@ -1774,6 +1774,7 @@
     // Cargar datos reales desde Supabase
     async function loadMetricsFromSupabase() {
       try {
+        console.log('🔥🔥🔥 FUNCIÓN EJECUTÁNDOSE - TIMESTAMP: ' + new Date().toISOString() + ' 🔥🔥🔥');
         console.log('📊 ========== CARGANDO MÉTRICAS LIVE ==========');
         
         // Query para obtener status y deal_value
@@ -1826,6 +1827,13 @@
         animateValue('kpi-positive', 0, positive, 2000);
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
+
+        console.log('🎯🎯🎯 KPIs ANIMADOS CON VALORES CORRECTOS:');
+        console.log('  - Invitations:', invitations);
+        console.log('  - Acceptance:', acceptance.toFixed(1) + '%');
+        console.log('  - Positive:', positive);
+        console.log('  - Meetings:', meetings);
+        console.log('  - Pipeline: $' + totalPipeline.toLocaleString());
 
         // ========== ACTUALIZAR MODAL DATA ==========
         MODAL_DATA.invitations.stats = [
@@ -2625,3 +2633,4 @@
   </script>
 </body>
 </html>
+<!-- CACHE BUSTER: 1771021969 -->
