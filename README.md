@@ -1,51 +1,36 @@
-# Urban Ponics - Investor Dashboard
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Dashboard interactivo para inversores con métricas en tiempo real, gráficos de rendimiento y seguimiento de deals.
+## Getting Started
 
-## 🚀 Demo en vivo
+First, run the development server:
 
-Visita: [URL se generará al deployar]
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## ✨ Características
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- 📊 Gráficos interactivos con ApexCharts
-- 🎯 5 KPIs principales con animaciones
-- 📈 Timeline de performance por trimestre
-- 💼 Top 10 deals activos con progreso
-- 🎭 Modales informativos para cada métrica
-- 📱 100% responsive
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 🛠️ Tecnologías
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-- HTML5
-- CSS3 (Animaciones nativas)
-- JavaScript Vanilla
-- ApexCharts para visualizaciones
-- Fonts: Inter + Space Grotesk
+## Learn More
 
-## 📊 Métricas incluidas
+To learn more about Next.js, take a look at the following resources:
 
-- Invitaciones enviadas: 5,758
-- Tasa de aceptación: 23.7%
-- Respuestas positivas: 102
-- Reuniones agendadas: 16+
-- Pipeline total: $540,000 USD
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## 🎨 Paleta de colores
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-Basada en la marca Urban Ponics:
-- Dorado: #B8A882
-- Verde: #22c55e
-- Negro: #000000
+## Deploy on Vercel
 
-## 📦 Despliegue
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Este proyecto está desplegado en Vercel para acceso instantáneo.
-
-## 📄 Licencia
-
-MIT
-
----
-
-Desarrollado para Urban Ponics 🌱
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

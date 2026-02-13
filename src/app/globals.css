@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* Urban Ponics Dashboard - Modern Dark Theme with Gold Accents */
+:root {
+  /* Brand Colors - Gold Theme */
+  --gold: #B8A882;
+  --gold-light: #d4c4a0;
+  --gold-dark: #9d8e6d;
+
+  /* Accent Colors */
+  --green: #22c55e;
+  --green-light: #4ade80;
+  --blue: #3b82f6;
+  --red: #ef4444;
+
+  /* Background Colors */
+  --bg-black: #000000;
+  --bg-dark: #0a0a0a;
+  --bg-card: rgba(184, 168, 130, 0.05);
+  --bg-hover: rgba(184, 168, 130, 0.08);
+
+  /* Border Colors */
+  --border: rgba(184, 168, 130, 0.15);
+  --border-hover: rgba(184, 168, 130, 0.4);
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-muted: #888888;
+  --text-dimmed: #666666;
+
+  /* Spacing */
+  --sidebar-width: 280px;
+}
+
+@theme inline {
+  --color-background: var(--bg-black);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-black);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-dark);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
