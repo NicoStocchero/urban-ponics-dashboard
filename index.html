@@ -979,7 +979,7 @@
     <div class="header">
       <div class="logo-section">
         <h1>👥 Leads</h1>
-        <p class="subtitle">Contact Database (7,352 leads)</p>
+        <p class="subtitle">Positive Responses & Meetings</p>
       </div>
       <div class="update-section">
         <div class="live-indicator">
@@ -1702,16 +1702,30 @@
           { label: t('status'), value: totalDeals > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
-        // Cargar top 10 deals
+        // Cargar top 10 deals (sin duplicados)
         const { data, error } = await supabaseClient
           .from('leads')
-          .select('deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name')
+          .select('deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name, unique_id')
           .not('deal_value', 'is', null)
           .gt('deal_value', 0)
-          .order('deal_value', { ascending: false })
-          .limit(10);
+          .order('deal_value', { ascending: false });
 
         if (error) throw error;
+
+        // Eliminar duplicados manualmente (agrupar por deal_title + contact)
+        const seenDeals = new Map();
+        const uniqueDeals = [];
+        
+        for (const lead of data) {
+          const dealKey = `${lead.deal_title || ''}_${lead.first_name || ''}_${lead.last_name || ''}_${lead.company || ''}`;
+          if (!seenDeals.has(dealKey)) {
+            seenDeals.set(dealKey, true);
+            uniqueDeals.push(lead);
+          }
+        }
+
+        // Tomar solo top 10
+        const topDeals = uniqueDeals.slice(0, 10);
 
         // Mapear stages a porcentajes
         const stageToProgress = {
@@ -1720,7 +1734,7 @@
         };
 
         // Convertir datos de Supabase al formato del dashboard
-        const deals = data.map((lead, idx) => {
+        const deals = topDeals.map((lead, idx) => {
           // Determinar el título
           let title = lead.deal_title || 'Deal sin título';
           
@@ -2191,8 +2205,8 @@
         const { data, error } = await supabaseClient
           .from('leads')
           .select('first_name, last_name, company, position, email, status, campaign')
-          .order('updated_at', { ascending: false })
-          .limit(100);
+          .in('status', ['positive', 'meeting'])
+          .order('status', { ascending: false }); // meetings primero
 
         if (error) throw error;
 
@@ -2205,35 +2219,32 @@
                   <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Name</th>
                   <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Company</th>
                   <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Position</th>
+                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Email</th>
                   <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Status</th>
-                  <th style="text-align: left; padding: 1rem; color: var(--gold); font-family: 'Space Grotesk', sans-serif;">Campaign</th>
                 </tr>
               </thead>
               <tbody>
                 ${data.map(lead => {
                   const statusColors = {
                     'meeting': 'var(--green)',
-                    'positive': 'var(--gold)',
-                    'accepted': 'var(--blue)',
-                    'messaged': '#888',
-                    'invited': '#555'
+                    'positive': 'var(--gold)'
                   };
                   const statusColor = statusColors[lead.status] || '#555';
+                  const statusLabel = lead.status === 'meeting' ? '🎯 Meeting' : '⭐ Positive';
                   
                   return `
                     <tr style="border-bottom: 1px solid var(--border);">
                       <td style="padding: 1rem; color: white; font-weight: 500;">
                         ${lead.first_name} ${lead.last_name}
-                        ${lead.email ? `<br><span style="color: var(--text-muted); font-size: 0.75rem;">${lead.email}</span>` : ''}
                       </td>
                       <td style="padding: 1rem; color: var(--text-muted);">${lead.company || '-'}</td>
                       <td style="padding: 1rem; color: var(--text-muted); font-size: 0.875rem;">${lead.position || '-'}</td>
+                      <td style="padding: 1rem; color: var(--text-muted); font-size: 0.875rem;">${lead.email || '-'}</td>
                       <td style="padding: 1rem;">
-                        <span style="background: ${statusColor}22; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
-                          ${lead.status}
+                        <span style="background: ${statusColor}22; color: ${statusColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                          ${statusLabel}
                         </span>
                       </td>
-                      <td style="padding: 1rem; color: var(--text-muted); font-size: 0.75rem;">${lead.campaign || '-'}</td>
                     </tr>
                   `;
                 }).join('')}
@@ -2241,11 +2252,11 @@
             </table>
           </div>
           <div style="margin-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
-            Showing top 100 most recent leads • Total: 7,352 leads in database
+            ${data.length} qualified leads (${data.filter(l => l.status === 'meeting').length} meetings + ${data.filter(l => l.status === 'positive').length} positive responses)
           </div>
         `;
         
-        console.log('Leads cargados:', data.length);
+        console.log('✅ Qualified leads cargados:', data.length);
       } catch (error) {
         console.error('Error loading leads:', error);
         document.getElementById('leadsTable').innerHTML = 
