@@ -1397,13 +1397,13 @@
         });
 
         // Actualizar KPIs con datos reales
-        const invitations = metrics.invitations_sent || 46;
-        const acceptance = metrics.acceptance_rate || 87;
-        const positive = metrics.qualified_interested || 5;
+        const invitations = metrics.invitations_sent || 0;
+        const acceptance = metrics.acceptance_rate || 0;
+        const positive = metrics.qualified_interested || 0;
         const meetings = metrics.meetings_scheduled || 0;
-        const pipeline = metrics.total_pipeline || 219000;
-        const accepted = metrics.connections_accepted || 40;
-        const responses = metrics.total_responses || 29;
+        const pipeline = metrics.total_pipeline || 0;
+        const accepted = metrics.connections_accepted || 0;
+        const responses = metrics.total_responses || 0;
 
         // Animar con los valores reales
         animateValue('kpi-invitations', 0, invitations, 2000, '', '', true);
