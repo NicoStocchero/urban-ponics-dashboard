@@ -1774,62 +1774,64 @@
     // Cargar datos reales desde Supabase
     async function loadMetricsFromSupabase() {
       try {
-        // 1. Cargar métricas estáticas de la tabla metrics
-        const { data: metricsData, error: metricsError } = await supabaseClient
-          .from('metrics')
-          .select('*');
+        console.log('📊 Calculando TODAS las métricas LIVE desde tabla leads...');
+        
+        // Query única para obtener TODOS los datos necesarios
+        const { data: allLeads, error } = await supabaseClient
+          .from('leads')
+          .select('invited_date, connected_date, status, deal_value');
 
-        if (metricsError) throw metricsError;
+        if (error) throw error;
 
-        // Crear un objeto con las métricas estáticas
-        const metrics = {};
-        metricsData.forEach(item => {
-          metrics[item.metric_name] = parseFloat(item.metric_value);
+        // ========== CALCULAR MÉTRICAS LIVE ==========
+        
+        // Total BBDD
+        const totalBBDD = allLeads.length;
+        
+        // Invitaciones enviadas (con fecha de invitación)
+        const invited = allLeads.filter(l => l.invited_date !== null);
+        const invitations = invited.length;
+        
+        // Conexiones aceptadas (status que indica aceptación)
+        const acceptedStatuses = ['accepted', 'messaged', 'positive', 'meeting'];
+        const accepted = allLeads.filter(l => acceptedStatuses.includes(l.status)).length;
+        
+        // Tasa de aceptación
+        const acceptance = invitations > 0 ? (accepted / invitations) * 100 : 0;
+        
+        // Positivos y Meetings
+        const positive = allLeads.filter(l => ['positive', 'meeting'].includes(l.status)).length;
+        const meetings = allLeads.filter(l => l.status === 'meeting').length;
+        
+        // Pipeline (deals con valor)
+        const dealsWithValue = allLeads.filter(l => l.deal_value && parseFloat(l.deal_value) > 0);
+        const totalDeals = dealsWithValue.length;
+        const totalPipeline = dealsWithValue.reduce((sum, l) => sum + parseFloat(l.deal_value), 0);
+
+        console.log('✅ Métricas calculadas:', {
+          totalBBDD,
+          invitations,
+          accepted,
+          acceptance: acceptance.toFixed(1) + '%',
+          positive,
+          meetings,
+          pipeline: totalPipeline
         });
 
-        // 2. Calcular LIVE: Pipeline y deals desde tabla leads
-        const { data: dealsData, error: dealsError } = await supabaseClient
-          .from('leads')
-          .select('deal_value, status')
-          .not('deal_value', 'is', null)
-          .gt('deal_value', 0);
-
-        if (dealsError) throw dealsError;
-
-        // Calcular pipeline LIVE
-        const totalDeals = dealsData.length;
-        const totalPipeline = dealsData.reduce((sum, d) => sum + parseFloat(d.deal_value), 0);
-
-        // 3. Calcular LIVE: Meetings y positivos desde tabla leads
-        const { data: leadsData, error: leadsError } = await supabaseClient
-          .from('leads')
-          .select('status')
-          .in('status', ['meeting', 'positive']);
-
-        if (leadsError) throw leadsError;
-
-        const meetings = leadsData.filter(l => l.status === 'meeting').length;
-        const positive = leadsData.filter(l => l.status === 'positive').length;
-
-        // Usar métricas estáticas para el resto
-        const invitations = metrics.invitations_sent || 0;
-        const acceptance = metrics.acceptance_rate || 0;
-        const accepted = metrics.connections_accepted || 0;
-        const responses = metrics.total_responses || 0;
-
-        // Animar con los valores reales (LIVE para pipeline, meetings, positive)
+        // ========== ANIMAR KPIs ==========
         animateValue('kpi-invitations', 0, invitations, 2000, '', '', true);
         animateValue('kpi-acceptance', 0, acceptance, 2000, '%');
         animateValue('kpi-positive', 0, positive, 2000);
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
 
-        // Actualizar MODAL_DATA con valores reales
+        // ========== ACTUALIZAR MODAL_DATA ==========
+        
         MODAL_DATA.invitations.stats = [
           { label: t('totalSent'), value: invitations.toLocaleString() },
           { label: t('acceptedCount'), value: accepted.toLocaleString() },
           { label: t('acceptanceRate'), value: acceptance.toFixed(1) + '%' },
-          { label: t('status'), value: acceptance > 25 ? '✅ ' + t('excellent') : '⚠️ ' + t('improving') }
+          { label: 'Total BBDD', value: totalBBDD.toLocaleString() + ' leads' }
         ];
 
         MODAL_DATA.acceptance.stats = [
@@ -1855,7 +1857,6 @@
           { label: t('status'), value: meetings > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
-        // Pipeline stats (LIVE)
         MODAL_DATA.pipeline.stats = [
           { label: 'Deals abiertos', value: totalDeals.toLocaleString() },
           { label: 'Valor total', value: '$' + totalPipeline.toLocaleString() },
