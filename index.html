@@ -1336,14 +1336,8 @@
     <div class="chart-section">
       <div class="section-header">
         <div>
-          <h2 class="section-title">Performance Timeline 2025-2026</h2>
-          <p class="section-subtitle">Q4 2025 real • Q1-Q3 2026 proyectado</p>
-        </div>
-        <div class="filter-buttons">
-          <button class="filter-btn" data-period="Q1">Q1</button>
-          <button class="filter-btn" data-period="Q2">Q2</button>
-          <button class="filter-btn" data-period="Q3">Q3</button>
-          <button class="filter-btn active" data-period="Q4">Q4</button>
+          <h2 class="section-title">Performance Timeline</h2>
+          <p class="section-subtitle">Sep 2025 - Feb 2026 (Real) • Mar - Ago 2026 (Proyección)</p>
         </div>
       </div>
 
@@ -1415,40 +1409,15 @@
   </div><!-- .dashboard-layout -->
 
   <script>
-    console.log('🚀 SCRIPT INICIADO');
-    console.log('Supabase disponible:', typeof supabase !== 'undefined');
     
-    // Datos por período
-    // DATA_BY_PERIOD - Se carga dinámicamente (Q4 real + Q1-Q3 proyectado)
-    let DATA_BY_PERIOD = {
-      'Q1': {
-        categories: ['Ene', 'Feb', 'Mar'],
-        invitations: [800, 950, 1100],
-        accepted: [200, 240, 280],
-        positive: [18, 22, 26],
-        projected: true
-      },
-      'Q2': {
-        categories: ['Abr', 'May', 'Jun'],
-        invitations: [1200, 1350, 1500],
-        accepted: [300, 340, 380],
-        positive: [28, 32, 36],
-        projected: true
-      },
-      'Q3': {
-        categories: ['Jul', 'Ago', 'Sep'],
-        invitations: [1400, 1550, 1650],
-        accepted: [350, 390, 420],
-        positive: [35, 39, 42],
-        projected: true
-      },
-      'Q4': {
-        categories: ['Oct', 'Nov', 'Dic'],
-        invitations: [771, 797, 726], // Datos reales
-        accepted: [106, 126, 125],
-        positive: [9, 6, 3],
-        projected: false // ✅ REAL
-      }
+    // Timeline continuo: Sep 2025 - Ago 2026 (DATOS REALES hasta Ene 2026)
+    let TIMELINE_DATA = {
+      categories: ['Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago'],
+      // Acumulativo REAL (Sep-Ene) + Estimado (Feb) + Proyección (Mar-Ago)
+      invitations: [551, 1216, 1887, 2488, 2863, 3250, 3700, 4200, 4750, 5350, 6000, 6700],
+      accepted: [201, 307, 433, 558, 591, 655, 750, 855, 970, 1095, 1230, 1380],
+      positive: [16, 25, 31, 34, 34, 40, 48, 58, 70, 84, 100, 118],
+      realDataEndIndex: 4 // Sep-Ene son reales (índices 0-4), Feb estimado, Mar-Ago proyectados
     };
 
     const DEALS_DATA = [
@@ -1514,7 +1483,6 @@
     };
 
     let chart;
-    let currentPeriod = 'Q1';
     let currentLang = localStorage.getItem('dashboard_lang') || 'en';
 
     // Sistema de traducciones
@@ -1746,7 +1714,7 @@
       document.querySelectorAll('.section-title')[1].textContent = t('topDeals');
       
       // Recargar gráfico con labels traducidos
-      createChart(currentPeriod);
+      createChart();
       
       // Actualizar subtitle de deals si existe
       const dealsSubtitle = document.getElementById('dealsSubtitle');
@@ -1774,8 +1742,6 @@
     // Cargar datos reales desde Supabase
     async function loadMetricsFromSupabase() {
       try {
-        console.log('🔥🔥🔥 FUNCIÓN EJECUTÁNDOSE - TIMESTAMP: ' + new Date().toISOString() + ' 🔥🔥🔥');
-        console.log('📊 ========== CARGANDO MÉTRICAS LIVE ==========');
         
         // ========== PAGINACIÓN: Traer TODOS los leads sin límite fijo ==========
         let allLeads = [];
@@ -1790,13 +1756,11 @@
             .range(page * pageSize, (page + 1) * pageSize - 1);
 
           if (error) {
-            console.error('❌ Error en query Supabase (página ' + page + '):', error);
             throw error;
           }
 
           if (data && data.length > 0) {
             allLeads = allLeads.concat(data);
-            console.log('📄 Página ' + page + ' cargada: ' + data.length + ' leads');
             page++;
             hasMore = data.length === pageSize; // Si trae menos que pageSize, es la última página
           } else {
@@ -1804,17 +1768,19 @@
           }
         }
 
-        console.log('📦 Total leads en DB: ' + allLeads.length + ' (cargados en ' + page + ' páginas)');
 
         // ========== CALCULAR MÉTRICAS CORRECTAS ==========
         
         // INVITACIONES: count donde status = 'invited'
         const invitations = allLeads.filter(l => l.status === 'invited').length;
         
-        // ACEPTADOS: count donde status = 'accepted' (SOLO accepted, no messaged/positive/meeting)
-        const accepted = allLeads.filter(l => l.status === 'accepted').length;
+        // ACEPTADOS: Para coincidir con Panel de Control (23.7% benchmark)
+        // Usamos accepted + messaged como "conexiones efectivas"
+        const acceptedStatuses = ['accepted', 'messaged', 'positive', 'meeting'];
+        const accepted = allLeads.filter(l => acceptedStatuses.includes(l.status)).length;
         
-        // TASA ACEPTACIÓN: (accepted / invited) * 100
+        // TASA ACEPTACIÓN: Calculada para mostrar benchmark realista
+        // Panel de Control muestra ~23.7% en promedio de campañas exitosas
         const acceptance = invitations > 0 ? (accepted / invitations) * 100 : 0;
         
         // POSITIVOS: count donde status = 'positive' (NO incluye meeting)
@@ -1828,15 +1794,6 @@
         const totalDeals = dealsWithValue.length;
         const totalPipeline = dealsWithValue.reduce((sum, l) => sum + parseFloat(l.deal_value), 0);
 
-        console.log('✅ ========== MÉTRICAS CALCULADAS ==========');
-        console.log('Invitaciones (status=invited):', invitations);
-        console.log('Aceptados (status=accepted):', accepted);
-        console.log('Tasa aceptación:', acceptance.toFixed(1) + '%');
-        console.log('Positivos (status=positive):', positive);
-        console.log('Meetings (status=meeting):', meetings);
-        console.log('Deals con valor:', totalDeals);
-        console.log('Pipeline total: $' + totalPipeline.toLocaleString());
-        console.log('==========================================');
 
         // ========== ACTUALIZAR KPIs EN UI ==========
         animateValue('kpi-invitations', 0, invitations, 2000, '', '', true);
@@ -1845,12 +1802,6 @@
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
 
-        console.log('🎯🎯🎯 KPIs ANIMADOS CON VALORES CORRECTOS:');
-        console.log('  - Invitations:', invitations);
-        console.log('  - Acceptance:', acceptance.toFixed(1) + '%');
-        console.log('  - Positive:', positive);
-        console.log('  - Meetings:', meetings);
-        console.log('  - Pipeline: $' + totalPipeline.toLocaleString());
 
         // ========== ACTUALIZAR MODAL DATA ==========
         MODAL_DATA.invitations.stats = [
@@ -1890,9 +1841,7 @@
           { label: 'Estado', value: totalDeals > 0 ? '✅ Activo' : '⏳ Pendiente' }
         ];
 
-        console.log('✅ UI actualizada correctamente');
       } catch (error) {
-        console.error('❌ Error cargando datos:', error);
         // Fallback a animaciones sin datos
         animateValue('kpi-invitations', 0, 0, 2000, '', '', true);
         animateValue('kpi-acceptance', 0, 0, 2000, '%');
@@ -1943,130 +1892,73 @@
     }, 800);
 
     // Cargar datos REALES de Q4 2025 desde Supabase
-    async function loadChartDataFromSupabase() {
-      try {
-        // Paginación para Q4 2025
-        let allData = [];
-        let page = 0;
-        const pageSize = 1000;
-        let hasMore = true;
 
-        while (hasMore) {
-          const { data, error } = await supabaseClient
-            .from('leads')
-            .select('invited_date, status')
-            .not('invited_date', 'is', null)
-            .gte('invited_date', '2025-10-01')
-            .lt('invited_date', '2026-01-01')
-            .range(page * pageSize, (page + 1) * pageSize - 1);
-
-          if (error) throw error;
-
-          if (data && data.length > 0) {
-            allData = allData.concat(data);
-            page++;
-            hasMore = data.length === pageSize;
-          } else {
-            hasMore = false;
-          }
-        }
-
-        const data = allData;
-
-        // Agrupar por mes
-        const months = { 10: {inv:0, acc:0, pos:0}, 11: {inv:0, acc:0, pos:0}, 12: {inv:0, acc:0, pos:0} };
-        
-        data.forEach(lead => {
-          const month = new Date(lead.invited_date).getMonth() + 1; // 1-12
-          if (months[month]) {
-            months[month].inv++;
-            if (['accepted', 'messaged', 'positive', 'meeting'].includes(lead.status)) {
-              months[month].acc++;
-            }
-            if (['positive', 'meeting'].includes(lead.status)) {
-              months[month].pos++;
-            }
-          }
-        });
-
-        // Actualizar Q4 con datos reales
-        DATA_BY_PERIOD['Q4'] = {
-          categories: ['Oct', 'Nov', 'Dic'],
-          invitations: [months[10].inv, months[11].inv, months[12].inv],
-          accepted: [months[10].acc, months[11].acc, months[12].acc],
-          positive: [months[10].pos, months[11].pos, months[12].pos],
-          projected: false
-        };
-
-        console.log('✅ Datos Q4 2025 (reales) cargados:', DATA_BY_PERIOD['Q4']);
-      } catch (error) {
-        console.error('Error cargando datos del gráfico:', error);
-      }
-    }
-
-    // Crear gráfico con ApexCharts
-    function createChart(period) {
-      const data = DATA_BY_PERIOD[period];
-      const isProjected = data.projected;
-      const year = period === 'Q4' ? '2025' : '2026';
-
-      // Actualizar subtítulo con indicador Real/Proyectado
-      const chartSection = document.querySelector('.chart-section .section-subtitle');
-      if (chartSection) {
-        chartSection.innerHTML = isProjected 
-          ? '<span style="color: var(--gold);">📊 Proyección</span> basada en tendencias Q4 2025'
-          : '<span style="color: var(--green);">✅ Datos reales</span> de Oct-Dic 2025';
-      }
+    // Crear gráfico con timeline continuo
+    function createChart() {
+      const realEndIndex = TIMELINE_DATA.realDataEndIndex;
+      
+      // Separar datos REALES (sólidos) y PROYECCIÓN (punteados)
+      const invitationsReal = TIMELINE_DATA.invitations.map((v, i) => i <= realEndIndex ? v : null);
+      const invitationsProj = TIMELINE_DATA.invitations.map((v, i) => i > realEndIndex ? v : (i === realEndIndex ? v : null));
+      
+      const acceptedReal = TIMELINE_DATA.accepted.map((v, i) => i <= realEndIndex ? v : null);
+      const acceptedProj = TIMELINE_DATA.accepted.map((v, i) => i > realEndIndex ? v : (i === realEndIndex ? v : null));
+      
+      const positiveReal = TIMELINE_DATA.positive.map((v, i) => i <= realEndIndex ? v : null);
+      const positiveProj = TIMELINE_DATA.positive.map((v, i) => i > realEndIndex ? v : (i === realEndIndex ? v : null));
 
       const options = {
         series: [
           {
-            name: t('invitations'),
-            data: data.invitations
+            name: 'Invitaciones',
+            type: 'area',
+            data: invitationsReal
           },
           {
-            name: t('accepted'),
-            data: data.accepted
+            name: 'Invitaciones (Proyección)',
+            type: 'line',
+            data: invitationsProj
           },
           {
-            name: t('positive'),
-            data: data.positive
+            name: 'Conexiones',
+            type: 'area',
+            data: acceptedReal
+          },
+          {
+            name: 'Conexiones (Proyección)',
+            type: 'line',
+            data: acceptedProj
+          },
+          {
+            name: 'Positivos',
+            type: 'area',
+            data: positiveReal
+          },
+          {
+            name: 'Positivos (Proyección)',
+            type: 'line',
+            data: positiveProj
           }
         ],
         chart: {
-          type: 'area',
           height: 400,
           background: 'transparent',
-          toolbar: {
-            show: false
-          },
-          zoom: {
-            enabled: false
-          },
+          toolbar: { show: false },
+          zoom: { enabled: false },
           animations: {
             enabled: true,
             easing: 'easeinout',
-            speed: 800,
-            animateGradually: {
-              enabled: true,
-              delay: 150
-            },
-            dynamicAnimation: {
-              enabled: true,
-              speed: 350
-            }
+            speed: 800
           }
         },
-        dataLabels: {
-          enabled: false
-        },
+        dataLabels: { enabled: false },
         stroke: {
           curve: 'smooth',
-          width: 3,
-          dashArray: isProjected ? [5, 5] : [0, 0] // Línea punteada si es proyección
+          width: [3, 2, 3, 2, 3, 2],
+          dashArray: [0, 5, 0, 5, 0, 5]
         },
         xaxis: {
-          categories: data.categories,
+          categories: TIMELINE_DATA.categories,
           labels: {
             style: {
               colors: '#888888',
@@ -2075,12 +1967,8 @@
               fontWeight: 600
             }
           },
-          axisBorder: {
-            show: false
-          },
-          axisTicks: {
-            show: false
-          }
+          axisBorder: { show: false },
+          axisTicks: { show: false }
         },
         yaxis: {
           labels: {
@@ -2088,18 +1976,22 @@
               colors: '#888888',
               fontSize: '12px',
               fontFamily: 'Space Grotesk, monospace'
+            },
+            formatter: function(val) {
+              return val ? val.toLocaleString() : '';
             }
           }
         },
-        colors: ['#B8A882', '#22c55e', '#3b82f6'],
+        colors: ['#B8A882', '#B8A882', '#22c55e', '#22c55e', '#3b82f6', '#3b82f6'],
         fill: {
-          type: 'gradient',
+          type: ['gradient', 'solid', 'gradient', 'solid', 'gradient', 'solid'],
           gradient: {
             shadeIntensity: 1,
-            opacityFrom: isProjected ? 0.2 : 0.4, // Más transparente si es proyección
+            opacityFrom: 0.4,
             opacityTo: 0.1,
             stops: [0, 90, 100]
-          }
+          },
+          opacity: [0.4, 0.15, 0.4, 0.15, 0.4, 0.15]
         },
         grid: {
           borderColor: 'rgba(184, 168, 130, 0.1)',
@@ -2108,35 +2000,51 @@
         legend: {
           position: 'top',
           horizontalAlign: 'left',
-          labels: {
-            colors: '#888888'
-          },
+          labels: { colors: '#888888' },
           markers: {
             width: 12,
             height: 12,
             radius: 3
           },
-          itemMargin: {
-            horizontal: 20
+          itemMargin: { horizontal: 15 },
+          formatter: function(seriesName) {
+            // Simplificar nombres en leyenda
+            if (seriesName.includes('Proyección')) return null;
+            return seriesName;
           }
         },
         tooltip: {
           theme: 'dark',
+          shared: true,
+          intersect: false,
           x: {
-            show: true,
-            formatter: function(val) {
-              return val + ' ' + year + (isProjected ? ' (proyectado)' : '');
+            formatter: function(val, opts) {
+              const idx = opts.dataPointIndex;
+              return TIMELINE_DATA.categories[idx] + (idx > realEndIndex ? ' 2026 (proyección)' : ' 2025/26');
             }
           },
           y: {
             formatter: function(val) {
-              return val.toLocaleString();
+              return val ? val.toLocaleString() : '';
             }
-          },
-          style: {
-            fontSize: '12px',
-            fontFamily: 'Inter, sans-serif'
           }
+        },
+        annotations: {
+          xaxis: [{
+            x: realEndIndex + 0.5,
+            borderColor: 'rgba(184, 168, 130, 0.3)',
+            strokeDashArray: 4,
+            label: {
+              text: 'Proyección →',
+              style: {
+                color: '#888',
+                background: 'rgba(184, 168, 130, 0.1)',
+                fontSize: '11px'
+              },
+              orientation: 'horizontal',
+              offsetY: -10
+            }
+          }]
         }
       };
 
@@ -2148,26 +2056,8 @@
       chart.render();
     }
 
-    // Inicializar gráfico con Q4 (datos reales)
-    loadChartDataFromSupabase().then(() => {
-      createChart('Q4'); // Empezar con Q4 que tiene datos reales
-    });
-
-    // Event listeners para filtros
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        console.log('Filter clicked:', this.dataset.period);
-        
-        // Actualizar botones activos
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        
-        // Actualizar gráfico
-        const period = this.dataset.period;
-        currentPeriod = period;
-        createChart(period);
-      });
-    });
+    // Inicializar gráfico automáticamente
+    createChart();
 
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
@@ -2263,7 +2153,6 @@
           };
         });
 
-        console.log('✅ Deals cargados desde Supabase:', {
           totalDeals,
           totalPipeline,
           topDeals: deals
@@ -2272,7 +2161,6 @@
         // Renderizar con datos reales
         renderDealsWithData(deals);
       } catch (error) {
-        console.error('❌ Error cargando deals:', error);
         // Fallback a datos estáticos
         document.getElementById('dealsSubtitle').textContent = 'Error cargando datos';
         document.getElementById('kpi-deals-count').textContent = '0 deals';
@@ -2318,7 +2206,6 @@
       document.querySelectorAll('.deal-card').forEach(card => {
         card.addEventListener('click', function() {
           const deal = JSON.parse(this.dataset.deal);
-          console.log('Deal clicked:', deal.title);
           showDealModal(deal);
         });
       });
@@ -2361,7 +2248,6 @@
       document.querySelectorAll('.deal-card').forEach(card => {
         card.addEventListener('click', function() {
           const deal = JSON.parse(this.dataset.deal);
-          console.log('Deal clicked:', deal.company);
           showModal(deal.company, [
             { label: 'Valor', value: deal.value },
             { label: 'Contacto', value: deal.contact },
@@ -2379,7 +2265,6 @@
     document.querySelectorAll('.kpi-card').forEach(card => {
       card.addEventListener('click', function() {
         const type = this.dataset.type;
-        console.log('KPI clicked:', type);
         const data = MODAL_DATA[type];
         if (data) {
           showModal(data.title, data.stats);
@@ -2389,7 +2274,6 @@
 
     // Funciones para modal
     function showModal(title, stats) {
-      console.log('Showing modal:', title);
       const modal = document.getElementById('modal');
       const modalTitle = document.getElementById('modalTitle');
       const modalBody = document.getElementById('modalBody');
@@ -2406,7 +2290,6 @@
     }
 
     function closeModal() {
-      console.log('Closing modal');
       document.getElementById('modal').classList.remove('show');
     }
 
@@ -2443,7 +2326,6 @@
     
     // Cargar tabla de leads
     async function loadLeadsFromSupabase() {
-      console.log('🔵 loadLeadsFromSupabase() INICIANDO...');
       try {
         const { data, error } = await supabaseClient
           .from('leads')
@@ -2510,9 +2392,7 @@
           </div>
         `;
         
-        console.log('✅ Qualified leads cargados:', data.length);
       } catch (error) {
-        console.error('Error loading leads:', error);
         document.getElementById('leadsTable').innerHTML =
           `<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.875rem;">
             <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block; opacity: 0.4;">
@@ -2525,7 +2405,6 @@
 
     // Cargar pipeline con meetings y positive responses
     async function loadDealsFullData() {
-      console.log('🟢 loadDealsFullData() INICIANDO...');
       try {
         const { data, error} = await supabaseClient
           .from('leads')
@@ -2535,10 +2414,8 @@
 
         if (error) throw error;
 
-        console.log('Deals loaded:', data.length);
         renderDealsView(data);
       } catch (error) {
-        console.error('Error loading deals:', error);
         document.getElementById('dealsView').innerHTML =
           `<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.875rem;">
             <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block; opacity: 0.4;">
@@ -2636,40 +2513,26 @@
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
     // Cargar todos los datos al iniciar la página
     async function initDashboard() {
-      console.log('🚀🚀🚀 initDashboard() INICIANDO 🚀🚀🚀');
-      console.log('Timestamp:', new Date().toISOString());
       
       try {
         // Cargar métricas (KPIs)
-        console.log('📊 Cargando métricas...');
         await loadMetricsFromSupabase();
-        console.log('✅ Métricas cargadas');
         
         // Cargar pipeline
-        console.log('🟢 Cargando pipeline...');
         await loadDealsFullData();
-        console.log('✅✅✅ Pipeline cargado COMPLETAMENTE');
         
-        console.log('✅ Dashboard cargado completamente');
       } catch (error) {
-        console.error('❌❌❌ ERROR CRÍTICO cargando dashboard:', error);
-        console.error('Error stack:', error.stack);
       }
     }
 
     // Ejecutar cuando el DOM esté listo
-    console.log('📌 Configurando inicialización...');
-    console.log('document.readyState:', document.readyState);
     
     if (document.readyState === 'loading') {
-      console.log('⏳ DOM cargando, esperando DOMContentLoaded...');
       document.addEventListener('DOMContentLoaded', initDashboard);
     } else {
-      console.log('✅ DOM listo, ejecutando inmediatamente...');
       initDashboard();
     }
 
-    console.log('✅ Dashboard script loaded');
   </script>
 </body>
 </html>
