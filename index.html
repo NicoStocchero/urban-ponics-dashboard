@@ -2065,7 +2065,7 @@
 
     // Navigation entre vistas
     const menuItems = document.querySelectorAll('.menu-item');
-    const currentView = 'overview'; // Vista actual por defecto
+    let currentView = 'overview'; // Vista actual por defecto
 
     menuItems.forEach(item => {
       item.addEventListener('click', function() {
@@ -2075,11 +2075,35 @@
         menuItems.forEach(m => m.classList.remove('active'));
         this.classList.add('active');
         
-        // Cambiar vista (por ahora solo overview está implementado)
-        // TODO: Implementar otras vistas
+        // Cambiar vista
         console.log('Navegando a:', view);
+        
+        // Ocultar todas las vistas
+        document.querySelectorAll('[id^="view-"]').forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // Mostrar la vista seleccionada
+        const targetView = document.getElementById('view-' + view);
+        if (targetView) {
+          targetView.classList.add('active');
+          currentView = view;
+          
+          // Cargar datos específicos según la vista
+          if (view === 'campaigns') {
+            loadCampaignsFromSupabase();
+          } else if (view === 'deals') {
+            loadDealsFullData();
+          }
+        }
       });
     });
+    
+    // Cargar datos iniciales
+    setTimeout(() => {
+      loadCampaignsFromSupabase(); // Cargar campañas desde el inicio
+      loadDealsFullData(); // Cargar deals desde el inicio
+    }, 1500);
 
     function renderCampaigns(campaigns) {
       const grid = document.getElementById('campaignsGrid');
@@ -2151,15 +2175,70 @@
       }).join('');
     }
 
+    // Cargar campañas desde Supabase
+    async function loadCampaignsFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('campaign, status');
+
+        if (error) throw error;
+
+        // Agrupar por campaña y contar métricas
+        const campaignStats = {};
+        
+        data.forEach(lead => {
+          const campaign = lead.campaign || 'Sin campaña';
+          
+          if (!campaignStats[campaign]) {
+            campaignStats[campaign] = {
+              name: campaign,
+              total: 0,
+              accepted: 0,
+              positive: 0,
+              meeting: 0,
+              messaged: 0
+            };
+          }
+          
+          campaignStats[campaign].total++;
+          
+          if (lead.status === 'accepted') campaignStats[campaign].accepted++;
+          if (lead.status === 'positive') campaignStats[campaign].positive++;
+          if (lead.status === 'meeting') campaignStats[campaign].meeting++;
+          if (lead.status === 'messaged') campaignStats[campaign].messaged++;
+        });
+
+        // Convertir a array y ordenar
+        const campaigns = Object.values(campaignStats)
+          .filter(c => c.name !== 'Sin campaña') // Filtrar leads sin campaña
+          .sort((a, b) => {
+            // Ordenar por meetings, luego positive, luego accepted
+            if (b.meeting !== a.meeting) return b.meeting - a.meeting;
+            if (b.positive !== a.positive) return b.positive - a.positive;
+            return b.accepted - a.accepted;
+          })
+          .slice(0, 15); // Top 15 campañas
+
+        console.log('Campañas cargadas:', campaigns.length);
+        renderCampaigns(campaigns);
+      } catch (error) {
+        console.error('Error loading campaigns:', error);
+        document.getElementById('campaignsGrid').innerHTML = 
+          `<p style="color: var(--text-muted);">Error loading campaigns data</p>`;
+      }
+    }
+
     async function loadDealsFullData() {
       try {
-        const { data, error } = await supabase
+        const { data, error} = await supabaseClient
           .from('leads')
           .select('*')
           .or('status.eq.meeting,status.eq.positive');
 
         if (error) throw error;
 
+        console.log('Deals loaded:', data.length);
         renderDealsView(data);
       } catch (error) {
         console.error('Error loading deals:', error);
