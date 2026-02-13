@@ -994,27 +994,6 @@
     </div>
   </div>
 
-  <!-- MEETINGS VIEW -->
-  <div class="view-section" id="view-meetings">
-    <div class="header">
-      <div class="logo-section">
-        <h1>📅 Meetings</h1>
-        <p class="subtitle">Scheduled Meetings (16 total)</p>
-      </div>
-      <div class="update-section">
-        <div class="live-indicator">
-          <span class="live-dot"></span>
-          <span data-i18n="live">LIVE</span>
-        </div>
-      </div>
-    </div>
-
-    <div id="meetingsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; padding: 2rem;">
-      <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Loading meetings data...</p>
-    </div>
-  </div>
-
-  <!-- CAMPAIGNS VIEW -->
   <!-- DEALS/PIPELINE VIEW -->
   <div class="view-section" id="view-deals">
     <div class="header">
@@ -2319,8 +2298,8 @@
                 <h4 style="color: var(--green); font-size: 1.125rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">
                   ${meeting.first_name} ${meeting.last_name}
                 </h4>
-                <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${meeting.position || 'No position'}</div>
-                <div style="color: white; font-weight: 500; margin-bottom: 1rem;">${meeting.company || 'No company'}</div>
+                ${meeting.position ? `<div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${meeting.position}</div>` : ''}
+                ${meeting.company ? `<div style="color: white; font-weight: 500; margin-bottom: 1rem;">${meeting.company}</div>` : ''}
                 ${meeting.email ? `
                   <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                     <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
@@ -2349,8 +2328,8 @@
                 <h4 style="color: var(--gold-light); font-size: 1.125rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif;">
                   ${lead.first_name} ${lead.last_name}
                 </h4>
-                <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${lead.position || 'No position'}</div>
-                <div style="color: white; font-weight: 500; margin-bottom: 1rem;">${lead.company || 'No company'}</div>
+                ${lead.position ? `<div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">${lead.position}</div>` : ''}
+                ${lead.company ? `<div style="color: white; font-weight: 500; margin-bottom: 1rem;">${lead.company}</div>` : ''}
                 ${lead.email ? `
                   <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                     <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
