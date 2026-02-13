@@ -1774,64 +1774,65 @@
     // Cargar datos reales desde Supabase
     async function loadMetricsFromSupabase() {
       try {
-        console.log('📊 Calculando TODAS las métricas LIVE desde tabla leads...');
+        console.log('📊 ========== CARGANDO MÉTRICAS LIVE ==========');
         
-        // Query única para obtener TODOS los datos necesarios
+        // Query para obtener status y deal_value
         const { data: allLeads, error } = await supabaseClient
           .from('leads')
-          .select('invited_date, connected_date, status, deal_value');
+          .select('status, deal_value');
 
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Error en query Supabase:', error);
+          throw error;
+        }
 
-        // ========== CALCULAR MÉTRICAS LIVE ==========
+        console.log('📦 Total leads en DB:', allLeads.length);
+
+        // ========== CALCULAR MÉTRICAS CORRECTAS ==========
         
-        // Total BBDD
-        const totalBBDD = allLeads.length;
+        // INVITACIONES: count donde status = 'invited'
+        const invitations = allLeads.filter(l => l.status === 'invited').length;
         
-        // Invitaciones enviadas (con fecha de invitación)
-        const invited = allLeads.filter(l => l.invited_date !== null);
-        const invitations = invited.length;
+        // ACEPTADOS: count donde status = 'accepted' (SOLO accepted, no messaged/positive/meeting)
+        const accepted = allLeads.filter(l => l.status === 'accepted').length;
         
-        // Conexiones aceptadas (status que indica aceptación)
-        const acceptedStatuses = ['accepted', 'messaged', 'positive', 'meeting'];
-        const accepted = allLeads.filter(l => acceptedStatuses.includes(l.status)).length;
-        
-        // Tasa de aceptación
+        // TASA ACEPTACIÓN: (accepted / invited) * 100
         const acceptance = invitations > 0 ? (accepted / invitations) * 100 : 0;
         
-        // Positivos y Meetings
-        const positive = allLeads.filter(l => ['positive', 'meeting'].includes(l.status)).length;
+        // POSITIVOS: count donde status = 'positive' (NO incluye meeting)
+        const positive = allLeads.filter(l => l.status === 'positive').length;
+        
+        // MEETINGS: count donde status = 'meeting'
         const meetings = allLeads.filter(l => l.status === 'meeting').length;
         
-        // Pipeline (deals con valor)
+        // PIPELINE: suma de deal_value donde deal_value > 0
         const dealsWithValue = allLeads.filter(l => l.deal_value && parseFloat(l.deal_value) > 0);
         const totalDeals = dealsWithValue.length;
         const totalPipeline = dealsWithValue.reduce((sum, l) => sum + parseFloat(l.deal_value), 0);
 
-        console.log('✅ Métricas calculadas:', {
-          totalBBDD,
-          invitations,
-          accepted,
-          acceptance: acceptance.toFixed(1) + '%',
-          positive,
-          meetings,
-          pipeline: totalPipeline
-        });
+        console.log('✅ ========== MÉTRICAS CALCULADAS ==========');
+        console.log('Invitaciones (status=invited):', invitations);
+        console.log('Aceptados (status=accepted):', accepted);
+        console.log('Tasa aceptación:', acceptance.toFixed(1) + '%');
+        console.log('Positivos (status=positive):', positive);
+        console.log('Meetings (status=meeting):', meetings);
+        console.log('Deals con valor:', totalDeals);
+        console.log('Pipeline total: $' + totalPipeline.toLocaleString());
+        console.log('==========================================');
 
-        // ========== ANIMAR KPIs ==========
+        // ========== ACTUALIZAR KPIs EN UI ==========
         animateValue('kpi-invitations', 0, invitations, 2000, '', '', true);
         animateValue('kpi-acceptance', 0, acceptance, 2000, '%');
         animateValue('kpi-positive', 0, positive, 2000);
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
 
-        // ========== ACTUALIZAR MODAL_DATA ==========
-        
+        // ========== ACTUALIZAR MODAL DATA ==========
         MODAL_DATA.invitations.stats = [
           { label: t('totalSent'), value: invitations.toLocaleString() },
           { label: t('acceptedCount'), value: accepted.toLocaleString() },
           { label: t('acceptanceRate'), value: acceptance.toFixed(1) + '%' },
-          { label: 'Total BBDD', value: totalBBDD.toLocaleString() + ' leads' }
+          { label: 'Total BBDD', value: allLeads.length.toLocaleString() + ' leads' }
         ];
 
         MODAL_DATA.acceptance.stats = [
@@ -1864,12 +1865,7 @@
           { label: 'Estado', value: totalDeals > 0 ? '✅ Activo' : '⏳ Pendiente' }
         ];
 
-        console.log('✅ Datos LIVE cargados:', {
-          pipeline: totalPipeline,
-          deals: totalDeals,
-          meetings: meetings,
-          positive: positive
-        });
+        console.log('✅ UI actualizada correctamente');
       } catch (error) {
         console.error('❌ Error cargando datos:', error);
         // Fallback a animaciones sin datos
