@@ -2337,7 +2337,89 @@
     // INICIALIZACIÓN DEL DASHBOARD
     // ==========================================
     
-    // Cargar pipeline con meetings y positive responses    async function loadDealsFullData() {
+    // Cargar tabla de leads
+    async function loadLeadsFromSupabase() {
+      console.log('🔵 loadLeadsFromSupabase() INICIANDO...');
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('first_name, last_name, company, position, email, status, campaign')
+          .in('status', ['positive', 'meeting'])
+          .order('status', { ascending: false }); // meetings primero
+
+        if (error) throw error;
+
+        const meetingCount = data.filter(l => l.status === 'meeting').length;
+        const positiveCount = data.filter(l => l.status === 'positive').length;
+
+        const container = document.getElementById('leadsTable');
+        container.innerHTML = `
+          <div style="overflow-x: auto;">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Company</th>
+                  <th>Position</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.map(lead => {
+                  const statusClass = lead.status === 'meeting' ? 'meeting' : 'positive';
+                  const statusLabel = lead.status === 'meeting' ? 'Meeting' : 'Positive';
+
+                  return `
+                    <tr>
+                      <td style="color: var(--text-primary); font-weight: 500;">
+                        ${lead.first_name} ${lead.last_name}
+                      </td>
+                      <td style="color: var(--text-muted);">${lead.company || '-'}</td>
+                      <td style="color: var(--text-muted);">${lead.position || '-'}</td>
+                      <td style="color: var(--text-muted);">${lead.email || '-'}</td>
+                      <td>
+                        <span class="status-badge ${statusClass}">
+                          <span class="status-dot ${statusClass}"></span>
+                          ${statusLabel}
+                        </span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+          <div class="leads-summary">
+            <div class="leads-summary-item">
+              <span class="status-dot meeting"></span>
+              <span class="count" style="color: var(--green);">${meetingCount}</span> meetings
+            </div>
+            <div class="leads-summary-item">
+              <span class="status-dot positive"></span>
+              <span class="count" style="color: var(--gold);">${positiveCount}</span> positive
+            </div>
+            <div class="leads-summary-item" style="color: var(--text-muted);">
+              <span class="count" style="color: var(--text-primary);">${data.length}</span> total qualified
+            </div>
+          </div>
+        `;
+        
+        console.log('✅ Qualified leads cargados:', data.length);
+      } catch (error) {
+        console.error('Error loading leads:', error);
+        document.getElementById('leadsTable').innerHTML =
+          `<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.875rem;">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block; opacity: 0.4;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Unable to load leads data
+          </div>`;
+      }
+    }
+
+    // Cargar pipeline con meetings y positive responses
+    async function loadDealsFullData() {
       console.log('🟢 loadDealsFullData() INICIANDO...');
       try {
         const { data, error} = await supabaseClient
