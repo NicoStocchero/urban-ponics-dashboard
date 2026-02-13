@@ -1803,33 +1803,55 @@
     // Cargar datos reales desde Supabase
     async function loadMetricsFromSupabase() {
       try {
-        const { data, error } = await supabaseClient
+        // 1. Cargar métricas estáticas de la tabla metrics
+        const { data: metricsData, error: metricsError } = await supabaseClient
           .from('metrics')
           .select('*');
 
-        if (error) throw error;
+        if (metricsError) throw metricsError;
 
-        // Crear un objeto con las métricas
+        // Crear un objeto con las métricas estáticas
         const metrics = {};
-        data.forEach(item => {
+        metricsData.forEach(item => {
           metrics[item.metric_name] = parseFloat(item.metric_value);
         });
 
-        // Actualizar KPIs con datos reales
+        // 2. Calcular LIVE: Pipeline y deals desde tabla leads
+        const { data: dealsData, error: dealsError } = await supabaseClient
+          .from('leads')
+          .select('deal_value, status')
+          .not('deal_value', 'is', null)
+          .gt('deal_value', 0);
+
+        if (dealsError) throw dealsError;
+
+        // Calcular pipeline LIVE
+        const totalDeals = dealsData.length;
+        const totalPipeline = dealsData.reduce((sum, d) => sum + parseFloat(d.deal_value), 0);
+
+        // 3. Calcular LIVE: Meetings y positivos desde tabla leads
+        const { data: leadsData, error: leadsError } = await supabaseClient
+          .from('leads')
+          .select('status')
+          .in('status', ['meeting', 'positive']);
+
+        if (leadsError) throw leadsError;
+
+        const meetings = leadsData.filter(l => l.status === 'meeting').length;
+        const positive = leadsData.filter(l => l.status === 'positive').length;
+
+        // Usar métricas estáticas para el resto
         const invitations = metrics.invitations_sent || 0;
         const acceptance = metrics.acceptance_rate || 0;
-        const positive = metrics.qualified_interested || 0;
-        const meetings = metrics.meetings_scheduled || 0;
-        const pipeline = metrics.total_pipeline || 0;
         const accepted = metrics.connections_accepted || 0;
         const responses = metrics.total_responses || 0;
 
-        // Animar con los valores reales
+        // Animar con los valores reales (LIVE para pipeline, meetings, positive)
         animateValue('kpi-invitations', 0, invitations, 2000, '', '', true);
         animateValue('kpi-acceptance', 0, acceptance, 2000, '%');
         animateValue('kpi-positive', 0, positive, 2000);
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
-        animateValue('kpi-pipeline', 0, pipeline, 2000, '', '$', true);
+        animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
 
         // Actualizar MODAL_DATA con valores reales
         MODAL_DATA.invitations.stats = [
@@ -1862,13 +1884,20 @@
           { label: t('status'), value: meetings > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
-        // Estos se actualizan desde loadDealsFromSupabase
-        // pero ponemos valores por defecto por si acaso
-        MODAL_DATA.pipeline.stats[0] = { label: 'Deals abiertos', value: '...' };
-        MODAL_DATA.pipeline.stats[1] = { label: 'Valor total', value: '$' + pipeline.toLocaleString() };
+        // Pipeline stats (LIVE)
+        MODAL_DATA.pipeline.stats = [
+          { label: 'Deals abiertos', value: totalDeals.toLocaleString() },
+          { label: 'Valor total', value: '$' + totalPipeline.toLocaleString() },
+          { label: 'Promedio', value: totalDeals > 0 ? '$' + Math.round(totalPipeline / totalDeals).toLocaleString() : '$0' },
+          { label: 'Estado', value: totalDeals > 0 ? '✅ Activo' : '⏳ Pendiente' }
+        ];
 
-        console.log('✅ Datos cargados desde Supabase:', metrics);
-        console.log('✅ MODAL_DATA actualizado:', MODAL_DATA);
+        console.log('✅ Datos LIVE cargados:', {
+          pipeline: totalPipeline,
+          deals: totalDeals,
+          meetings: meetings,
+          positive: positive
+        });
       } catch (error) {
         console.error('❌ Error cargando datos:', error);
         // Fallback a animaciones sin datos
