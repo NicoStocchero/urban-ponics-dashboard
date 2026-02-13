@@ -1,15 +1,8 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { Inter } from 'next/font/google'
 import { locales } from '@/i18n'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-})
 
 export const metadata = {
   title: 'Urban Ponics Dashboard - Investor Intelligence',
@@ -26,7 +19,7 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
 
@@ -40,8 +33,8 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} className={inter.variable}>
-      <body className="antialiased">
+    <html lang={locale}>
+      <body className="antialiased font-sans">
         <NextIntlClientProvider messages={messages}>
           <DashboardLayout>{children}</DashboardLayout>
         </NextIntlClientProvider>

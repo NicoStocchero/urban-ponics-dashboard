@@ -4,13 +4,20 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Enable Partial Prerendering for better performance
-    ppr: true,
-  },
+  // Enable cache components (replaces PPR in Next.js 16)
+  cacheComponents: true,
   images: {
-    // Allow Supabase images if needed
-    domains: ['mwbkrkoeltsbkbguoemo.supabase.co'],
+    // Use remotePatterns instead of domains
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'mwbkrkoeltsbkbguoemo.supabase.co',
+      },
+    ],
+  },
+  experimental: {
+    // Use system TLS certificates for Turbopack
+    turbopackUseSystemTlsCerts: true,
   },
 }
 

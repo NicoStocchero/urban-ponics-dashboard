@@ -42,15 +42,19 @@ export async function getQuarterlyMetrics(): Promise<{
     .select('date, total_pipeline, meetings_scheduled')
     .order('date', { ascending: true })
 
-  if (error) {
+  if (error || !data) {
     console.error('Error fetching quarterly metrics:', error)
     return []
   }
 
   // For now, return the last 4 data points as quarters
   // In production, you'd group by actual quarters
-  const lastFour = data.slice(-4)
-  
+  const lastFour: Array<{
+    date: string
+    total_pipeline: number
+    meetings_scheduled: number
+  }> = data.slice(-4)
+
   return lastFour.map((item, index) => ({
     quarter: `Q${index + 1} 2026`,
     pipeline: item.total_pipeline,
@@ -123,15 +127,16 @@ export async function getCompanies(): Promise<{
     .select('*')
     .order('company', { ascending: true })
 
-  if (error) {
+  if (error || !data) {
     console.error('Error fetching companies:', error)
     return []
   }
 
   // Group by company
   const companiesMap = new Map<string, LeadsRow[]>()
+  const leads: LeadsRow[] = data
 
-  for (const lead of data) {
+  for (const lead of leads) {
     if (!companiesMap.has(lead.company)) {
       companiesMap.set(lead.company, [])
     }
@@ -168,7 +173,7 @@ export async function getAllLeads(): Promise<LeadsRow[]> {
     .select('*')
     .order('created_at', { ascending: false })
 
-  if (error) {
+  if (error || !data) {
     console.error('Error fetching leads:', error)
     return []
   }
