@@ -103,3 +103,75 @@ export function getDealPriority(
   if (value >= 50000) return 'medium'
   return 'low'
 }
+
+/**
+ * Get all companies with aggregated stats
+ * Groups leads by company and calculates totals
+ */
+export async function getCompanies(): Promise<{
+  company: string
+  totalDeals: number
+  totalValue: number
+  avgDealValue: number
+  activeDeals: number
+  leads: LeadsRow[]
+}[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('leads')
+    .select('*')
+    .order('company', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching companies:', error)
+    return []
+  }
+
+  // Group by company
+  const companiesMap = new Map<string, LeadsRow[]>()
+
+  for (const lead of data) {
+    if (!companiesMap.has(lead.company)) {
+      companiesMap.set(lead.company, [])
+    }
+    companiesMap.get(lead.company)!.push(lead)
+  }
+
+  // Calculate stats for each company
+  const companies = Array.from(companiesMap.entries()).map(([company, leads]) => {
+    const totalValue = leads.reduce((sum, lead) => sum + lead.deal_value, 0)
+    const activeDeals = leads.filter((lead) => lead.deal_stage < 5).length
+
+    return {
+      company,
+      totalDeals: leads.length,
+      totalValue,
+      avgDealValue: totalValue / leads.length,
+      activeDeals,
+      leads,
+    }
+  })
+
+  // Sort by total value descending
+  return companies.sort((a, b) => b.totalValue - a.totalValue)
+}
+
+/**
+ * Get all leads with optional filtering
+ */
+export async function getAllLeads(): Promise<LeadsRow[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('leads')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching leads:', error)
+    return []
+  }
+
+  return data
+}
