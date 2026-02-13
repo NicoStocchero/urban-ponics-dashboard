@@ -1777,10 +1777,11 @@
         console.log('🔥🔥🔥 FUNCIÓN EJECUTÁNDOSE - TIMESTAMP: ' + new Date().toISOString() + ' 🔥🔥🔥');
         console.log('📊 ========== CARGANDO MÉTRICAS LIVE ==========');
         
-        // Query para obtener status y deal_value
+        // Query para obtener status y deal_value (SIN LÍMITE - traer TODOS)
         const { data: allLeads, error } = await supabaseClient
           .from('leads')
-          .select('status, deal_value');
+          .select('status, deal_value')
+          .limit(10000); // Traer hasta 10,000 leads (más que suficiente)
 
         if (error) {
           console.error('❌ Error en query Supabase:', error);
@@ -1933,7 +1934,8 @@
           .select('invited_date, status')
           .not('invited_date', 'is', null)
           .gte('invited_date', '2025-10-01')
-          .lt('invited_date', '2026-01-01');
+          .lt('invited_date', '2026-01-01')
+          .limit(10000);
 
         if (error) throw error;
 
@@ -2141,7 +2143,8 @@
           .from('leads')
           .select('deal_value')
           .not('deal_value', 'is', null)
-          .gt('deal_value', 0);
+          .gt('deal_value', 0)
+          .limit(10000);
 
         if (statsError) throw statsError;
 
@@ -2170,7 +2173,8 @@
           .select('deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name, unique_id')
           .not('deal_value', 'is', null)
           .gt('deal_value', 0)
-          .order('deal_value', { ascending: false });
+          .order('deal_value', { ascending: false })
+          .limit(10000);
 
         if (error) throw error;
 
@@ -2411,7 +2415,8 @@
           .from('leads')
           .select('first_name, last_name, company, position, email, status, campaign')
           .in('status', ['positive', 'meeting'])
-          .order('status', { ascending: false }); // meetings primero
+          .order('status', { ascending: false })
+          .limit(10000);
 
         if (error) throw error;
 
@@ -2491,7 +2496,8 @@
         const { data, error} = await supabaseClient
           .from('leads')
           .select('*')
-          .or('status.eq.meeting,status.eq.positive');
+          .or('status.eq.meeting,status.eq.positive')
+          .limit(10000);
 
         if (error) throw error;
 
