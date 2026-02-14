@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <!--
   Urban Ponics - Investor Dashboard
   Version: 2.0
@@ -38,198 +38,10 @@
       box-sizing: border-box;
     }
 
-    /* SIDEBAR MODERNO */
+    /* Layout */
     .dashboard-layout {
       display: flex;
       min-height: 100vh;
-    }
-
-    .sidebar {
-      display: none !important;
-    }
-
-    .sidebar-toggle {
-      display: none !important;
-    }
-
-    .sidebar.collapsed {
-      transform: translateX(-280px);
-    }
-
-    .sidebar-header {
-      padding: 2rem 1.5rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sidebar-logo {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .sidebar-logo-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-      padding: 6px;
-    }
-
-    .sidebar-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-family: 'Space Grotesk', sans-serif;
-    }
-
-    .sidebar-subtitle {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 0.25rem;
-    }
-
-    .sidebar-menu {
-      padding: 1rem 0.75rem;
-    }
-
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.875rem 1rem;
-      margin-bottom: 0.5rem;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      background: transparent;
-      border: 1px solid transparent;
-    }
-
-    .menu-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(184, 168, 130, 0.1), transparent);
-      transition: left 0.6s;
-    }
-
-    .menu-item:hover::before {
-      left: 100%;
-    }
-
-    .menu-item:hover {
-      background: rgba(184, 168, 130, 0.05);
-      border-color: rgba(184, 168, 130, 0.2);
-      transform: translateX(4px);
-    }
-
-    .menu-item.active {
-      background: linear-gradient(135deg, 
-        rgba(184, 168, 130, 0.15) 0%,
-        rgba(184, 168, 130, 0.05) 100%);
-      border-color: var(--gold);
-      box-shadow: 0 0 20px rgba(184, 168, 130, 0.2);
-    }
-
-    .menu-item.active::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: 1rem;
-      width: 6px;
-      height: 6px;
-      background: var(--gold);
-      border-radius: 50%;
-      transform: translateY(-50%);
-      box-shadow: 0 0 10px var(--gold);
-      animation: pulse-glow 2s infinite;
-    }
-
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--gold); }
-      50% { opacity: 0.5; box-shadow: 0 0 20px var(--gold); }
-    }
-
-    .menu-icon {
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      transition: all 0.3s;
-    }
-
-    .menu-item:hover .menu-icon,
-    .menu-item.active .menu-icon {
-      color: var(--gold);
-      filter: drop-shadow(0 0 8px var(--gold));
-    }
-
-    .menu-label {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: color 0.3s;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .menu-item:hover .menu-label,
-    .menu-item.active .menu-label {
-      color: var(--gold-light);
-    }
-
-    .menu-badge {
-      margin-left: auto;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: rgba(34, 197, 94, 0.15);
-      color: var(--green);
-      border-radius: 6px;
-      font-family: 'Space Grotesk', monospace;
-    }
-
-    .menu-badge.gold {
-      background: rgba(184, 168, 130, 0.15);
-      color: var(--gold);
-    }
-
-    .sidebar-toggle {
-      position: fixed;
-      left: 290px;
-      top: 2rem;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(25, 25, 30, 0.95) 100%);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 999;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .sidebar-toggle:hover {
-      background: var(--gold);
-      color: #000;
-      box-shadow: 0 0 20px rgba(184, 168, 130, 0.5);
-      transform: scale(1.1);
-    }
-
-    .sidebar.collapsed ~ .sidebar-toggle {
-      left: 10px;
     }
 
     .main-content {
@@ -1259,6 +1071,10 @@
       margin-bottom: 3rem;
     }
 
+    .kpis-grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
     .kpi-card {
       position: relative;
       background: var(--bg-card);
@@ -1354,16 +1170,6 @@
       font-weight: 500;
     }
 
-    /* Chart Section */
-    .chart-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      margin-bottom: 3rem;
-      animation: fadeInUp 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-    }
-
     .section-header {
       display: flex;
       justify-content: space-between;
@@ -1386,41 +1192,44 @@
       margin-top: 0.5rem;
     }
 
-    .filter-buttons {
-      display: flex;
-      gap: 0.5rem;
-      background: rgba(184, 168, 130, 0.05);
-      padding: 0.375rem;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .filter-btn {
-      padding: 0.625rem 1.25rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      border-radius: 8px;
-      font-size: 0.875rem;
+    /* Priority badges */
+    .priority-badge {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
     }
 
-    .filter-btn:hover {
-      color: var(--gold);
+    .priority-badge.high {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+
+    .priority-badge.medium {
+      background: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+    }
+
+    .priority-badge.low {
+      background: rgba(59, 130, 246, 0.15);
+      color: #3b82f6;
+    }
+
+    /* Progress bar (deal cards) */
+    .progress-bar {
+      height: 4px;
       background: rgba(184, 168, 130, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
     }
 
-    .filter-btn.active {
-      background: var(--gold);
-      color: #000;
-      box-shadow: 0 4px 12px rgba(184, 168, 130, 0.3);
-    }
-
-    #performanceChart {
-      margin-top: 2rem;
+    .progress-fill {
+      height: 100%;
+      width: var(--progress, 0%);
+      background: linear-gradient(90deg, var(--gold), var(--green));
+      border-radius: 2px;
+      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* Deals Grid */
@@ -1552,11 +1361,6 @@
       display: flex;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
     .modal-content {
       background: linear-gradient(135deg, rgba(10, 10, 10, 0.98), rgba(20, 20, 20, 0.98));
       border: 1px solid var(--border-hover);
@@ -1657,7 +1461,8 @@
         align-items: flex-start;
       }
 
-      .kpis-grid {
+      .kpis-grid,
+      .kpis-grid-4 {
         grid-template-columns: 1fr;
       }
 
@@ -1667,14 +1472,6 @@
 
       .deals-grid {
         grid-template-columns: 1fr;
-      }
-
-      .filter-buttons {
-        width: 100%;
-      }
-
-      .filter-btn {
-        flex: 1;
       }
 
       .pipeline-hero {
@@ -1799,7 +1596,7 @@
     </div>
     
     <!-- KPIs Grid - 4 cards -->
-    <div class="kpis-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="kpis-grid kpis-grid-4">
       <div class="kpi-card" data-type="invitations">
         <div class="kpi-header">
           <div class="kpi-icon">
@@ -2001,8 +1798,25 @@
       }
     };
 
-    let chart;
+    let funnelChartInstance = null;
     let currentLang = localStorage.getItem('dashboard_lang') || 'en';
+
+    // Sanitize strings to prevent XSS when using innerHTML
+    function esc(str) {
+      if (str == null) return '';
+      const div = document.createElement('div');
+      div.textContent = String(str);
+      return div.innerHTML;
+    }
+
+    // Escape a value for safe use in an HTML attribute
+    function escAttr(str) {
+      if (str == null) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Locale map for date formatting
+    const langToLocale = { en: 'en-US', es: 'es-ES', nl: 'nl-NL' };
 
     // Sistema de traducciones
     const translations = {
@@ -2194,7 +2008,8 @@
     function changeLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('dashboard_lang', lang);
-      
+      document.documentElement.lang = lang;
+
       // Actualizar botones
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -2329,6 +2144,14 @@
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
 
+        // Update KPI trend badges
+        const invTrend = document.getElementById('kpi-invitations-trend');
+        if (invTrend) invTrend.textContent = invitations.toLocaleString() + ' total';
+        const posTrend = document.getElementById('kpi-positive-trend');
+        if (posTrend) posTrend.textContent = (accepted > 0 ? ((positive / accepted) * 100).toFixed(1) : 0) + '% conv.';
+        const mtgTrend = document.getElementById('kpi-meetings-trend');
+        if (mtgTrend) mtgTrend.textContent = meetings > 0 ? 'Active' : 'Pending';
+
         // Actualizar PIPELINE GRANDE
         animateValue('kpi-pipeline-big', 0, totalPipeline, 2000, '', '$', true);
         const avgDealVal = totalDeals > 0 ? Math.round(totalPipeline / totalDeals).toLocaleString() : '0';
@@ -2388,7 +2211,7 @@
     // Actualizar fecha/hora
     function updateTime() {
       const now = new Date();
-      document.getElementById('updateTime').textContent = now.toLocaleString('es-ES', {
+      document.getElementById('updateTime').textContent = now.toLocaleString(langToLocale[currentLang] || 'en-US', {
         day: '2-digit',
         month: 'short',
         hour: '2-digit',
@@ -2421,15 +2244,14 @@
       }, duration / 60);
     }
 
-    // Cargar datos reales desde Supabase
-    setTimeout(() => {
-      loadMetricsFromSupabase();
-    }, 800);
-
-    // Cargar datos REALES de Q4 2025 desde Supabase
-
     // Crear funnel chart con datos actuales
     function createFunnelChart(invitations, accepted, positive, meetings) {
+      // Destroy previous chart instance to prevent memory leak
+      if (funnelChartInstance) {
+        funnelChartInstance.destroy();
+        funnelChartInstance = null;
+      }
+
       // Render custom visual funnel
       const funnelVisualEl = document.getElementById('funnelVisual');
       if (funnelVisualEl) {
@@ -2529,12 +2351,9 @@
         }
       };
 
-      const chart = new ApexCharts(document.querySelector("#funnelChart"), options);
-      chart.render();
-      return chart;
+      funnelChartInstance = new ApexCharts(document.querySelector("#funnelChart"), options);
+      funnelChartInstance.render();
     }
-
-    // DEALS_DATA    });
 
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
@@ -2653,13 +2472,13 @@
       };
       
       grid.innerHTML = dealsData.map((deal, idx) => `
-        <div class="deal-card" data-deal='${JSON.stringify(deal)}'>
+        <div class="deal-card" data-deal="${escAttr(JSON.stringify(deal))}">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
             <div>
-              <div style="font-family: 'Space Grotesk', monospace; font-weight: 600; font-size: 14px; margin-bottom: 4px;">${deal.title}</div>
-              <div style="color: var(--text-muted); font-size: 12px;">${deal.contact}</div>
+              <div style="font-family: 'Space Grotesk', monospace; font-weight: 600; font-size: 14px; margin-bottom: 4px;">${esc(deal.title)}</div>
+              <div style="color: var(--text-muted); font-size: 12px;">${esc(deal.contact)}</div>
             </div>
-            <span class="priority-badge ${deal.priority}">${priorityLabels[deal.priority]}</span>
+            <span class="priority-badge ${esc(deal.priority)}">${priorityLabels[deal.priority] || ''}</span>
           </div>
           <div style="font-size: 24px; font-weight: 700; color: var(--gold); margin-bottom: 12px;">
             $${deal.value.toLocaleString()}
@@ -2705,7 +2524,7 @@
     function renderDeals() {
       const grid = document.getElementById('dealsGrid');
       grid.innerHTML = DEALS_DATA.map((deal, idx) => `
-        <div class="deal-card" data-deal='${JSON.stringify(deal)}'>
+        <div class="deal-card" data-deal="${escAttr(JSON.stringify(deal))}"
           <div class="deal-header">
             <div class="deal-company">${deal.company}</div>
             <div class="deal-priority ${deal.class}">${deal.priority}</div>
@@ -2731,9 +2550,6 @@
         });
       });
     }
-
-    // Cargar deals desde Supabase
-    loadDealsFromSupabase();
 
     // Event listeners para KPIs
     document.querySelectorAll('.kpi-card').forEach(card => {
@@ -2834,11 +2650,11 @@
                   return `
                     <tr>
                       <td style="color: var(--text-primary); font-weight: 500;">
-                        ${lead.first_name} ${lead.last_name}
+                        ${esc(lead.first_name)} ${esc(lead.last_name)}
                       </td>
-                      <td style="color: var(--text-muted);">${lead.company || '-'}</td>
-                      <td style="color: var(--text-muted);">${lead.position || '-'}</td>
-                      <td style="color: var(--text-muted);">${lead.email || '-'}</td>
+                      <td style="color: var(--text-muted);">${esc(lead.company) || '-'}</td>
+                      <td style="color: var(--text-muted);">${esc(lead.position) || '-'}</td>
+                      <td style="color: var(--text-muted);">${esc(lead.email) || '-'}</td>
                       <td>
                         <span class="status-badge ${statusClass}">
                           <span class="status-dot ${statusClass}"></span>
@@ -2912,14 +2728,14 @@
 
       function renderContactCard(contact, type) {
         const cardClass = type === 'meeting' ? 'meeting-card' : 'positive-card';
-        const initials = getInitials(contact.first_name, contact.last_name).toUpperCase();
+        const initials = esc(getInitials(contact.first_name, contact.last_name).toUpperCase());
         return `
           <div class="pipeline-contact-card ${cardClass}">
             <div class="contact-header">
               <div class="contact-avatar">${initials}</div>
               <div>
-                <div class="contact-name">${contact.first_name || ''} ${contact.last_name || ''}</div>
-                ${contact.position ? `<div class="contact-position">${contact.position}</div>` : ''}
+                <div class="contact-name">${esc(contact.first_name)} ${esc(contact.last_name)}</div>
+                ${contact.position ? `<div class="contact-position">${esc(contact.position)}</div>` : ''}
               </div>
             </div>
             ${contact.company ? `
@@ -2927,7 +2743,7 @@
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
-                ${contact.company}
+                ${esc(contact.company)}
               </div>
             ` : ''}
             ${contact.email ? `
@@ -2935,7 +2751,7 @@
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
-                ${contact.email}
+                ${esc(contact.email)}
               </div>
             ` : ''}
             ${contact.campaign ? `
@@ -2943,7 +2759,7 @@
                 <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                 </svg>
-                ${contact.campaign}
+                ${esc(contact.campaign)}
               </div>
             ` : ''}
           </div>
@@ -3028,15 +2844,15 @@
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
     // Cargar todos los datos al iniciar la página
     async function initDashboard() {
-      
       try {
-        // Cargar métricas (KPIs)
-        await loadMetricsFromSupabase();
-        
-        // Cargar pipeline
-        await loadDealsFullData();
-        
+        // Load all data sources in parallel
+        await Promise.all([
+          loadMetricsFromSupabase(),
+          loadDealsFromSupabase(),
+          loadDealsFullData()
+        ]);
       } catch (error) {
+        console.error('Dashboard init error:', error);
       }
     }
 
