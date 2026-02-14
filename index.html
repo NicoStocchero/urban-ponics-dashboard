@@ -1264,8 +1264,25 @@
     
     <!-- OVERVIEW VIEW -->
     <div class="view-section active" id="view-overview">
-    <!-- KPIs Grid -->
-    <div class="kpis-grid">
+    
+    <!-- PIPELINE GRANDE - Full Width -->
+    <div style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05)); border-radius: 16px; padding: 32px; margin-bottom: 24px; border: 1px solid rgba(212, 175, 55, 0.2);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="color: #888; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Pipeline Total</div>
+          <div style="font-size: 48px; font-weight: 700; color: #D4AF37; font-family: 'Space Grotesk', monospace;" id="kpi-pipeline-big">$0</div>
+          <div style="color: #888; font-size: 14px; margin-top: 8px;" id="kpi-deals-count-big">0 deals abiertos</div>
+        </div>
+        <div style="background: rgba(212, 175, 55, 0.1); border-radius: 50%; padding: 24px;">
+          <svg width="48" height="48" fill="none" stroke="#D4AF37" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    
+    <!-- KPIs Grid - 4 cards -->
+    <div class="kpis-grid" style="grid-template-columns: repeat(4, 1fr);">
       <div class="kpi-card" data-type="invitations">
         <div class="kpi-header">
           <div class="kpi-icon">
@@ -1317,31 +1334,15 @@
         <div class="kpi-value" id="kpi-meetings">0+</div>
         <div class="kpi-label">Reuniones Agendadas</div>
       </div>
-
-      <div class="kpi-card" data-type="pipeline">
-        <div class="kpi-header">
-          <div class="kpi-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <div class="kpi-trend" id="kpi-deals-count">...</div>
-        </div>
-        <div class="kpi-value" id="kpi-pipeline">$0</div>
-        <div class="kpi-label">Pipeline Total</div>
-      </div>
     </div>
 
-    <!-- Chart Section -->
-    <div class="chart-section">
-      <div class="section-header">
-        <div>
-          <h2 class="section-title">Performance Timeline</h2>
-          <p class="section-subtitle">Sep 2025 - Feb 2026 (Real) • Mar - Ago 2026 (Proyección)</p>
-        </div>
+    <!-- Funnel Chart -->
+    <div style="background: rgba(20, 20, 20, 0.5); border-radius: 16px; padding: 24px; margin-top: 24px; border: 1px solid rgba(184, 168, 130, 0.1);">
+      <div style="margin-bottom: 16px;">
+        <h2 style="color: #D4AF37; font-size: 18px; font-weight: 600; margin: 0;">Embudo de Conversión</h2>
+        <p style="color: #888; font-size: 13px; margin: 4px 0 0 0;">De invitación a reunión agendada</p>
       </div>
-
-      <div id="performanceChart"></div>
+      <div id="funnelChart"></div>
     </div>
 
     <!-- Deals Grid -->
@@ -1411,60 +1412,6 @@
   <script>
     
     // Timeline continuo: Sep 2025 - Ago 2026 (DATOS REALES hasta Ene 2026)
-    let TIMELINE_DATA = {
-      categories: ['Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago'],
-      invitations: [],
-      accepted: [],
-      positive: [],
-      realDataEndIndex: 4 // Se actualizará dinámicamente
-    };
-    
-    // Cargar datos REALES desde Supabase para el gráfico
-    async function loadTimelineDataFromSupabase() {
-      // DATOS CORRECTOS VERIFICADOS (Feb 2026 = dato actual total):
-      // Invitaciones totales: 4,896
-      // Conexiones (23.7% benchmark): 1,160
-      // Positivos totales: 81 (65 positivos + 16 meetings)
-      
-      // Distribución SUAVE acumulativa Sep 2025 - Feb 2026 (incrementos ~816/mes):
-      const realInvAccumulative = [
-        816,   // Sep 2025: 1/6 del total (+816)
-        1632,  // Oct 2025: 2/6 del total (+816)
-        2448,  // Nov 2025: 3/6 del total (+816)
-        3264,  // Dic 2025: 4/6 del total (+816)
-        4080,  // Ene 2026: 5/6 del total (+816)
-        4896   // Feb 2026: 6/6 = 100% TOTAL (+816)
-      ];
-      
-      const realAccAccumulative = realInvAccumulative.map(inv => Math.round(inv * 0.237));
-      
-      const realPosAccumulative = [14, 27, 41, 54, 68, 81]; // Feb = 81 (distribución suave)
-
-      // PROYECCIÓN Mar-Ago 2026 (crecimiento 12% mensual)
-      const growthRate = 1.12;
-      const projInv = [], projAcc = [], projPos = [];
-      
-      let lastInv = 4896;
-      let lastAcc = 1160;
-      let lastPos = 81;
-      
-      for (let i = 0; i < 6; i++) { // Mar-Ago (6 meses)
-        lastInv = Math.round(lastInv * growthRate);
-        lastAcc = Math.round(lastInv * 0.237);
-        lastPos = Math.round(lastPos * 1.15); // Positivos crecen 15%
-        
-        projInv.push(lastInv);
-        projAcc.push(lastAcc);
-        projPos.push(lastPos);
-      }
-
-      // Actualizar TIMELINE_DATA
-      TIMELINE_DATA.invitations = [...realInvAccumulative, ...projInv];
-      TIMELINE_DATA.accepted = [...realAccAccumulative, ...projAcc];
-      TIMELINE_DATA.positive = [...realPosAccumulative, ...projPos];
-      TIMELINE_DATA.realDataEndIndex = 5; // Sep-Feb (índices 0-5) son reales
-    }
-
     const DEALS_DATA = [
       { company: 'Jazamango', value: '$250,000', contact: '-', priority: '🔥 Hot', progress: 85, class: 'priority-hot' },
       { company: 'DAR AL OMRAN', value: '$100,000', contact: '-', priority: '🔥 Hot', progress: 75, class: 'priority-hot' },
@@ -1847,6 +1794,12 @@
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
 
+        // Actualizar PIPELINE GRANDE
+        animateValue('kpi-pipeline-big', 0, totalPipeline, 2000, '', '$', true);
+        document.getElementById('kpi-deals-count-big').textContent = totalDeals + ' deals abiertos • Avg: $' + Math.round(totalPipeline / totalDeals).toLocaleString();
+
+        // Crear FUNNEL CHART
+        createFunnelChart(invitations, accepted, positive, meetings);
 
         // ========== ACTUALIZAR MODAL DATA ==========
         MODAL_DATA.invitations.stats = [
@@ -1938,118 +1891,78 @@
 
     // Cargar datos REALES de Q4 2025 desde Supabase
 
-    // Crear gráfico con timeline continuo
-    function createChart() {
-      const realEndIndex = TIMELINE_DATA.realDataEndIndex;
-      
-      // Dividir datos en REAL (sólido) y PROYECCIÓN (punteado)
-      const invReal = TIMELINE_DATA.invitations.map((v, i) => i <= realEndIndex ? v : null);
-      const invProj = TIMELINE_DATA.invitations.map((v, i) => i >= realEndIndex ? v : null);
-      
-      const accReal = TIMELINE_DATA.accepted.map((v, i) => i <= realEndIndex ? v : null);
-      const accProj = TIMELINE_DATA.accepted.map((v, i) => i >= realEndIndex ? v : null);
-      
-      const posReal = TIMELINE_DATA.positive.map((v, i) => i <= realEndIndex ? v : null);
-      const posProj = TIMELINE_DATA.positive.map((v, i) => i >= realEndIndex ? v : null);
-
+    // Crear funnel chart con datos actuales
+    function createFunnelChart(invitations, accepted, positive, meetings) {
       const options = {
-        series: [
-          { name: 'Invitaciones', type: 'line', data: invReal },
-          { name: 'Invitaciones_proj', type: 'line', data: invProj },
-          { name: 'Conexiones', type: 'line', data: accReal },
-          { name: 'Conexiones_proj', type: 'line', data: accProj },
-          { name: 'Positivos', type: 'line', data: posReal },
-          { name: 'Positivos_proj', type: 'line', data: posProj }
-        ],
+        series: [{
+          name: '',
+          data: [invitations, accepted, positive, meetings]
+        }],
         chart: {
-          height: 400,
+          type: 'bar',
+          height: 300,
           background: 'transparent',
-          toolbar: { show: false },
-          zoom: { enabled: false },
-          animations: { enabled: true, easing: 'easeinout', speed: 800 }
+          toolbar: { show: false }
         },
-        dataLabels: { enabled: false },
-        stroke: {
-          curve: 'smooth',
-          width: [4, 4, 4, 4, 4, 4],
-          dashArray: [0, 8, 0, 8, 0, 8] // Sólido, Punteado, Sólido, Punteado, ...
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            barHeight: '80%',
+            distributed: true,
+            dataLabels: {
+              position: 'bottom'
+            }
+          }
+        },
+        colors: ['#D4AF37', '#00ff88', '#00bbff', '#ff6b6b'],
+        dataLabels: {
+          enabled: true,
+          textAnchor: 'start',
+          style: {
+            colors: ['#fff'],
+            fontSize: '14px',
+            fontWeight: 'bold'
+          },
+          formatter: function (val, opt) {
+            const labels = ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'];
+            return labels[opt.dataPointIndex] + ': ' + val.toLocaleString();
+          },
+          offsetX: 10
         },
         xaxis: {
-          categories: TIMELINE_DATA.categories,
+          categories: ['Invitaciones', 'Aceptadas (23.7%)', 'Positivos', 'Meetings'],
           labels: {
-            style: {
-              colors: '#888888',
-              fontSize: '12px',
-              fontFamily: 'Space Grotesk, monospace',
-              fontWeight: 600
-            }
-          },
-          axisBorder: { show: false },
-          axisTicks: { show: false }
+            style: { colors: '#888', fontSize: '12px' }
+          }
         },
         yaxis: {
-          logarithmic: true, // ESCALA LOGARÍTMICA
           labels: {
-            style: { colors: '#888888', fontSize: '12px', fontFamily: 'Space Grotesk, monospace' },
-            formatter: function(val) { return val ? val.toLocaleString() : ''; }
+            style: { colors: '#D4AF37', fontSize: '14px', fontWeight: '600' }
           }
         },
-        colors: ['#D4AF37', '#D4AF37', '#00ff88', '#00ff88', '#00bbff', '#00bbff'],
-        grid: { borderColor: 'rgba(184, 168, 130, 0.1)', strokeDashArray: 3 },
-        legend: {
-          show: true,
-          position: 'top',
-          horizontalAlign: 'left',
-          labels: { colors: '#cccccc' },
-          markers: { width: 12, height: 12, radius: 3 },
-          itemMargin: { horizontal: 15 },
-          formatter: function(seriesName, opts) {
-            // OCULTAR series de proyección (las que tienen _proj)
-            if (seriesName.includes('_proj')) {
-              return undefined;
-            }
-            return seriesName;
-          }
+        grid: {
+          borderColor: 'rgba(184, 168, 130, 0.1)',
+          xaxis: { lines: { show: true } },
+          yaxis: { lines: { show: false } }
         },
+        legend: { show: false },
         tooltip: {
           theme: 'dark',
-          shared: true,
-          intersect: false,
-          x: {
-            formatter: function(val, opts) {
-              const idx = opts.dataPointIndex;
-              return TIMELINE_DATA.categories[idx] + (idx > realEndIndex ? ' (proyección)' : '');
+          y: {
+            formatter: function(val, opt) {
+              const percentages = ['100%', '23.7%', Math.round(positive/invitations*100) + '%', Math.round(meetings/invitations*100) + '%'];
+              return val.toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
             }
-          },
-          y: { formatter: function(val) { return val ? val.toLocaleString() : ''; } }
-        },
-        annotations: {
-          xaxis: [{
-            x: realEndIndex + 0.5,
-            borderColor: 'rgba(212, 175, 55, 0.5)',
-            strokeDashArray: 4,
-            label: {
-              text: 'Proyección →',
-              style: { color: '#D4AF37', background: 'rgba(0, 0, 0, 0.7)', fontSize: '11px', fontWeight: 'bold' },
-              orientation: 'horizontal',
-              offsetY: -10
-            }
-          }]
+          }
         }
       };
 
-      if (chart) {
-        chart.destroy();
-      }
-
-      chart = new ApexCharts(document.querySelector("#performanceChart"), options);
+      const chart = new ApexCharts(document.querySelector("#funnelChart"), options);
       chart.render();
+      return chart;
     }
 
-    // Inicializar gráfico automáticamente después de cargar datos
-    loadTimelineDataFromSupabase().then(() => {
-      createChart();
-    });
+    // DEALS_DATA    });
 
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
