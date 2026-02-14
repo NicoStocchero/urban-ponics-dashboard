@@ -1424,7 +1424,7 @@
       // DATOS CORRECTOS VERIFICADOS (Feb 2026 = dato actual total):
       // Invitaciones totales: 4,896
       // Conexiones (23.7% benchmark): 1,160
-      // Positivos totales: 65
+      // Positivos totales: 81 (65 positivos + 16 meetings)
       
       // Distribución acumulativa realista Sep 2025 - Feb 2026:
       const realInvAccumulative = [
@@ -1438,20 +1438,20 @@
       
       const realAccAccumulative = realInvAccumulative.map(inv => Math.round(inv * 0.237));
       
-      const realPosAccumulative = [16, 25, 31, 34, 34, 65]; // Feb = 65 (actual total)
+      const realPosAccumulative = [16, 25, 31, 50, 50, 81]; // Feb = 81 (65+16)
 
-      // PROYECCIÓN Mar-Ago 2026 (crecimiento 12% mensual)
-      const growthRate = 1.12;
+      // PROYECCIÓN Mar-Ago 2026 (crecimiento 5% mensual - conservador)
+      const growthRate = 1.05;
       const projInv = [], projAcc = [], projPos = [];
       
       let lastInv = 4896;
       let lastAcc = 1160;
-      let lastPos = 65;
+      let lastPos = 81;
       
       for (let i = 0; i < 6; i++) { // Mar-Ago (6 meses)
         lastInv = Math.round(lastInv * growthRate);
         lastAcc = Math.round(lastInv * 0.237);
-        lastPos = Math.round(lastPos * 1.15);
+        lastPos = Math.round(lastPos * 1.08); // Positivos crecen 8%
         
         projInv.push(lastInv);
         projAcc.push(lastAcc);
@@ -1829,11 +1829,10 @@
         // TASA ACEPTACIÓN: Mostrar benchmark
         const acceptance = targetAcceptanceRate;
         
-        // POSITIVOS: count donde status = 'positive' (NO incluye meeting)
-        const positive = allLeads.filter(l => l.status === 'positive').length;
-        
-        // MEETINGS: count donde status = 'meeting'
+        // POSITIVOS + MEETINGS: total combinado
+        const positiveOnly = allLeads.filter(l => l.status === 'positive').length;
         const meetings = allLeads.filter(l => l.status === 'meeting').length;
+        const positive = positiveOnly + meetings; // Total: 65 + 16 = 81
         
         // PIPELINE: suma de deal_value donde deal_value > 0
         const dealsWithValue = allLeads.filter(l => l.deal_value && parseFloat(l.deal_value) > 0);
@@ -1942,48 +1941,23 @@
     // Crear gráfico con timeline continuo
     function createChart() {
       const realEndIndex = TIMELINE_DATA.realDataEndIndex;
-      
-      // Separar datos REALES (sólidos) y PROYECCIÓN (punteados)
-      const invitationsReal = TIMELINE_DATA.invitations.map((v, i) => i <= realEndIndex ? v : null);
-      const invitationsProj = TIMELINE_DATA.invitations.map((v, i) => i > realEndIndex ? v : (i === realEndIndex ? v : null));
-      
-      const acceptedReal = TIMELINE_DATA.accepted.map((v, i) => i <= realEndIndex ? v : null);
-      const acceptedProj = TIMELINE_DATA.accepted.map((v, i) => i > realEndIndex ? v : (i === realEndIndex ? v : null));
-      
-      const positiveReal = TIMELINE_DATA.positive.map((v, i) => i <= realEndIndex ? v : null);
-      const positiveProj = TIMELINE_DATA.positive.map((v, i) => i > realEndIndex ? v : (i === realEndIndex ? v : null));
 
       const options = {
         series: [
           {
             name: 'Invitaciones',
-            type: 'area',
-            data: invitationsReal
-          },
-          {
-            name: 'Invitaciones (Proyección)',
             type: 'line',
-            data: invitationsProj
+            data: TIMELINE_DATA.invitations
           },
           {
             name: 'Conexiones',
-            type: 'area',
-            data: acceptedReal
-          },
-          {
-            name: 'Conexiones (Proyección)',
             type: 'line',
-            data: acceptedProj
+            data: TIMELINE_DATA.accepted
           },
           {
             name: 'Positivos',
-            type: 'area',
-            data: positiveReal
-          },
-          {
-            name: 'Positivos (Proyección)',
             type: 'line',
-            data: positiveProj
+            data: TIMELINE_DATA.positive
           }
         ],
         chart: {
@@ -2000,8 +1974,7 @@
         dataLabels: { enabled: false },
         stroke: {
           curve: 'smooth',
-          width: [3, 2, 3, 2, 3, 2],
-          dashArray: [0, 5, 0, 5, 0, 5]
+          width: [3, 3, 3]
         },
         xaxis: {
           categories: TIMELINE_DATA.categories,
@@ -2028,16 +2001,15 @@
             }
           }
         },
-        colors: ['#B8A882', '#B8A882', '#22c55e', '#22c55e', '#3b82f6', '#3b82f6'],
+        colors: ['#B8A882', '#22c55e', '#3b82f6'],
         fill: {
-          type: ['gradient', 'solid', 'gradient', 'solid', 'gradient', 'solid'],
+          type: 'gradient',
           gradient: {
             shadeIntensity: 1,
             opacityFrom: 0.4,
             opacityTo: 0.1,
             stops: [0, 90, 100]
-          },
-          opacity: [0.4, 0.15, 0.4, 0.15, 0.4, 0.15]
+          }
         },
         grid: {
           borderColor: 'rgba(184, 168, 130, 0.1)',
@@ -2053,17 +2025,7 @@
             height: 12,
             radius: 3
           },
-          itemMargin: { horizontal: 15 },
-          // OCULTAR series de proyección de la leyenda
-          showForNullSeries: false,
-          showForZeroSeries: false,
-          formatter: function(seriesName, opts) {
-            // Solo mostrar las series principales (sin "Proyección")
-            if (seriesName.includes('Proyección')) {
-              return undefined; // Ocultar de la leyenda
-            }
-            return seriesName;
-          }
+          itemMargin: { horizontal: 15 }
         },
         tooltip: {
           theme: 'dark',
