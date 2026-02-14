@@ -1840,12 +1840,15 @@
         ];
 
       } catch (error) {
+        console.error('Error cargando métricas:', error);
         // Fallback a animaciones sin datos
         animateValue('kpi-invitations', 0, 0, 2000, '', '', true);
         animateValue('kpi-acceptance', 0, 0, 2000, '%');
         animateValue('kpi-positive', 0, 0, 2000);
         animateValue('kpi-meetings', 0, 0, 2000, '+');
         animateValue('kpi-pipeline', 0, 0, 2000, '', '$', true);
+        animateValue('kpi-pipeline-big', 0, 0, 2000, '', '$', true);
+        document.getElementById('kpi-deals-count-big').textContent = '0 deals abiertos';
       }
     }
 
@@ -1961,8 +1964,6 @@
       chart.render();
       return chart;
     }
-
-    // DEALS_DATA    });
 
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
