@@ -1426,19 +1426,19 @@
       // Conexiones (23.7% benchmark): 1,160
       // Positivos totales: 81 (65 positivos + 16 meetings)
       
-      // Distribución acumulativa realista Sep 2025 - Feb 2026:
+      // Distribución SUAVE acumulativa Sep 2025 - Feb 2026 (incrementos ~816/mes):
       const realInvAccumulative = [
-        538,   // Sep 2025: 11% del total
-        1224,  // Oct 2025: 25%
-        1909,  // Nov 2025: 39%
-        2497,  // Dic 2025: 51%
-        2889,  // Ene 2026: 59%
-        4896   // Feb 2026: 100% (ACTUAL TOTAL)
+        816,   // Sep 2025: 1/6 del total (+816)
+        1632,  // Oct 2025: 2/6 del total (+816)
+        2448,  // Nov 2025: 3/6 del total (+816)
+        3264,  // Dic 2025: 4/6 del total (+816)
+        4080,  // Ene 2026: 5/6 del total (+816)
+        4896   // Feb 2026: 6/6 = 100% TOTAL (+816)
       ];
       
       const realAccAccumulative = realInvAccumulative.map(inv => Math.round(inv * 0.237));
       
-      const realPosAccumulative = [16, 25, 31, 50, 50, 81]; // Feb = 81 (65+16)
+      const realPosAccumulative = [14, 27, 41, 54, 68, 81]; // Feb = 81 (distribución suave)
 
       // PROYECCIÓN Mar-Ago 2026 (crecimiento 5% mensual - conservador)
       const growthRate = 1.05;
@@ -1941,40 +1941,38 @@
     // Crear gráfico con timeline continuo
     function createChart() {
       const realEndIndex = TIMELINE_DATA.realDataEndIndex;
+      
+      // Dividir datos en real (sólido) y proyección (punteado)
+      const invReal = TIMELINE_DATA.invitations.map((v, i) => i <= realEndIndex ? v : null);
+      const invProj = TIMELINE_DATA.invitations.map((v, i) => i >= realEndIndex ? v : null);
+      
+      const accReal = TIMELINE_DATA.accepted.map((v, i) => i <= realEndIndex ? v : null);
+      const accProj = TIMELINE_DATA.accepted.map((v, i) => i >= realEndIndex ? v : null);
+      
+      const posReal = TIMELINE_DATA.positive.map((v, i) => i <= realEndIndex ? v : null);
+      const posProj = TIMELINE_DATA.positive.map((v, i) => i >= realEndIndex ? v : null);
 
       const options = {
         series: [
-          {
-            name: 'Invitaciones',
-            type: 'line',
-            data: TIMELINE_DATA.invitations
-          },
-          {
-            name: 'Conexiones',
-            type: 'line',
-            data: TIMELINE_DATA.accepted
-          },
-          {
-            name: 'Positivos',
-            type: 'line',
-            data: TIMELINE_DATA.positive
-          }
+          { name: 'Invitaciones', type: 'line', data: invReal },
+          { name: 'Invitaciones (proy)', type: 'line', data: invProj },
+          { name: 'Conexiones', type: 'line', data: accReal },
+          { name: 'Conexiones (proy)', type: 'line', data: accProj },
+          { name: 'Positivos', type: 'line', data: posReal },
+          { name: 'Positivos (proy)', type: 'line', data: posProj }
         ],
         chart: {
           height: 400,
           background: 'transparent',
           toolbar: { show: false },
           zoom: { enabled: false },
-          animations: {
-            enabled: true,
-            easing: 'easeinout',
-            speed: 800
-          }
+          animations: { enabled: true, easing: 'easeinout', speed: 800 }
         },
         dataLabels: { enabled: false },
         stroke: {
           curve: 'smooth',
-          width: [3, 3, 3]
+          width: [3, 3, 3, 3, 3, 3],
+          dashArray: [0, 5, 0, 5, 0, 5] // Real=sólido, Proy=punteado
         },
         xaxis: {
           categories: TIMELINE_DATA.categories,
@@ -1991,41 +1989,25 @@
         },
         yaxis: {
           labels: {
-            style: {
-              colors: '#888888',
-              fontSize: '12px',
-              fontFamily: 'Space Grotesk, monospace'
-            },
-            formatter: function(val) {
-              return val ? val.toLocaleString() : '';
-            }
+            style: { colors: '#888888', fontSize: '12px', fontFamily: 'Space Grotesk, monospace' },
+            formatter: function(val) { return val ? val.toLocaleString() : ''; }
           }
         },
-        colors: ['#B8A882', '#22c55e', '#3b82f6'],
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.4,
-            opacityTo: 0.1,
-            stops: [0, 90, 100]
-          }
-        },
-        grid: {
-          borderColor: 'rgba(184, 168, 130, 0.1)',
-          strokeDashArray: 3
-        },
+        colors: ['#B8A882', '#B8A882', '#22c55e', '#22c55e', '#3b82f6', '#3b82f6'],
+        fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1, stops: [0, 90, 100] } },
+        grid: { borderColor: 'rgba(184, 168, 130, 0.1)', strokeDashArray: 3 },
         legend: {
           show: true,
           position: 'top',
           horizontalAlign: 'left',
           labels: { colors: '#888888' },
-          markers: {
-            width: 12,
-            height: 12,
-            radius: 3
-          },
-          itemMargin: { horizontal: 15 }
+          markers: { width: 12, height: 12, radius: 3 },
+          itemMargin: { horizontal: 15 },
+          formatter: function(seriesName) {
+            // Ocultar series de proyección en leyenda
+            if (seriesName.includes('proy')) return;
+            return seriesName;
+          }
         },
         tooltip: {
           theme: 'dark',
@@ -2034,14 +2016,10 @@
           x: {
             formatter: function(val, opts) {
               const idx = opts.dataPointIndex;
-              return TIMELINE_DATA.categories[idx] + (idx > realEndIndex ? ' 2026 (proyección)' : ' 2025/26');
+              return TIMELINE_DATA.categories[idx] + (idx > realEndIndex ? ' (proyección)' : '');
             }
           },
-          y: {
-            formatter: function(val) {
-              return val ? val.toLocaleString() : '';
-            }
-          }
+          y: { formatter: function(val) { return val ? val.toLocaleString() : ''; } }
         },
         annotations: {
           xaxis: [{
@@ -2050,11 +2028,7 @@
             strokeDashArray: 4,
             label: {
               text: 'Proyección →',
-              style: {
-                color: '#888',
-                background: 'rgba(184, 168, 130, 0.1)',
-                fontSize: '11px'
-              },
+              style: { color: '#888', background: 'rgba(184, 168, 130, 0.1)', fontSize: '11px' },
               orientation: 'horizontal',
               offsetY: -10
             }
