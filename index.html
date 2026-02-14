@@ -2133,16 +2133,19 @@
         funnelChartInstance = null;
       }
 
-      // ApexCharts bar chart with logarithmic scale
       const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
       const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
       const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
       const percentages = ['100%', acceptedRate + '%', positiveRate + '%', meetingsRate + '%'];
 
+      // Manual log transform so all bars are visible (ApexCharts doesn't support logarithmic on horizontal bars)
+      const rawValues = [invitations, accepted, positive, meetings];
+      const logValues = rawValues.map(function(v) { return v > 0 ? Math.log10(v) : 0; });
+
       const options = {
         series: [{
           name: '',
-          data: [invitations, accepted, positive, meetings]
+          data: logValues
         }],
         chart: {
           type: 'bar',
@@ -2174,19 +2177,20 @@
           },
           formatter: function (val, opt) {
             const labels = ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'];
-            return labels[opt.dataPointIndex] + ': ' + val.toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
+            return labels[opt.dataPointIndex] + ': ' + rawValues[opt.dataPointIndex].toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
           },
           offsetX: 10
         },
         xaxis: {
           categories: ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'],
-          logarithmic: true,
           labels: {
             style: { colors: '#888', fontSize: '11px', fontFamily: 'Inter, sans-serif' },
             formatter: function(val) {
-              return Math.round(val).toLocaleString();
+              if (val <= 0) return '0';
+              return Math.round(Math.pow(10, val)).toLocaleString();
             }
-          }
+          },
+          min: 0
         },
         yaxis: {
           labels: {
@@ -2204,7 +2208,7 @@
           style: { fontFamily: 'Inter, sans-serif' },
           y: {
             formatter: function(val, opt) {
-              return val.toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
+              return rawValues[opt.dataPointIndex].toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
             }
           }
         }
