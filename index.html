@@ -1440,8 +1440,8 @@
       
       const realPosAccumulative = [14, 27, 41, 54, 68, 81]; // Feb = 81 (distribución suave)
 
-      // PROYECCIÓN Mar-Ago 2026 (crecimiento 5% mensual - conservador)
-      const growthRate = 1.05;
+      // PROYECCIÓN Mar-Ago 2026 (crecimiento 12% mensual)
+      const growthRate = 1.12;
       const projInv = [], projAcc = [], projPos = [];
       
       let lastInv = 4896;
@@ -1451,7 +1451,7 @@
       for (let i = 0; i < 6; i++) { // Mar-Ago (6 meses)
         lastInv = Math.round(lastInv * growthRate);
         lastAcc = Math.round(lastInv * 0.237);
-        lastPos = Math.round(lastPos * 1.08); // Positivos crecen 8%
+        lastPos = Math.round(lastPos * 1.15); // Positivos crecen 15%
         
         projInv.push(lastInv);
         projAcc.push(lastAcc);
@@ -1941,12 +1941,25 @@
     // Crear gráfico con timeline continuo
     function createChart() {
       const realEndIndex = TIMELINE_DATA.realDataEndIndex;
+      
+      // Dividir datos en REAL (sólido) y PROYECCIÓN (punteado)
+      const invReal = TIMELINE_DATA.invitations.map((v, i) => i <= realEndIndex ? v : null);
+      const invProj = TIMELINE_DATA.invitations.map((v, i) => i >= realEndIndex ? v : null);
+      
+      const accReal = TIMELINE_DATA.accepted.map((v, i) => i <= realEndIndex ? v : null);
+      const accProj = TIMELINE_DATA.accepted.map((v, i) => i >= realEndIndex ? v : null);
+      
+      const posReal = TIMELINE_DATA.positive.map((v, i) => i <= realEndIndex ? v : null);
+      const posProj = TIMELINE_DATA.positive.map((v, i) => i >= realEndIndex ? v : null);
 
       const options = {
         series: [
-          { name: 'Invitaciones', type: 'line', data: TIMELINE_DATA.invitations },
-          { name: 'Conexiones', type: 'line', data: TIMELINE_DATA.accepted },
-          { name: 'Positivos', type: 'line', data: TIMELINE_DATA.positive }
+          { name: 'Invitaciones', type: 'line', data: invReal },
+          { name: 'Invitaciones_proj', type: 'line', data: invProj },
+          { name: 'Conexiones', type: 'line', data: accReal },
+          { name: 'Conexiones_proj', type: 'line', data: accProj },
+          { name: 'Positivos', type: 'line', data: posReal },
+          { name: 'Positivos_proj', type: 'line', data: posProj }
         ],
         chart: {
           height: 400,
@@ -1958,7 +1971,8 @@
         dataLabels: { enabled: false },
         stroke: {
           curve: 'smooth',
-          width: [4, 4, 4]
+          width: [4, 4, 4, 4, 4, 4],
+          dashArray: [0, 8, 0, 8, 0, 8] // Sólido, Punteado, Sólido, Punteado, ...
         },
         xaxis: {
           categories: TIMELINE_DATA.categories,
@@ -1974,12 +1988,13 @@
           axisTicks: { show: false }
         },
         yaxis: {
+          logarithmic: true, // ESCALA LOGARÍTMICA
           labels: {
             style: { colors: '#888888', fontSize: '12px', fontFamily: 'Space Grotesk, monospace' },
             formatter: function(val) { return val ? val.toLocaleString() : ''; }
           }
         },
-        colors: ['#D4AF37', '#00ff88', '#00bbff'], // Oro brillante, verde neón, azul brillante
+        colors: ['#D4AF37', '#D4AF37', '#00ff88', '#00ff88', '#00bbff', '#00bbff'],
         grid: { borderColor: 'rgba(184, 168, 130, 0.1)', strokeDashArray: 3 },
         legend: {
           show: true,
@@ -1987,7 +2002,14 @@
           horizontalAlign: 'left',
           labels: { colors: '#cccccc' },
           markers: { width: 12, height: 12, radius: 3 },
-          itemMargin: { horizontal: 15 }
+          itemMargin: { horizontal: 15 },
+          formatter: function(seriesName, opts) {
+            // OCULTAR series de proyección (las que tienen _proj)
+            if (seriesName.includes('_proj')) {
+              return undefined;
+            }
+            return seriesName;
+          }
         },
         tooltip: {
           theme: 'dark',
