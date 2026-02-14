@@ -1941,25 +1941,12 @@
     // Crear gráfico con timeline continuo
     function createChart() {
       const realEndIndex = TIMELINE_DATA.realDataEndIndex;
-      
-      // Dividir datos en real (sólido) y proyección (punteado)
-      const invReal = TIMELINE_DATA.invitations.map((v, i) => i <= realEndIndex ? v : null);
-      const invProj = TIMELINE_DATA.invitations.map((v, i) => i >= realEndIndex ? v : null);
-      
-      const accReal = TIMELINE_DATA.accepted.map((v, i) => i <= realEndIndex ? v : null);
-      const accProj = TIMELINE_DATA.accepted.map((v, i) => i >= realEndIndex ? v : null);
-      
-      const posReal = TIMELINE_DATA.positive.map((v, i) => i <= realEndIndex ? v : null);
-      const posProj = TIMELINE_DATA.positive.map((v, i) => i >= realEndIndex ? v : null);
 
       const options = {
         series: [
-          { name: 'Invitaciones', type: 'line', data: invReal },
-          { name: 'Invitaciones (proy)', type: 'line', data: invProj },
-          { name: 'Conexiones', type: 'line', data: accReal },
-          { name: 'Conexiones (proy)', type: 'line', data: accProj },
-          { name: 'Positivos', type: 'line', data: posReal },
-          { name: 'Positivos (proy)', type: 'line', data: posProj }
+          { name: 'Invitaciones', type: 'line', data: TIMELINE_DATA.invitations },
+          { name: 'Conexiones', type: 'line', data: TIMELINE_DATA.accepted },
+          { name: 'Positivos', type: 'line', data: TIMELINE_DATA.positive }
         ],
         chart: {
           height: 400,
@@ -1971,8 +1958,7 @@
         dataLabels: { enabled: false },
         stroke: {
           curve: 'smooth',
-          width: [3, 3, 3, 3, 3, 3],
-          dashArray: [0, 5, 0, 5, 0, 5] // Real=sólido, Proy=punteado
+          width: [4, 4, 4]
         },
         xaxis: {
           categories: TIMELINE_DATA.categories,
@@ -1993,21 +1979,15 @@
             formatter: function(val) { return val ? val.toLocaleString() : ''; }
           }
         },
-        colors: ['#B8A882', '#B8A882', '#22c55e', '#22c55e', '#3b82f6', '#3b82f6'],
-        fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1, stops: [0, 90, 100] } },
+        colors: ['#D4AF37', '#00ff88', '#00bbff'], // Oro brillante, verde neón, azul brillante
         grid: { borderColor: 'rgba(184, 168, 130, 0.1)', strokeDashArray: 3 },
         legend: {
           show: true,
           position: 'top',
           horizontalAlign: 'left',
-          labels: { colors: '#888888' },
+          labels: { colors: '#cccccc' },
           markers: { width: 12, height: 12, radius: 3 },
-          itemMargin: { horizontal: 15 },
-          formatter: function(seriesName) {
-            // Ocultar series de proyección en leyenda
-            if (seriesName.includes('proy')) return;
-            return seriesName;
-          }
+          itemMargin: { horizontal: 15 }
         },
         tooltip: {
           theme: 'dark',
@@ -2024,11 +2004,11 @@
         annotations: {
           xaxis: [{
             x: realEndIndex + 0.5,
-            borderColor: 'rgba(184, 168, 130, 0.3)',
+            borderColor: 'rgba(212, 175, 55, 0.5)',
             strokeDashArray: 4,
             label: {
               text: 'Proyección →',
-              style: { color: '#888', background: 'rgba(184, 168, 130, 0.1)', fontSize: '11px' },
+              style: { color: '#D4AF37', background: 'rgba(0, 0, 0, 0.7)', fontSize: '11px', fontWeight: 'bold' },
               orientation: 'horizontal',
               offsetY: -10
             }
