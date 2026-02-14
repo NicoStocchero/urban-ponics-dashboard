@@ -362,119 +362,6 @@
       margin-top: 0.25rem;
     }
 
-    /* Custom Visual Funnel */
-    .funnel-visual {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .funnel-stage {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      padding: 1rem 1.5rem;
-      border-radius: 14px;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      cursor: default;
-    }
-
-    .funnel-stage:hover {
-      transform: translateX(6px);
-    }
-
-    .funnel-stage:nth-child(1) {
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.03) 100%);
-      border-left: 3px solid #D4AF37;
-    }
-    .funnel-stage:nth-child(2) {
-      background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.02) 100%);
-      border-left: 3px solid #00ff88;
-    }
-    .funnel-stage:nth-child(3) {
-      background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.02) 100%);
-      border-left: 3px solid #3b82f6;
-    }
-    .funnel-stage:nth-child(4) {
-      background: linear-gradient(90deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.02) 100%);
-      border-left: 3px solid #22c55e;
-    }
-
-    .funnel-stage-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .funnel-stage:nth-child(1) .funnel-stage-icon { background: rgba(212, 175, 55, 0.15); color: #D4AF37; }
-    .funnel-stage:nth-child(2) .funnel-stage-icon { background: rgba(0, 255, 136, 0.12); color: #00ff88; }
-    .funnel-stage:nth-child(3) .funnel-stage-icon { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-    .funnel-stage:nth-child(4) .funnel-stage-icon { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-
-    .funnel-stage-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .funnel-stage-name {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.25rem;
-    }
-
-    .funnel-stage-rate {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .funnel-stage-value {
-      font-family: 'Space Grotesk', monospace;
-      font-size: 1.75rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .funnel-stage:nth-child(1) .funnel-stage-value { color: #D4AF37; }
-    .funnel-stage:nth-child(2) .funnel-stage-value { color: #00ff88; }
-    .funnel-stage:nth-child(3) .funnel-stage-value { color: #3b82f6; }
-    .funnel-stage:nth-child(4) .funnel-stage-value { color: #22c55e; }
-
-    .funnel-stage-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 2px;
-      border-radius: 0 2px 2px 0;
-      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .funnel-stage:nth-child(1) .funnel-stage-bar { background: #D4AF37; }
-    .funnel-stage:nth-child(2) .funnel-stage-bar { background: #00ff88; }
-    .funnel-stage:nth-child(3) .funnel-stage-bar { background: #3b82f6; }
-    .funnel-stage:nth-child(4) .funnel-stage-bar { background: #22c55e; }
-
-    .funnel-connector {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 0 0 2rem;
-    }
-
-    .funnel-connector-arrow {
-      width: 24px;
-      height: 24px;
-      color: var(--text-muted);
-      opacity: 0.3;
-    }
-
     /* ========== PIPELINE CARDS (DEALS VIEW) ========== */
     .pipeline-stats-grid {
       display: grid;
@@ -1503,14 +1390,6 @@
         border-radius: 16px;
       }
 
-      .funnel-stage {
-        padding: 0.75rem 1rem;
-      }
-
-      .funnel-stage-value {
-        font-size: 1.25rem;
-      }
-
       .pipeline-stats-grid {
         grid-template-columns: 1fr;
       }
@@ -1665,7 +1544,6 @@
           </div>
         </div>
       </div>
-      <div id="funnelVisual" class="funnel-visual"></div>
       <div id="funnelChart" style="margin-top: 1.5rem;"></div>
     </div>
 
@@ -2255,37 +2133,12 @@
         funnelChartInstance = null;
       }
 
-      // Render custom visual funnel
-      const funnelVisualEl = document.getElementById('funnelVisual');
-      if (funnelVisualEl) {
-        const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
-        const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
-        const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
+      // ApexCharts bar chart with logarithmic scale
+      const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
+      const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
+      const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
+      const percentages = ['100%', acceptedRate + '%', positiveRate + '%', meetingsRate + '%'];
 
-        const stages = [
-          { name: 'Invitaciones Enviadas', value: invitations, rate: '100%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>', barWidth: 100 },
-          { name: 'Aceptadas', value: accepted, rate: acceptedRate + '%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>', barWidth: invitations > 0 ? Math.max((accepted / invitations) * 100, 8) : 8 },
-          { name: 'Respuestas Positivas', value: positive, rate: positiveRate + '%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>', barWidth: invitations > 0 ? Math.max((positive / invitations) * 100, 5) : 5 },
-          { name: 'Meetings Agendados', value: meetings, rate: meetingsRate + '%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>', barWidth: invitations > 0 ? Math.max((meetings / invitations) * 100, 3) : 3 }
-        ];
-
-        funnelVisualEl.innerHTML = stages.map((stage, i) => `
-          <div class="funnel-stage" style="animation: fadeInUp 0.5s ${0.1 + i * 0.1}s cubic-bezier(0.16, 1, 0.3, 1) backwards;">
-            <div class="funnel-stage-icon">
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">${stage.icon}</svg>
-            </div>
-            <div class="funnel-stage-info">
-              <div class="funnel-stage-name">${stage.name}</div>
-              <div class="funnel-stage-rate">Conversión: ${stage.rate}</div>
-            </div>
-            <div class="funnel-stage-value">${stage.value.toLocaleString()}</div>
-            <div class="funnel-stage-bar" style="width: ${stage.barWidth}%;"></div>
-          </div>
-          ${i < stages.length - 1 ? '<div class="funnel-connector"><svg class="funnel-connector-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>' : ''}
-        `).join('');
-      }
-
-      // ApexCharts bar chart below
       const options = {
         series: [{
           name: '',
@@ -2293,7 +2146,7 @@
         }],
         chart: {
           type: 'bar',
-          height: 200,
+          height: 280,
           background: 'transparent',
           toolbar: { show: false },
           fontFamily: 'Space Grotesk, Inter, sans-serif'
@@ -2301,9 +2154,9 @@
         plotOptions: {
           bar: {
             horizontal: true,
-            barHeight: '70%',
+            barHeight: '65%',
             distributed: true,
-            borderRadius: 6,
+            borderRadius: 8,
             dataLabels: {
               position: 'bottom'
             }
@@ -2321,14 +2174,18 @@
           },
           formatter: function (val, opt) {
             const labels = ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'];
-            return labels[opt.dataPointIndex] + ': ' + val.toLocaleString();
+            return labels[opt.dataPointIndex] + ': ' + val.toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
           },
           offsetX: 10
         },
         xaxis: {
           categories: ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'],
+          logarithmic: true,
           labels: {
-            style: { colors: '#888', fontSize: '11px', fontFamily: 'Inter, sans-serif' }
+            style: { colors: '#888', fontSize: '11px', fontFamily: 'Inter, sans-serif' },
+            formatter: function(val) {
+              return Math.round(val).toLocaleString();
+            }
           }
         },
         yaxis: {
@@ -2347,7 +2204,6 @@
           style: { fontFamily: 'Inter, sans-serif' },
           y: {
             formatter: function(val, opt) {
-              const percentages = ['100%', (invitations > 0 ? (accepted/invitations*100).toFixed(1) : 0) + '%', (invitations > 0 ? (positive/invitations*100).toFixed(1) : 0) + '%', (invitations > 0 ? (meetings/invitations*100).toFixed(1) : 0) + '%'];
               return val.toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
             }
           }
