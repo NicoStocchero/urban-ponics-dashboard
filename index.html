@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <!--
   Urban Ponics - Investor Dashboard
   Version: 2.0
@@ -38,198 +38,10 @@
       box-sizing: border-box;
     }
 
-    /* SIDEBAR MODERNO */
+    /* Layout */
     .dashboard-layout {
       display: flex;
       min-height: 100vh;
-    }
-
-    .sidebar {
-      display: none !important;
-    }
-
-    .sidebar-toggle {
-      display: none !important;
-    }
-
-    .sidebar.collapsed {
-      transform: translateX(-280px);
-    }
-
-    .sidebar-header {
-      padding: 2rem 1.5rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sidebar-logo {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .sidebar-logo-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-      padding: 6px;
-    }
-
-    .sidebar-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-family: 'Space Grotesk', sans-serif;
-    }
-
-    .sidebar-subtitle {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 0.25rem;
-    }
-
-    .sidebar-menu {
-      padding: 1rem 0.75rem;
-    }
-
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.875rem 1rem;
-      margin-bottom: 0.5rem;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      background: transparent;
-      border: 1px solid transparent;
-    }
-
-    .menu-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(184, 168, 130, 0.1), transparent);
-      transition: left 0.6s;
-    }
-
-    .menu-item:hover::before {
-      left: 100%;
-    }
-
-    .menu-item:hover {
-      background: rgba(184, 168, 130, 0.05);
-      border-color: rgba(184, 168, 130, 0.2);
-      transform: translateX(4px);
-    }
-
-    .menu-item.active {
-      background: linear-gradient(135deg, 
-        rgba(184, 168, 130, 0.15) 0%,
-        rgba(184, 168, 130, 0.05) 100%);
-      border-color: var(--gold);
-      box-shadow: 0 0 20px rgba(184, 168, 130, 0.2);
-    }
-
-    .menu-item.active::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: 1rem;
-      width: 6px;
-      height: 6px;
-      background: var(--gold);
-      border-radius: 50%;
-      transform: translateY(-50%);
-      box-shadow: 0 0 10px var(--gold);
-      animation: pulse-glow 2s infinite;
-    }
-
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--gold); }
-      50% { opacity: 0.5; box-shadow: 0 0 20px var(--gold); }
-    }
-
-    .menu-icon {
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      transition: all 0.3s;
-    }
-
-    .menu-item:hover .menu-icon,
-    .menu-item.active .menu-icon {
-      color: var(--gold);
-      filter: drop-shadow(0 0 8px var(--gold));
-    }
-
-    .menu-label {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: color 0.3s;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .menu-item:hover .menu-label,
-    .menu-item.active .menu-label {
-      color: var(--gold-light);
-    }
-
-    .menu-badge {
-      margin-left: auto;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: rgba(34, 197, 94, 0.15);
-      color: var(--green);
-      border-radius: 6px;
-      font-family: 'Space Grotesk', monospace;
-    }
-
-    .menu-badge.gold {
-      background: rgba(184, 168, 130, 0.15);
-      color: var(--gold);
-    }
-
-    .sidebar-toggle {
-      position: fixed;
-      left: 290px;
-      top: 2rem;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(25, 25, 30, 0.95) 100%);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 999;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .sidebar-toggle:hover {
-      background: var(--gold);
-      color: #000;
-      box-shadow: 0 0 20px rgba(184, 168, 130, 0.5);
-      transform: scale(1.1);
-    }
-
-    .sidebar.collapsed ~ .sidebar-toggle {
-      left: 10px;
     }
 
     .main-content {
@@ -398,71 +210,416 @@
       font-family: 'Space Grotesk', monospace;
     }
 
-    /* Pipeline cards */
+    /* ========== PIPELINE HERO SECTION ========== */
+    .pipeline-hero {
+      position: relative;
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.08) 0%, rgba(184, 168, 130, 0.02) 50%, rgba(34, 197, 94, 0.04) 100%);
+      border: 1px solid rgba(184, 168, 130, 0.2);
+      border-radius: 24px;
+      padding: 2.5rem 3rem;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
+
+    .pipeline-hero-glow {
+      position: absolute;
+      top: -60%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(184, 168, 130, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      animation: pulse 15s ease-in-out infinite;
+    }
+
+    .pipeline-hero-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pipeline-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+      padding: 0.375rem 0.875rem;
+      background: rgba(184, 168, 130, 0.08);
+      border: 1px solid rgba(184, 168, 130, 0.12);
+      border-radius: 8px;
+    }
+
+    .pipeline-hero-label svg {
+      color: var(--gold);
+    }
+
+    .pipeline-hero-value {
+      font-size: 3.75rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 40%, #ffffff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: 'Space Grotesk', monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .pipeline-hero-subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .pipeline-hero-icon-ring {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.12) 0%, rgba(184, 168, 130, 0.04) 100%);
+      border: 1px solid rgba(184, 168, 130, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    .pipeline-hero-icon-inner {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.1) 0%, rgba(184, 168, 130, 0.02) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ========== FUNNEL SECTION ========== */
+    .funnel-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-top: 2rem;
+      animation: fadeInUp 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .funnel-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--green), transparent);
+      opacity: 0.6;
+    }
+
+    .funnel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .funnel-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .funnel-header-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.15), rgba(184, 168, 130, 0.05));
+      border-radius: 12px;
+      color: var(--gold);
+    }
+
+    .funnel-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .funnel-subtitle {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Custom Visual Funnel */
+    .funnel-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .funnel-stage {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem 1.5rem;
+      border-radius: 14px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      cursor: default;
+    }
+
+    .funnel-stage:hover {
+      transform: translateX(6px);
+    }
+
+    .funnel-stage:nth-child(1) {
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.03) 100%);
+      border-left: 3px solid #D4AF37;
+    }
+    .funnel-stage:nth-child(2) {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.02) 100%);
+      border-left: 3px solid #00ff88;
+    }
+    .funnel-stage:nth-child(3) {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.02) 100%);
+      border-left: 3px solid #3b82f6;
+    }
+    .funnel-stage:nth-child(4) {
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.02) 100%);
+      border-left: 3px solid #22c55e;
+    }
+
+    .funnel-stage-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .funnel-stage:nth-child(1) .funnel-stage-icon { background: rgba(212, 175, 55, 0.15); color: #D4AF37; }
+    .funnel-stage:nth-child(2) .funnel-stage-icon { background: rgba(0, 255, 136, 0.12); color: #00ff88; }
+    .funnel-stage:nth-child(3) .funnel-stage-icon { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+    .funnel-stage:nth-child(4) .funnel-stage-icon { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
+
+    .funnel-stage-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .funnel-stage-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .funnel-stage-rate {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .funnel-stage-value {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 1.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .funnel-stage:nth-child(1) .funnel-stage-value { color: #D4AF37; }
+    .funnel-stage:nth-child(2) .funnel-stage-value { color: #00ff88; }
+    .funnel-stage:nth-child(3) .funnel-stage-value { color: #3b82f6; }
+    .funnel-stage:nth-child(4) .funnel-stage-value { color: #22c55e; }
+
+    .funnel-stage-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      border-radius: 0 2px 2px 0;
+      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .funnel-stage:nth-child(1) .funnel-stage-bar { background: #D4AF37; }
+    .funnel-stage:nth-child(2) .funnel-stage-bar { background: #00ff88; }
+    .funnel-stage:nth-child(3) .funnel-stage-bar { background: #3b82f6; }
+    .funnel-stage:nth-child(4) .funnel-stage-bar { background: #22c55e; }
+
+    .funnel-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0 0 2rem;
+    }
+
+    .funnel-connector-arrow {
+      width: 24px;
+      height: 24px;
+      color: var(--text-muted);
+      opacity: 0.3;
+    }
+
+    /* ========== PIPELINE CARDS (DEALS VIEW) ========== */
     .pipeline-stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
       margin-bottom: 2.5rem;
     }
 
     .pipeline-stat-card {
-      background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.75rem;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
 
+    .pipeline-stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .pipeline-stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .pipeline-stat-card:nth-child(1) { animation-delay: 0s; }
+    .pipeline-stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .pipeline-stat-card:nth-child(3) { animation-delay: 0.2s; }
+
     .pipeline-stat-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-6px) scale(1.02);
       border-color: var(--border-hover);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+    }
+
+    .pipeline-stat-card .stat-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
     }
 
     .pipeline-stat-card .stat-label {
       color: var(--text-muted);
       font-size: 0.8rem;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       margin-bottom: 0.75rem;
     }
 
     .pipeline-stat-card .stat-value {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: 3rem;
+      font-weight: 800;
       font-family: 'Space Grotesk', monospace;
       line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .pipeline-stat-card .stat-trend {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
     }
 
     .pipeline-stat-card.green {
-      border-color: rgba(34, 197, 94, 0.3);
-      background: linear-gradient(135deg, rgba(34,197,94,0.06) 0%, transparent 100%);
+      border-color: rgba(34, 197, 94, 0.25);
+      background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(34,197,94,0.01) 100%);
     }
-
+    .pipeline-stat-card.green::before {
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+    }
+    .pipeline-stat-card.green .stat-icon {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--green);
+    }
     .pipeline-stat-card.green .stat-value {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .pipeline-stat-card.green .stat-trend {
+      background: rgba(34, 197, 94, 0.1);
       color: var(--green);
     }
 
     .pipeline-stat-card.gold {
-      border-color: rgba(184, 168, 130, 0.3);
-      background: linear-gradient(135deg, rgba(184,168,130,0.06) 0%, transparent 100%);
+      border-color: rgba(184, 168, 130, 0.25);
+      background: linear-gradient(135deg, rgba(184,168,130,0.08) 0%, rgba(184,168,130,0.01) 100%);
     }
-
+    .pipeline-stat-card.gold::before {
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .pipeline-stat-card.gold .stat-icon {
+      background: rgba(184, 168, 130, 0.12);
+      color: var(--gold);
+    }
     .pipeline-stat-card.gold .stat-value {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .pipeline-stat-card.gold .stat-trend {
+      background: rgba(184, 168, 130, 0.1);
       color: var(--gold);
     }
 
     .pipeline-stat-card.blue {
-      border-color: rgba(59, 130, 246, 0.3);
-      background: linear-gradient(135deg, rgba(59,130,246,0.06) 0%, transparent 100%);
+      border-color: rgba(59, 130, 246, 0.25);
+      background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(59,130,246,0.01) 100%);
     }
-
+    .pipeline-stat-card.blue::before {
+      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+    }
+    .pipeline-stat-card.blue .stat-icon {
+      background: rgba(59, 130, 246, 0.12);
+      color: #3b82f6;
+    }
     .pipeline-stat-card.blue .stat-value {
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .pipeline-stat-card.blue .stat-trend {
+      background: rgba(59, 130, 246, 0.1);
       color: #3b82f6;
     }
 
+    /* ========== PIPELINE SUBSECTIONS ========== */
     .pipeline-subsection {
       margin-bottom: 2.5rem;
     }
@@ -470,63 +627,96 @@
     .pipeline-subsection-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
+      gap: 0.875rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
       border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .pipeline-subsection-header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      border-radius: 1px;
+    }
+
+    .pipeline-subsection-header.green-header::after {
+      background: var(--green);
+    }
+
+    .pipeline-subsection-header.gold-header::after {
+      background: var(--gold);
     }
 
     .pipeline-subsection-icon {
-      width: 32px;
-      height: 32px;
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 8px;
+      border-radius: 10px;
       color: var(--gold);
+      transition: all 0.3s;
     }
 
     .pipeline-subsection-icon.green {
-      background: rgba(34, 197, 94, 0.1);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
       color: var(--green);
     }
 
     .pipeline-subsection-icon.gold {
-      background: rgba(184, 168, 130, 0.1);
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.15), rgba(184, 168, 130, 0.05));
       color: var(--gold);
     }
 
     .pipeline-subsection-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600;
-      font-size: 1.1rem;
+      font-weight: 700;
+      font-size: 1.15rem;
       color: var(--text-primary);
     }
 
     .pipeline-subsection-count {
       font-family: 'Space Grotesk', monospace;
       font-size: 0.8rem;
-      font-weight: 600;
-      padding: 0.25rem 0.625rem;
-      border-radius: 6px;
-      background: rgba(184, 168, 130, 0.1);
-      color: var(--gold);
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: 8px;
+      margin-left: auto;
     }
 
+    .pipeline-subsection-count.green-count {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, 0.15);
+    }
+
+    .pipeline-subsection-count.gold-count {
+      background: rgba(184, 168, 130, 0.1);
+      color: var(--gold);
+      border: 1px solid rgba(184, 168, 130, 0.15);
+    }
+
+    /* ========== PIPELINE CONTACT GRID ========== */
     .pipeline-contact-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 1.25rem;
     }
 
     .pipeline-contact-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 16px;
+      padding: 1.75rem;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       overflow: hidden;
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
 
     .pipeline-contact-card::before {
@@ -535,38 +725,100 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 2px;
+      height: 3px;
       transform: scaleX(0);
-      transition: transform 0.3s;
+      transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .pipeline-contact-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+      border-radius: 16px;
     }
 
     .pipeline-contact-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-5px) scale(1.01);
       border-color: var(--border-hover);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
     }
 
     .pipeline-contact-card:hover::before {
       transform: scaleX(1);
     }
 
+    .pipeline-contact-card:hover::after {
+      opacity: 1;
+    }
+
     .pipeline-contact-card.meeting-card::before {
-      background: var(--green);
+      background: linear-gradient(90deg, var(--green), var(--green-light));
+    }
+
+    .pipeline-contact-card.meeting-card::after {
+      background: radial-gradient(circle at top center, rgba(34, 197, 94, 0.04) 0%, transparent 70%);
     }
 
     .pipeline-contact-card.meeting-card {
-      border-color: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.15);
     }
 
     .pipeline-contact-card.positive-card::before {
-      background: var(--gold);
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+
+    .pipeline-contact-card.positive-card::after {
+      background: radial-gradient(circle at top center, rgba(184, 168, 130, 0.04) 0%, transparent 70%);
+    }
+
+    .pipeline-contact-card.positive-card {
+      border-color: rgba(184, 168, 130, 0.15);
+    }
+
+    .pipeline-contact-card .contact-header {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .pipeline-contact-card .contact-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .pipeline-contact-card.meeting-card .contact-avatar {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.05));
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .pipeline-contact-card.positive-card .contact-avatar {
+      background: linear-gradient(135deg, rgba(184, 168, 130, 0.2), rgba(184, 168, 130, 0.05));
+      color: var(--gold);
+      border: 1px solid rgba(184, 168, 130, 0.2);
     }
 
     .pipeline-contact-card .contact-name {
       font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 1.05rem;
-      margin-bottom: 0.375rem;
+      margin-bottom: 0.125rem;
     }
 
     .pipeline-contact-card.meeting-card .contact-name {
@@ -579,15 +831,26 @@
 
     .pipeline-contact-card .contact-position {
       color: var(--text-muted);
-      font-size: 0.825rem;
-      margin-bottom: 0.25rem;
+      font-size: 0.8rem;
     }
 
     .pipeline-contact-card .contact-company {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       color: var(--text-primary);
-      font-weight: 500;
+      font-weight: 600;
       font-size: 0.9rem;
       margin-bottom: 0.875rem;
+      padding: 0.625rem 0.875rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      border: 1px solid rgba(184, 168, 130, 0.06);
+    }
+
+    .pipeline-contact-card .contact-company svg {
+      flex-shrink: 0;
+      opacity: 0.5;
     }
 
     .pipeline-contact-card .contact-email {
@@ -595,18 +858,20 @@
       align-items: center;
       gap: 0.5rem;
       color: var(--text-muted);
-      font-size: 0.825rem;
+      font-size: 0.8rem;
       margin-bottom: 0.5rem;
     }
 
     .pipeline-contact-card .contact-campaign {
-      margin-top: 0.75rem;
-      padding: 0.4rem 0.75rem;
-      border-radius: 6px;
+      margin-top: 0.875rem;
+      padding: 0.4rem 0.875rem;
+      border-radius: 8px;
       font-size: 0.7rem;
-      font-weight: 500;
-      display: inline-block;
-      letter-spacing: 0.02em;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      letter-spacing: 0.03em;
     }
 
     .pipeline-contact-card.meeting-card .contact-campaign {
@@ -806,6 +1071,10 @@
       margin-bottom: 3rem;
     }
 
+    .kpis-grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
     .kpi-card {
       position: relative;
       background: var(--bg-card);
@@ -901,16 +1170,6 @@
       font-weight: 500;
     }
 
-    /* Chart Section */
-    .chart-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      margin-bottom: 3rem;
-      animation: fadeInUp 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-    }
-
     .section-header {
       display: flex;
       justify-content: space-between;
@@ -933,41 +1192,44 @@
       margin-top: 0.5rem;
     }
 
-    .filter-buttons {
-      display: flex;
-      gap: 0.5rem;
-      background: rgba(184, 168, 130, 0.05);
-      padding: 0.375rem;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .filter-btn {
-      padding: 0.625rem 1.25rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      border-radius: 8px;
-      font-size: 0.875rem;
+    /* Priority badges */
+    .priority-badge {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
     }
 
-    .filter-btn:hover {
-      color: var(--gold);
+    .priority-badge.high {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+
+    .priority-badge.medium {
+      background: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+    }
+
+    .priority-badge.low {
+      background: rgba(59, 130, 246, 0.15);
+      color: #3b82f6;
+    }
+
+    /* Progress bar (deal cards) */
+    .progress-bar {
+      height: 4px;
       background: rgba(184, 168, 130, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
     }
 
-    .filter-btn.active {
-      background: var(--gold);
-      color: #000;
-      box-shadow: 0 4px 12px rgba(184, 168, 130, 0.3);
-    }
-
-    #performanceChart {
-      margin-top: 2rem;
+    .progress-fill {
+      height: 100%;
+      width: var(--progress, 0%);
+      background: linear-gradient(90deg, var(--gold), var(--green));
+      border-radius: 2px;
+      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* Deals Grid */
@@ -1099,11 +1361,6 @@
       display: flex;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
     .modal-content {
       background: linear-gradient(135deg, rgba(10, 10, 10, 0.98), rgba(20, 20, 20, 0.98));
       border: 1px solid var(--border-hover);
@@ -1204,7 +1461,8 @@
         align-items: flex-start;
       }
 
-      .kpis-grid {
+      .kpis-grid,
+      .kpis-grid-4 {
         grid-template-columns: 1fr;
       }
 
@@ -1216,12 +1474,58 @@
         grid-template-columns: 1fr;
       }
 
-      .filter-buttons {
-        width: 100%;
+      .pipeline-hero {
+        padding: 1.75rem;
+        border-radius: 16px;
       }
 
-      .filter-btn {
-        flex: 1;
+      .pipeline-hero-value {
+        font-size: 2.5rem;
+      }
+
+      .pipeline-hero-icon-ring {
+        width: 72px;
+        height: 72px;
+      }
+
+      .pipeline-hero-icon-inner {
+        width: 52px;
+        height: 52px;
+      }
+
+      .pipeline-hero-icon-inner svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .funnel-section {
+        padding: 1.5rem;
+        border-radius: 16px;
+      }
+
+      .funnel-stage {
+        padding: 0.75rem 1rem;
+      }
+
+      .funnel-stage-value {
+        font-size: 1.25rem;
+      }
+
+      .pipeline-stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pipeline-stat-card .stat-value {
+        font-size: 2.25rem;
+      }
+
+      .pipeline-contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-card {
+        padding: 1.5rem;
+        border-radius: 16px;
       }
     }
   </style>
@@ -1266,23 +1570,33 @@
     <div class="view-section active" id="view-overview">
     
     <!-- PIPELINE GRANDE - Full Width -->
-    <div style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05)); border-radius: 16px; padding: 32px; margin-bottom: 24px; border: 1px solid rgba(212, 175, 55, 0.2);">
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <div>
-          <div style="color: #888; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Pipeline Total</div>
-          <div style="font-size: 48px; font-weight: 700; color: #D4AF37; font-family: 'Space Grotesk', monospace;" id="kpi-pipeline-big">$0</div>
-          <div style="color: #888; font-size: 14px; margin-top: 8px;" id="kpi-deals-count-big">0 deals abiertos</div>
+    <div class="pipeline-hero">
+      <div class="pipeline-hero-glow"></div>
+      <div class="pipeline-hero-content">
+        <div class="pipeline-hero-left">
+          <div class="pipeline-hero-label">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+            Pipeline Total
+          </div>
+          <div class="pipeline-hero-value" id="kpi-pipeline-big">$0</div>
+          <div class="pipeline-hero-subtitle" id="kpi-deals-count-big">0 deals abiertos</div>
         </div>
-        <div style="background: rgba(212, 175, 55, 0.1); border-radius: 50%; padding: 24px;">
-          <svg width="48" height="48" fill="none" stroke="#D4AF37" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
+        <div class="pipeline-hero-right">
+          <div class="pipeline-hero-icon-ring">
+            <div class="pipeline-hero-icon-inner">
+              <svg width="40" height="40" fill="none" stroke="var(--gold)" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     
     <!-- KPIs Grid - 4 cards -->
-    <div class="kpis-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="kpis-grid kpis-grid-4">
       <div class="kpi-card" data-type="invitations">
         <div class="kpi-header">
           <div class="kpi-icon">
@@ -1337,12 +1651,22 @@
     </div>
 
     <!-- Funnel Chart -->
-    <div style="background: rgba(20, 20, 20, 0.5); border-radius: 16px; padding: 24px; margin-top: 24px; border: 1px solid rgba(184, 168, 130, 0.1);">
-      <div style="margin-bottom: 16px;">
-        <h2 style="color: #D4AF37; font-size: 18px; font-weight: 600; margin: 0;">Embudo de Conversión</h2>
-        <p style="color: #888; font-size: 13px; margin: 4px 0 0 0;">De invitación a reunión agendada</p>
+    <div class="funnel-section">
+      <div class="funnel-header">
+        <div class="funnel-header-left">
+          <div class="funnel-header-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="funnel-title">Embudo de Conversión</h2>
+            <p class="funnel-subtitle">De invitación a reunión agendada</p>
+          </div>
+        </div>
       </div>
-      <div id="funnelChart"></div>
+      <div id="funnelVisual" class="funnel-visual"></div>
+      <div id="funnelChart" style="margin-top: 1.5rem;"></div>
     </div>
 
     <!-- Deals Grid -->
@@ -1474,8 +1798,25 @@
       }
     };
 
-    let chart;
+    let funnelChartInstance = null;
     let currentLang = localStorage.getItem('dashboard_lang') || 'en';
+
+    // Sanitize strings to prevent XSS when using innerHTML
+    function esc(str) {
+      if (str == null) return '';
+      const div = document.createElement('div');
+      div.textContent = String(str);
+      return div.innerHTML;
+    }
+
+    // Escape a value for safe use in an HTML attribute
+    function escAttr(str) {
+      if (str == null) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Locale map for date formatting
+    const langToLocale = { en: 'en-US', es: 'es-ES', nl: 'nl-NL' };
 
     // Sistema de traducciones
     const translations = {
@@ -1667,7 +2008,8 @@
     function changeLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('dashboard_lang', lang);
-      
+      document.documentElement.lang = lang;
+
       // Actualizar botones
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -1679,6 +2021,7 @@
 
     // Función para actualizar todos los textos
     function updateAllTexts() {
+      try {
       // Header
       document.querySelector('.title-section h1').textContent = t('dashboardTitle');
       document.querySelector('.subtitle').textContent = t('dashboardSubtitle');
@@ -1701,12 +2044,18 @@
         }
       });
       
-      // Section titles
-      document.querySelector('.section-title').textContent = t('performanceTimeline');
-      document.querySelectorAll('.section-title')[1].textContent = t('topDeals');
-      
-      // Recargar gráfico con labels traducidos
-      createChart();
+      // Section titles - update funnel and deals titles safely
+      try {
+        const funnelTitleEl = document.querySelector('.funnel-title');
+        if (funnelTitleEl) funnelTitleEl.textContent = t('performanceTimeline');
+        const sectionTitles = document.querySelectorAll('.section-title');
+        for (let i = 0; i < sectionTitles.length; i++) {
+          if (sectionTitles[i].textContent.includes('Top') || sectionTitles[i].textContent.includes('Deal') || sectionTitles[i].textContent.includes('Deals')) {
+            sectionTitles[i].textContent = t('topDeals');
+            break;
+          }
+        }
+      } catch(e) { /* section titles not yet rendered */ }
       
       // Actualizar subtitle de deals si existe
       const dealsSubtitle = document.getElementById('dealsSubtitle');
@@ -1723,6 +2072,7 @@
       MODAL_DATA.positive.title = t('modalPositiveTitle');
       MODAL_DATA.meetings.title = t('modalMeetingsTitle');
       MODAL_DATA.pipeline.title = t('modalPipelineTitle');
+      } catch(e) { console.warn('updateAllTexts: some elements not ready yet', e); }
     }
 
     // Inicializar Supabase
@@ -1794,9 +2144,18 @@
         animateValue('kpi-meetings', 0, meetings, 2000, '+');
         animateValue('kpi-pipeline', 0, totalPipeline, 2000, '', '$', true);
 
+        // Update KPI trend badges
+        const invTrend = document.getElementById('kpi-invitations-trend');
+        if (invTrend) invTrend.textContent = invitations.toLocaleString() + ' total';
+        const posTrend = document.getElementById('kpi-positive-trend');
+        if (posTrend) posTrend.textContent = (accepted > 0 ? ((positive / accepted) * 100).toFixed(1) : 0) + '% conv.';
+        const mtgTrend = document.getElementById('kpi-meetings-trend');
+        if (mtgTrend) mtgTrend.textContent = meetings > 0 ? 'Active' : 'Pending';
+
         // Actualizar PIPELINE GRANDE
         animateValue('kpi-pipeline-big', 0, totalPipeline, 2000, '', '$', true);
-        document.getElementById('kpi-deals-count-big').textContent = totalDeals + ' deals abiertos • Avg: $' + Math.round(totalPipeline / totalDeals).toLocaleString();
+        const avgDealVal = totalDeals > 0 ? Math.round(totalPipeline / totalDeals).toLocaleString() : '0';
+        document.getElementById('kpi-deals-count-big').textContent = totalDeals + ' deals abiertos • Avg: $' + avgDealVal;
 
         // Crear FUNNEL CHART
         createFunnelChart(invitations, accepted, positive, meetings);
@@ -1855,7 +2214,7 @@
     // Actualizar fecha/hora
     function updateTime() {
       const now = new Date();
-      document.getElementById('updateTime').textContent = now.toLocaleString('es-ES', {
+      document.getElementById('updateTime').textContent = now.toLocaleString(langToLocale[currentLang] || 'en-US', {
         day: '2-digit',
         month: 'short',
         hour: '2-digit',
@@ -1868,6 +2227,7 @@
     // Animar KPIs
     function animateValue(id, start, end, duration, suffix = '', prefix = '', format = false) {
       const obj = document.getElementById(id);
+      if (!obj) return; // Element not in DOM, skip
       const range = end - start;
       const increment = range / 60;
       let current = start;
@@ -1878,24 +2238,54 @@
           current = end;
           clearInterval(timer);
         }
-        
-        const displayValue = format 
+
+        const displayValue = format
           ? `${prefix}${Math.floor(current).toLocaleString()}${suffix}`
           : `${prefix}${current.toFixed(suffix === '%' ? 1 : 0)}${suffix}`;
-        
+
         obj.textContent = displayValue;
       }, duration / 60);
     }
 
-    // Cargar datos reales desde Supabase
-    setTimeout(() => {
-      loadMetricsFromSupabase();
-    }, 800);
-
-    // Cargar datos REALES de Q4 2025 desde Supabase
-
     // Crear funnel chart con datos actuales
     function createFunnelChart(invitations, accepted, positive, meetings) {
+      // Destroy previous chart instance to prevent memory leak
+      if (funnelChartInstance) {
+        funnelChartInstance.destroy();
+        funnelChartInstance = null;
+      }
+
+      // Render custom visual funnel
+      const funnelVisualEl = document.getElementById('funnelVisual');
+      if (funnelVisualEl) {
+        const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
+        const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
+        const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
+
+        const stages = [
+          { name: 'Invitaciones Enviadas', value: invitations, rate: '100%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>', barWidth: 100 },
+          { name: 'Aceptadas', value: accepted, rate: acceptedRate + '%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>', barWidth: invitations > 0 ? Math.max((accepted / invitations) * 100, 8) : 8 },
+          { name: 'Respuestas Positivas', value: positive, rate: positiveRate + '%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>', barWidth: invitations > 0 ? Math.max((positive / invitations) * 100, 5) : 5 },
+          { name: 'Meetings Agendados', value: meetings, rate: meetingsRate + '%', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>', barWidth: invitations > 0 ? Math.max((meetings / invitations) * 100, 3) : 3 }
+        ];
+
+        funnelVisualEl.innerHTML = stages.map((stage, i) => `
+          <div class="funnel-stage" style="animation: fadeInUp 0.5s ${0.1 + i * 0.1}s cubic-bezier(0.16, 1, 0.3, 1) backwards;">
+            <div class="funnel-stage-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">${stage.icon}</svg>
+            </div>
+            <div class="funnel-stage-info">
+              <div class="funnel-stage-name">${stage.name}</div>
+              <div class="funnel-stage-rate">Conversión: ${stage.rate}</div>
+            </div>
+            <div class="funnel-stage-value">${stage.value.toLocaleString()}</div>
+            <div class="funnel-stage-bar" style="width: ${stage.barWidth}%;"></div>
+          </div>
+          ${i < stages.length - 1 ? '<div class="funnel-connector"><svg class="funnel-connector-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>' : ''}
+        `).join('');
+      }
+
+      // ApexCharts bar chart below
       const options = {
         series: [{
           name: '',
@@ -1903,28 +2293,31 @@
         }],
         chart: {
           type: 'bar',
-          height: 300,
+          height: 200,
           background: 'transparent',
-          toolbar: { show: false }
+          toolbar: { show: false },
+          fontFamily: 'Space Grotesk, Inter, sans-serif'
         },
         plotOptions: {
           bar: {
             horizontal: true,
-            barHeight: '80%',
+            barHeight: '70%',
             distributed: true,
+            borderRadius: 6,
             dataLabels: {
               position: 'bottom'
             }
           }
         },
-        colors: ['#D4AF37', '#00ff88', '#00bbff', '#ff6b6b'],
+        colors: ['#D4AF37', '#00ff88', '#3b82f6', '#22c55e'],
         dataLabels: {
           enabled: true,
           textAnchor: 'start',
           style: {
             colors: ['#fff'],
-            fontSize: '14px',
-            fontWeight: 'bold'
+            fontSize: '13px',
+            fontWeight: '600',
+            fontFamily: 'Space Grotesk, monospace'
           },
           formatter: function (val, opt) {
             const labels = ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'];
@@ -1933,36 +2326,36 @@
           offsetX: 10
         },
         xaxis: {
-          categories: ['Invitaciones', 'Aceptadas (23.7%)', 'Positivos', 'Meetings'],
+          categories: ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'],
           labels: {
-            style: { colors: '#888', fontSize: '12px' }
+            style: { colors: '#888', fontSize: '11px', fontFamily: 'Inter, sans-serif' }
           }
         },
         yaxis: {
           labels: {
-            style: { colors: '#D4AF37', fontSize: '14px', fontWeight: '600' }
+            style: { colors: '#D4AF37', fontSize: '12px', fontWeight: '600', fontFamily: 'Space Grotesk, monospace' }
           }
         },
         grid: {
-          borderColor: 'rgba(184, 168, 130, 0.1)',
+          borderColor: 'rgba(184, 168, 130, 0.08)',
           xaxis: { lines: { show: true } },
           yaxis: { lines: { show: false } }
         },
         legend: { show: false },
         tooltip: {
           theme: 'dark',
+          style: { fontFamily: 'Inter, sans-serif' },
           y: {
             formatter: function(val, opt) {
-              const percentages = ['100%', '23.7%', Math.round(positive/invitations*100) + '%', Math.round(meetings/invitations*100) + '%'];
+              const percentages = ['100%', (invitations > 0 ? (accepted/invitations*100).toFixed(1) : 0) + '%', (invitations > 0 ? (positive/invitations*100).toFixed(1) : 0) + '%', (invitations > 0 ? (meetings/invitations*100).toFixed(1) : 0) + '%'];
               return val.toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
             }
           }
         }
       };
 
-      const chart = new ApexCharts(document.querySelector("#funnelChart"), options);
-      chart.render();
-      return chart;
+      funnelChartInstance = new ApexCharts(document.querySelector("#funnelChart"), options);
+      funnelChartInstance.render();
     }
 
     // Cargar deals desde Supabase
@@ -1987,7 +2380,8 @@
         // Actualizar UI con stats reales
         document.getElementById('dealsSubtitle').textContent = 
           `${totalDeals} ${t('dealsActive')} • $${totalPipeline.toLocaleString()} USD ${t('total')}`;
-        document.getElementById('kpi-deals-count').textContent = `${totalDeals} ${t('deals')}`;
+        const kpiDealsCountEl = document.getElementById('kpi-deals-count');
+        if (kpiDealsCountEl) kpiDealsCountEl.textContent = `${totalDeals} ${t('deals')}`;
 
         // Actualizar modal de pipeline
         MODAL_DATA.pipeline.stats = [
@@ -2064,7 +2458,8 @@
       } catch (error) {
         // Fallback a datos estáticos
         document.getElementById('dealsSubtitle').textContent = 'Error cargando datos';
-        document.getElementById('kpi-deals-count').textContent = '0 deals';
+        const kpiDealsCountErr = document.getElementById('kpi-deals-count');
+        if (kpiDealsCountErr) kpiDealsCountErr.textContent = '0 deals';
         renderDeals();
       }
     }
@@ -2080,13 +2475,13 @@
       };
       
       grid.innerHTML = dealsData.map((deal, idx) => `
-        <div class="deal-card" data-deal='${JSON.stringify(deal)}'>
+        <div class="deal-card" data-deal="${escAttr(JSON.stringify(deal))}">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
             <div>
-              <div style="font-family: 'Space Grotesk', monospace; font-weight: 600; font-size: 14px; margin-bottom: 4px;">${deal.title}</div>
-              <div style="color: var(--text-muted); font-size: 12px;">${deal.contact}</div>
+              <div style="font-family: 'Space Grotesk', monospace; font-weight: 600; font-size: 14px; margin-bottom: 4px;">${esc(deal.title)}</div>
+              <div style="color: var(--text-muted); font-size: 12px;">${esc(deal.contact)}</div>
             </div>
-            <span class="priority-badge ${deal.priority}">${priorityLabels[deal.priority]}</span>
+            <span class="priority-badge ${esc(deal.priority)}">${priorityLabels[deal.priority] || ''}</span>
           </div>
           <div style="font-size: 24px; font-weight: 700; color: var(--gold); margin-bottom: 12px;">
             $${deal.value.toLocaleString()}
@@ -2132,7 +2527,7 @@
     function renderDeals() {
       const grid = document.getElementById('dealsGrid');
       grid.innerHTML = DEALS_DATA.map((deal, idx) => `
-        <div class="deal-card" data-deal='${JSON.stringify(deal)}'>
+        <div class="deal-card" data-deal="${escAttr(JSON.stringify(deal))}"
           <div class="deal-header">
             <div class="deal-company">${deal.company}</div>
             <div class="deal-priority ${deal.class}">${deal.priority}</div>
@@ -2158,9 +2553,6 @@
         });
       });
     }
-
-    // Cargar deals desde Supabase
-    loadDealsFromSupabase();
 
     // Event listeners para KPIs
     document.querySelectorAll('.kpi-card').forEach(card => {
@@ -2261,11 +2653,11 @@
                   return `
                     <tr>
                       <td style="color: var(--text-primary); font-weight: 500;">
-                        ${lead.first_name} ${lead.last_name}
+                        ${esc(lead.first_name)} ${esc(lead.last_name)}
                       </td>
-                      <td style="color: var(--text-muted);">${lead.company || '-'}</td>
-                      <td style="color: var(--text-muted);">${lead.position || '-'}</td>
-                      <td style="color: var(--text-muted);">${lead.email || '-'}</td>
+                      <td style="color: var(--text-muted);">${esc(lead.company) || '-'}</td>
+                      <td style="color: var(--text-muted);">${esc(lead.position) || '-'}</td>
+                      <td style="color: var(--text-muted);">${esc(lead.email) || '-'}</td>
                       <td>
                         <span class="status-badge ${statusClass}">
                           <span class="status-dot ${statusClass}"></span>
@@ -2333,79 +2725,120 @@
       const meetings = deals.filter(d => d.status === 'meeting');
       const positive = deals.filter(d => d.status === 'positive');
 
+      function getInitials(first, last) {
+        return ((first || '')[0] || '') + ((last || '')[0] || '');
+      }
+
+      function renderContactCard(contact, type) {
+        const cardClass = type === 'meeting' ? 'meeting-card' : 'positive-card';
+        const initials = esc(getInitials(contact.first_name, contact.last_name).toUpperCase());
+        return `
+          <div class="pipeline-contact-card ${cardClass}">
+            <div class="contact-header">
+              <div class="contact-avatar">${initials}</div>
+              <div>
+                <div class="contact-name">${esc(contact.first_name)} ${esc(contact.last_name)}</div>
+                ${contact.position ? `<div class="contact-position">${esc(contact.position)}</div>` : ''}
+              </div>
+            </div>
+            ${contact.company ? `
+              <div class="contact-company">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                ${esc(contact.company)}
+              </div>
+            ` : ''}
+            ${contact.email ? `
+              <div class="contact-email">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                ${esc(contact.email)}
+              </div>
+            ` : ''}
+            ${contact.campaign ? `
+              <div class="contact-campaign">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                ${esc(contact.campaign)}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
       container.innerHTML = `
         <div class="pipeline-stats-grid">
           <div class="pipeline-stat-card green">
+            <div class="stat-icon">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
             <div class="stat-label">Meetings Scheduled</div>
             <div class="stat-value">${meetings.length}</div>
+            <div class="stat-trend">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              Confirmed
+            </div>
           </div>
           <div class="pipeline-stat-card gold">
+            <div class="stat-icon">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+              </svg>
+            </div>
             <div class="stat-label">Positive Responses</div>
             <div class="stat-value">${positive.length}</div>
+            <div class="stat-trend">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              Active
+            </div>
           </div>
           <div class="pipeline-stat-card blue">
+            <div class="stat-icon">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+            </div>
             <div class="stat-label">Total Pipeline</div>
             <div class="stat-value">${deals.length}</div>
+            <div class="stat-trend">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Live
+            </div>
           </div>
         </div>
 
         <div class="pipeline-subsection">
-          <div class="pipeline-subsection-header">
+          <div class="pipeline-subsection-header green-header">
             <div class="pipeline-subsection-icon green">
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
             <span class="pipeline-subsection-title">Meetings</span>
-            <span class="pipeline-subsection-count">${meetings.length}</span>
+            <span class="pipeline-subsection-count green-count">${meetings.length}</span>
           </div>
           <div class="pipeline-contact-grid">
-            ${meetings.length > 0 ? meetings.map(meeting => `
-              <div class="pipeline-contact-card meeting-card">
-                <div class="contact-name">${meeting.first_name} ${meeting.last_name}</div>
-                ${meeting.position ? `<div class="contact-position">${meeting.position}</div>` : ''}
-                ${meeting.company ? `<div class="contact-company">${meeting.company}</div>` : ''}
-                ${meeting.email ? `
-                  <div class="contact-email">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    ${meeting.email}
-                  </div>
-                ` : ''}
-                ${meeting.campaign ? `<div class="contact-campaign">${meeting.campaign}</div>` : ''}
-              </div>
-            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0;">No meetings scheduled yet</p>'}
+            ${meetings.length > 0 ? meetings.map((m, i) => renderContactCard(m, 'meeting')).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0; font-size: 0.875rem;">No meetings scheduled yet</p>'}
           </div>
         </div>
 
         <div class="pipeline-subsection">
-          <div class="pipeline-subsection-header">
+          <div class="pipeline-subsection-header gold-header">
             <div class="pipeline-subsection-icon gold">
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
             <span class="pipeline-subsection-title">Positive Responses</span>
-            <span class="pipeline-subsection-count">${positive.length}</span>
+            <span class="pipeline-subsection-count gold-count">${positive.length}</span>
           </div>
           <div class="pipeline-contact-grid">
-            ${positive.length > 0 ? positive.map(lead => `
-              <div class="pipeline-contact-card positive-card">
-                <div class="contact-name">${lead.first_name} ${lead.last_name}</div>
-                ${lead.position ? `<div class="contact-position">${lead.position}</div>` : ''}
-                ${lead.company ? `<div class="contact-company">${lead.company}</div>` : ''}
-                ${lead.email ? `
-                  <div class="contact-email">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    ${lead.email}
-                  </div>
-                ` : ''}
-                ${lead.campaign ? `<div class="contact-campaign">${lead.campaign}</div>` : ''}
-              </div>
-            `).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0;">No positive responses yet</p>'}
+            ${positive.length > 0 ? positive.map((p, i) => renderContactCard(p, 'positive')).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0; font-size: 0.875rem;">No positive responses yet</p>'}
           </div>
         </div>
       `;
@@ -2414,15 +2847,15 @@
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
     // Cargar todos los datos al iniciar la página
     async function initDashboard() {
-      
       try {
-        // Cargar métricas (KPIs)
-        await loadMetricsFromSupabase();
-        
-        // Cargar pipeline
-        await loadDealsFullData();
-        
+        // Load all data sources in parallel
+        await Promise.all([
+          loadMetricsFromSupabase(),
+          loadDealsFromSupabase(),
+          loadDealsFullData()
+        ]);
       } catch (error) {
+        console.error('Dashboard init error:', error);
       }
     }
 
