@@ -1750,6 +1750,16 @@
         fromPositive: 'From positive',
         active: 'Active',
         
+        // Chart labels
+        meetings: 'Meetings',
+
+        // Pipeline modal labels
+        avg: 'Avg',
+        totalValue: 'Total value',
+
+        // Error states
+        errorLoadingData: 'Error loading data',
+
         // Modal Titles
         modalInvitationsTitle: 'Invitations Sent',
         modalAcceptanceTitle: 'Acceptance Rate',
@@ -1809,6 +1819,16 @@
         fromPositive: 'De positivos',
         active: 'Activo',
         
+        // Chart labels
+        meetings: 'Reuniones',
+
+        // Pipeline modal labels
+        avg: 'Prom',
+        totalValue: 'Valor total',
+
+        // Error states
+        errorLoadingData: 'Error cargando datos',
+
         // Modal Titles
         modalInvitationsTitle: 'Invitaciones Enviadas',
         modalAcceptanceTitle: 'Tasa de Aceptación',
@@ -1868,6 +1888,16 @@
         fromPositive: 'Van positief',
         active: 'Actief',
         
+        // Chart labels
+        meetings: 'Vergaderingen',
+
+        // Pipeline modal labels
+        avg: 'Gem',
+        totalValue: 'Totale waarde',
+
+        // Error states
+        errorLoadingData: 'Fout bij laden gegevens',
+
         // Modal Titles
         modalInvitationsTitle: 'Uitnodigingen Verzonden',
         modalAcceptanceTitle: 'Acceptatiepercentage',
@@ -2024,16 +2054,16 @@
 
         // Update KPI trend badges
         const invTrend = document.getElementById('kpi-invitations-trend');
-        if (invTrend) invTrend.textContent = invitations.toLocaleString() + ' total';
+        if (invTrend) invTrend.textContent = invitations.toLocaleString() + ' ' + t('total');
         const posTrend = document.getElementById('kpi-positive-trend');
         if (posTrend) posTrend.textContent = (accepted > 0 ? ((positive / accepted) * 100).toFixed(1) : 0) + '% conv.';
         const mtgTrend = document.getElementById('kpi-meetings-trend');
-        if (mtgTrend) mtgTrend.textContent = meetings > 0 ? 'Active' : 'Pending';
+        if (mtgTrend) mtgTrend.textContent = meetings > 0 ? t('active') : t('pending');
 
         // Actualizar PIPELINE GRANDE
         animateValue('kpi-pipeline-big', 0, totalPipeline, 2000, '', '$', true);
         const avgDealVal = totalDeals > 0 ? Math.round(totalPipeline / totalDeals).toLocaleString() : '0';
-        document.getElementById('kpi-deals-count-big').textContent = totalDeals + ' deals abiertos • Avg: $' + avgDealVal;
+        document.getElementById('kpi-deals-count-big').textContent = totalDeals + ' ' + t('dealsActive') + ' • ' + t('avg') + ': $' + avgDealVal;
 
         // Crear FUNNEL CHART
         createFunnelChart(invitations, accepted, positive, meetings);
@@ -2070,22 +2100,22 @@
         ];
 
         MODAL_DATA.pipeline.stats = [
-          { label: 'Deals abiertos', value: totalDeals.toLocaleString() },
-          { label: 'Valor total', value: '$' + totalPipeline.toLocaleString() },
-          { label: 'Promedio', value: totalDeals > 0 ? '$' + Math.round(totalPipeline / totalDeals).toLocaleString() : '$0' },
-          { label: 'Estado', value: totalDeals > 0 ? '✅ Activo' : '⏳ Pendiente' }
+          { label: t('openDeals'), value: totalDeals.toLocaleString() },
+          { label: t('totalValue'), value: '$' + totalPipeline.toLocaleString() },
+          { label: t('avgDealValue'), value: totalDeals > 0 ? '$' + Math.round(totalPipeline / totalDeals).toLocaleString() : '$0' },
+          { label: t('status'), value: totalDeals > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
       } catch (error) {
-        console.error('Error cargando métricas:', error);
-        // Fallback a animaciones sin datos
+        console.error('Error loading metrics:', error);
+        // Fallback animations with no data
         animateValue('kpi-invitations', 0, 0, 2000, '', '', true);
         animateValue('kpi-acceptance', 0, 0, 2000, '%');
         animateValue('kpi-positive', 0, 0, 2000);
         animateValue('kpi-meetings', 0, 0, 2000, '+');
         animateValue('kpi-pipeline', 0, 0, 2000, '', '$', true);
         animateValue('kpi-pipeline-big', 0, 0, 2000, '', '$', true);
-        document.getElementById('kpi-deals-count-big').textContent = '0 deals abiertos';
+        document.getElementById('kpi-deals-count-big').textContent = '0 ' + t('dealsActive');
       }
     }
 
@@ -2176,13 +2206,13 @@
             fontFamily: 'Space Grotesk, monospace'
           },
           formatter: function (val, opt) {
-            const labels = ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'];
+            const labels = [t('invitations'), t('accepted'), t('positive'), t('meetings')];
             return labels[opt.dataPointIndex] + ': ' + rawValues[opt.dataPointIndex].toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
           },
           offsetX: 10
         },
         xaxis: {
-          categories: ['Invitaciones', 'Aceptadas', 'Positivos', 'Meetings'],
+          categories: [t('invitations'), t('accepted'), t('positive'), t('meetings')],
           labels: {
             style: { colors: '#888', fontSize: '11px', fontFamily: 'Inter, sans-serif' },
             formatter: function(val) {
@@ -2316,8 +2346,8 @@
         // Renderizar con datos reales
         renderDealsWithData(deals);
       } catch (error) {
-        // Fallback a datos estáticos
-        document.getElementById('dealsSubtitle').textContent = 'Error cargando datos';
+        // Fallback to static data
+        document.getElementById('dealsSubtitle').textContent = t('errorLoadingData');
         const kpiDealsCountErr = document.getElementById('kpi-deals-count');
         if (kpiDealsCountErr) kpiDealsCountErr.textContent = '0 deals';
         renderDeals();
