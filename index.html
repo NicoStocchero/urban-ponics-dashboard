@@ -2190,10 +2190,16 @@
         const meetings = allLeads.filter(l => l.status === 'meeting').length;
         const positive = positiveOnly + meetings; // Total: 65 + 16 = 81
         
-        // PIPELINE: suma de deal_value donde deal_value > 0
-        const dealsWithValue = allLeads.filter(l => l.deal_value && parseFloat(l.deal_value) > 0);
-        const totalDeals = dealsWithValue.length;
-        const totalPipeline = dealsWithValue.reduce((sum, l) => sum + parseFloat(l.deal_value), 0);
+        // PIPELINE: leer desde tabla metrics (calculada solo con source='pipedrive')
+        const { data: metricsData } = await supabaseClient
+          .from('metrics')
+          .select('metric_name, metric_value')
+          .in('metric_name', ['total_pipeline', 'open_deals']);
+        
+        const metricsMap = {};
+        (metricsData || []).forEach(m => { metricsMap[m.metric_name] = parseFloat(m.metric_value) || 0; });
+        const totalDeals = metricsMap['open_deals'] || 0;
+        const totalPipeline = metricsMap['total_pipeline'] || 0;
 
 
         // ========== ACTUALIZAR KPIs EN UI ==========
@@ -2402,21 +2408,19 @@
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
       try {
-        // Cargar todos los deals para stats
-        const { data: allDeals, error: statsError } = await supabaseClient
-          .from('leads')
-          .select('deal_value')
-          .not('deal_value', 'is', null)
-          .gt('deal_value', 0)
-          .limit(10000);
+        // Cargar stats desde metrics (ya filtrado source='pipedrive')
+        const { data: pipeMetrics, error: statsError } = await supabaseClient
+          .from('metrics')
+          .select('metric_name, metric_value')
+          .in('metric_name', ['total_pipeline', 'open_deals', 'avg_deal_value']);
 
         if (statsError) throw statsError;
 
-        // Calcular stats
-        const totalDeals = allDeals.length;
-        const totalPipeline = allDeals.reduce((sum, d) => sum + parseFloat(d.deal_value), 0);
-        const avgDeal = totalDeals > 0 ? totalPipeline / totalDeals : 0;
-        const topDeal = allDeals.length > 0 ? Math.max(...allDeals.map(d => parseFloat(d.deal_value))) : 0;
+        const pm = {};
+        (pipeMetrics || []).forEach(m => { pm[m.metric_name] = parseFloat(m.metric_value) || 0; });
+        const totalDeals = pm['open_deals'] || 0;
+        const totalPipeline = pm['total_pipeline'] || 0;
+        const avgDeal = pm['avg_deal_value'] || 0;
 
         // Actualizar UI con stats reales
         document.getElementById('dealsSubtitle').textContent = 
@@ -2432,25 +2436,24 @@
           { label: t('status'), value: totalDeals > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
-        // Cargar top 10 deals (sin duplicados)
+        // Cargar top 10 deals: solo source='pipedrive', con deal_id real, sin duplicados
         const { data, error } = await supabaseClient
           .from('leads')
-          .select('deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name, unique_id')
-          .not('deal_value', 'is', null)
+          .select('deal_id, deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name')
+          .eq('source', 'pipedrive')
+          .not('deal_id', 'is', null)
           .gt('deal_value', 0)
           .order('deal_value', { ascending: false })
-          .limit(10000);
+          .limit(100);
 
         if (error) throw error;
 
-        // Eliminar duplicados manualmente (agrupar por deal_title + contact)
-        const seenDeals = new Map();
+        // Deduplicar por deal_id (clave real de Pipedrive)
+        const seenIds = new Set();
         const uniqueDeals = [];
-        
         for (const lead of data) {
-          const dealKey = `${lead.deal_title || ''}_${lead.first_name || ''}_${lead.last_name || ''}_${lead.company || ''}`;
-          if (!seenDeals.has(dealKey)) {
-            seenDeals.set(dealKey, true);
+          if (lead.deal_id && !seenIds.has(lead.deal_id)) {
+            seenIds.add(lead.deal_id);
             uniqueDeals.push(lead);
           }
         }
@@ -2458,10 +2461,14 @@
         // Tomar solo top 10
         const topDeals = uniqueDeals.slice(0, 10);
 
-        // Mapear stages a porcentajes
+        // Mapear stages reales de Pipedrive a porcentajes
         const stageToProgress = {
-          'stage_1': 10, 'stage_2': 20, 'stage_3': 30, 'stage_4': 40,
-          'stage_5': 50, 'stage_6': 60, 'stage_7': 70, 'stage_8': 80, 'stage_9': 90
+          'Compelling Case Identified': 20,
+          'Stakeholders Identified': 40,
+          'Objections Identified': 60,
+          'Proposal Sent': 80,
+          'Negotiation': 90,
+          'Won': 100
         };
 
         // Convertir datos de Supabase al formato del dashboard
@@ -2920,3 +2927,4 @@
 </body>
 </html>
 <!-- CACHE BUSTER: 1771021969 -->
+
