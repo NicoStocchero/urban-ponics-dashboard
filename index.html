@@ -1765,7 +1765,54 @@
         modalAcceptanceTitle: 'Acceptance Rate',
         modalPositiveTitle: 'Positive Responses',
         modalMeetingsTitle: 'Meetings Scheduled',
-        modalPipelineTitle: 'Total Pipeline'
+        modalPipelineTitle: 'Total Pipeline',
+
+        // Deal modal labels
+        dealValue: 'Deal Value',
+        contact: 'Contact',
+        priority: 'Priority',
+
+        // Priority labels
+        highPriority: '🔥 High Priority',
+        mediumPriority: '⚡ Medium Priority',
+        lowPriority: '📌 Low Priority',
+
+        // Pipeline view stats
+        confirmed: 'Confirmed',
+        liveLabel: 'Live',
+        positiveResponses: 'Positive Responses',
+        meetingsScheduled: 'Meetings Scheduled',
+
+        // Leads table headers
+        thName: 'Name',
+        thCompany: 'Company',
+        thPosition: 'Position',
+        thEmail: 'Email',
+        thStatus: 'Status',
+
+        // Status badge labels
+        statusMeeting: 'Meeting',
+        statusPositive: 'Positive',
+
+        // Leads summary
+        summaryMeetings: 'meetings',
+        summaryPositive: 'positive',
+        summaryTotalQualified: 'total qualified',
+
+        // Empty state messages
+        noMeetings: 'No meetings scheduled yet',
+        noPositive: 'No positive responses yet',
+
+        // Error states
+        unableToLoadLeads: 'Unable to load leads data',
+        unableToLoadPipeline: 'Unable to load pipeline data',
+
+        // Fallback deal modal
+        value: 'Value',
+
+        // Pipeline subsection titles
+        pipelineMeetings: 'Meetings',
+        pipelinePositive: 'Positive Responses'
       },
       es: {
         // Header
@@ -1834,7 +1881,54 @@
         modalAcceptanceTitle: 'Tasa de Aceptación',
         modalPositiveTitle: 'Respuestas Positivas',
         modalMeetingsTitle: 'Reuniones Agendadas',
-        modalPipelineTitle: 'Pipeline Total'
+        modalPipelineTitle: 'Pipeline Total',
+
+        // Deal modal labels
+        dealValue: 'Valor del deal',
+        contact: 'Contacto',
+        priority: 'Prioridad',
+
+        // Priority labels
+        highPriority: '🔥 Alta Prioridad',
+        mediumPriority: '⚡ Media Prioridad',
+        lowPriority: '📌 Baja Prioridad',
+
+        // Pipeline view stats
+        confirmed: 'Confirmadas',
+        liveLabel: 'En vivo',
+        positiveResponses: 'Respuestas Positivas',
+        meetingsScheduled: 'Reuniones Agendadas',
+
+        // Leads table headers
+        thName: 'Nombre',
+        thCompany: 'Empresa',
+        thPosition: 'Cargo',
+        thEmail: 'Email',
+        thStatus: 'Estado',
+
+        // Status badge labels
+        statusMeeting: 'Reunión',
+        statusPositive: 'Positivo',
+
+        // Leads summary
+        summaryMeetings: 'reuniones',
+        summaryPositive: 'positivos',
+        summaryTotalQualified: 'total cualificados',
+
+        // Empty state messages
+        noMeetings: 'Aún no hay reuniones agendadas',
+        noPositive: 'Aún no hay respuestas positivas',
+
+        // Error states
+        unableToLoadLeads: 'No se pudieron cargar los leads',
+        unableToLoadPipeline: 'No se pudieron cargar los datos del pipeline',
+
+        // Fallback deal modal
+        value: 'Valor',
+
+        // Pipeline subsection titles
+        pipelineMeetings: 'Reuniones',
+        pipelinePositive: 'Respuestas Positivas'
       },
       nl: {
         // Header
@@ -1903,7 +1997,54 @@
         modalAcceptanceTitle: 'Acceptatiepercentage',
         modalPositiveTitle: 'Positieve Reacties',
         modalMeetingsTitle: 'Geplande Vergaderingen',
-        modalPipelineTitle: 'Totale Pipeline'
+        modalPipelineTitle: 'Totale Pipeline',
+
+        // Deal modal labels
+        dealValue: 'Deal Waarde',
+        contact: 'Contact',
+        priority: 'Prioriteit',
+
+        // Priority labels
+        highPriority: '🔥 Hoge Prioriteit',
+        mediumPriority: '⚡ Gemiddelde Prioriteit',
+        lowPriority: '📌 Lage Prioriteit',
+
+        // Pipeline view stats
+        confirmed: 'Bevestigd',
+        liveLabel: 'Live',
+        positiveResponses: 'Positieve Reacties',
+        meetingsScheduled: 'Geplande Vergaderingen',
+
+        // Leads table headers
+        thName: 'Naam',
+        thCompany: 'Bedrijf',
+        thPosition: 'Functie',
+        thEmail: 'E-mail',
+        thStatus: 'Status',
+
+        // Status badge labels
+        statusMeeting: 'Vergadering',
+        statusPositive: 'Positief',
+
+        // Leads summary
+        summaryMeetings: 'vergaderingen',
+        summaryPositive: 'positief',
+        summaryTotalQualified: 'totaal gekwalificeerd',
+
+        // Empty state messages
+        noMeetings: 'Nog geen vergaderingen gepland',
+        noPositive: 'Nog geen positieve reacties',
+
+        // Error states
+        unableToLoadLeads: 'Kan leadgegevens niet laden',
+        unableToLoadPipeline: 'Kan pipelinegegevens niet laden',
+
+        // Fallback deal modal
+        value: 'Waarde',
+
+        // Pipeline subsection titles
+        pipelineMeetings: 'Vergaderingen',
+        pipelinePositive: 'Positieve Reacties'
       }
     };
 
@@ -1913,6 +2054,11 @@
     }
 
     // Función para cambiar idioma
+    // Cache de datos para re-render al cambiar idioma
+    let _cachedLeadsData = null;
+    let _cachedDealsViewData = null;
+    let _cachedDealsData = null;
+
     function changeLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('dashboard_lang', lang);
@@ -1925,6 +2071,11 @@
       
       // Actualizar todos los textos
       updateAllTexts();
+
+      // Re-render de vistas dinámicas si los datos ya están cargados
+      if (_cachedLeadsData) renderLeadsTable(_cachedLeadsData);
+      if (_cachedDealsViewData) renderDealsView(_cachedDealsViewData);
+      if (_cachedDealsData) renderDealsWithData(_cachedDealsData);
     }
 
     // Función para actualizar todos los textos
@@ -2344,12 +2495,13 @@
         });
 
         // Renderizar con datos reales
+        _cachedDealsData = deals;
         renderDealsWithData(deals);
       } catch (error) {
         // Fallback to static data
         document.getElementById('dealsSubtitle').textContent = t('errorLoadingData');
         const kpiDealsCountErr = document.getElementById('kpi-deals-count');
-        if (kpiDealsCountErr) kpiDealsCountErr.textContent = '0 deals';
+        if (kpiDealsCountErr) kpiDealsCountErr.textContent = '0 ' + t('deals');
         renderDeals();
       }
     }
@@ -2399,15 +2551,15 @@
 
     // Modal específico para deals
     function showDealModal(deal) {
-      const priorityText = deal.priority === 'high' ? '🔥 Alta Prioridad' : 
-                          deal.priority === 'medium' ? '⚡ Media Prioridad' : 
-                          '📌 Baja Prioridad';
+      const priorityText = deal.priority === 'high' ? t('highPriority') : 
+                          deal.priority === 'medium' ? t('mediumPriority') : 
+                          t('lowPriority');
       
       const stats = [
-        { label: 'Valor del deal', value: '$' + deal.value.toLocaleString() },
-        { label: 'Contacto', value: deal.contact },
-        { label: 'Prioridad', value: priorityText },
-        { label: 'Progreso', value: deal.progress + '%' }
+        { label: t('dealValue'), value: '$' + deal.value.toLocaleString() },
+        { label: t('contact'), value: deal.contact },
+        { label: t('priority'), value: priorityText },
+        { label: t('progress'), value: deal.progress + '%' }
       ];
       
       showModal(deal.title, stats);
@@ -2435,10 +2587,10 @@
         card.addEventListener('click', function() {
           const deal = JSON.parse(this.dataset.deal);
           showModal(deal.company, [
-            { label: 'Valor', value: deal.value },
-            { label: 'Contacto', value: deal.contact },
-            { label: 'Prioridad', value: deal.priority },
-            { label: 'Progreso', value: `${deal.progress}%` }
+            { label: t('value'), value: deal.value },
+            { label: t('contact'), value: deal.contact },
+            { label: t('priority'), value: deal.priority },
+            { label: t('progress'), value: `${deal.progress}%` }
           ]);
         });
       });
@@ -2507,38 +2659,28 @@
     // INICIALIZACIÓN DEL DASHBOARD
     // ==========================================
     
-    // Cargar tabla de leads
-    async function loadLeadsFromSupabase() {
-      try {
-        const { data, error } = await supabaseClient
-          .from('leads')
-          .select('first_name, last_name, company, position, email, status, campaign')
-          .in('status', ['positive', 'meeting'])
-          .order('status', { ascending: false })
-          .limit(10000);
+    // Función de render separada para reutilizar al cambiar idioma
+    function renderLeadsTable(data) {
+      const meetingCount = data.filter(l => l.status === 'meeting').length;
+      const positiveCount = data.filter(l => l.status === 'positive').length;
 
-        if (error) throw error;
-
-        const meetingCount = data.filter(l => l.status === 'meeting').length;
-        const positiveCount = data.filter(l => l.status === 'positive').length;
-
-        const container = document.getElementById('leadsTable');
-        container.innerHTML = `
+      const container = document.getElementById('leadsTable');
+      container.innerHTML = `
           <div style="overflow-x: auto;">
             <table class="premium-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Company</th>
-                  <th>Position</th>
-                  <th>Email</th>
-                  <th>Status</th>
+                  <th>${t('thName')}</th>
+                  <th>${t('thCompany')}</th>
+                  <th>${t('thPosition')}</th>
+                  <th>${t('thEmail')}</th>
+                  <th>${t('thStatus')}</th>
                 </tr>
               </thead>
               <tbody>
                 ${data.map(lead => {
                   const statusClass = lead.status === 'meeting' ? 'meeting' : 'positive';
-                  const statusLabel = lead.status === 'meeting' ? 'Meeting' : 'Positive';
+                  const statusLabel = lead.status === 'meeting' ? t('statusMeeting') : t('statusPositive');
 
                   return `
                     <tr>
@@ -2563,17 +2705,33 @@
           <div class="leads-summary">
             <div class="leads-summary-item">
               <span class="status-dot meeting"></span>
-              <span class="count" style="color: var(--green);">${meetingCount}</span> meetings
+              <span class="count" style="color: var(--green);">${meetingCount}</span> ${t('summaryMeetings')}
             </div>
             <div class="leads-summary-item">
               <span class="status-dot positive"></span>
-              <span class="count" style="color: var(--gold);">${positiveCount}</span> positive
+              <span class="count" style="color: var(--gold);">${positiveCount}</span> ${t('summaryPositive')}
             </div>
             <div class="leads-summary-item" style="color: var(--text-muted);">
-              <span class="count" style="color: var(--text-primary);">${data.length}</span> total qualified
+              <span class="count" style="color: var(--text-primary);">${data.length}</span> ${t('summaryTotalQualified')}
             </div>
           </div>
         `;
+    }
+
+    // Cargar tabla de leads
+    async function loadLeadsFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('first_name, last_name, company, position, email, status, campaign')
+          .in('status', ['positive', 'meeting'])
+          .order('status', { ascending: false })
+          .limit(10000);
+
+        if (error) throw error;
+
+        _cachedLeadsData = data;
+        renderLeadsTable(data);
         
       } catch (error) {
         document.getElementById('leadsTable').innerHTML =
@@ -2581,7 +2739,7 @@
             <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block; opacity: 0.4;">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Unable to load leads data
+            ${t('unableToLoadLeads')}
           </div>`;
       }
     }
@@ -2597,6 +2755,7 @@
 
         if (error) throw error;
 
+        _cachedDealsViewData = data;
         renderDealsView(data);
       } catch (error) {
         document.getElementById('dealsView').innerHTML =
@@ -2604,7 +2763,7 @@
             <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; display: block; opacity: 0.4;">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Unable to load pipeline data
+            ${t('unableToLoadPipeline')}
           </div>`;
       }
     }
@@ -2667,11 +2826,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
-            <div class="stat-label">Meetings Scheduled</div>
+            <div class="stat-label">${t('meetingsScheduled')}</div>
             <div class="stat-value">${meetings.length}</div>
             <div class="stat-trend">
               <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              Confirmed
+              ${t('confirmed')}
             </div>
           </div>
           <div class="pipeline-stat-card gold">
@@ -2680,11 +2839,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
               </svg>
             </div>
-            <div class="stat-label">Positive Responses</div>
+            <div class="stat-label">${t('positiveResponses')}</div>
             <div class="stat-value">${positive.length}</div>
             <div class="stat-trend">
               <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-              Active
+              ${t('active')}
             </div>
           </div>
           <div class="pipeline-stat-card blue">
@@ -2693,11 +2852,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
               </svg>
             </div>
-            <div class="stat-label">Total Pipeline</div>
+            <div class="stat-label">${t('totalPipeline')}</div>
             <div class="stat-value">${deals.length}</div>
             <div class="stat-trend">
               <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              Live
+              ${t('liveLabel')}
             </div>
           </div>
         </div>
@@ -2709,11 +2868,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
-            <span class="pipeline-subsection-title">Meetings</span>
+            <span class="pipeline-subsection-title">${t('pipelineMeetings')}</span>
             <span class="pipeline-subsection-count green-count">${meetings.length}</span>
           </div>
           <div class="pipeline-contact-grid">
-            ${meetings.length > 0 ? meetings.map((m, i) => renderContactCard(m, 'meeting')).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0; font-size: 0.875rem;">No meetings scheduled yet</p>'}
+            ${meetings.length > 0 ? meetings.map((m, i) => renderContactCard(m, 'meeting')).join('') : `<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0; font-size: 0.875rem;">${t('noMeetings')}</p>`}
           </div>
         </div>
 
@@ -2724,11 +2883,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
-            <span class="pipeline-subsection-title">Positive Responses</span>
+            <span class="pipeline-subsection-title">${t('pipelinePositive')}</span>
             <span class="pipeline-subsection-count gold-count">${positive.length}</span>
           </div>
           <div class="pipeline-contact-grid">
-            ${positive.length > 0 ? positive.map((p, i) => renderContactCard(p, 'positive')).join('') : '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0; font-size: 0.875rem;">No positive responses yet</p>'}
+            ${positive.length > 0 ? positive.map((p, i) => renderContactCard(p, 'positive')).join('') : `<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0; font-size: 0.875rem;">${t('noPositive')}</p>`}
           </div>
         </div>
       `;
