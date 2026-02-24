@@ -2219,16 +2219,25 @@
         const meetings = allLeads.filter(l => l.status === 'meeting').length;
         const positive = positiveOnly + meetings; // positive + meeting (ambos cuentan como interesados)
         
-        // PIPELINE: leer desde tabla metrics (calculada solo con source='pipedrive')
-        const { data: metricsData } = await supabaseClient
-          .from('metrics')
-          .select('metric_name, metric_value')
-          .in('metric_name', ['total_pipeline', 'open_deals']);
-        
-        const metricsMap = {};
-        (metricsData || []).forEach(m => { metricsMap[m.metric_name] = parseFloat(m.metric_value) || 0; });
-        const totalDeals = metricsMap['open_deals'] || 0;
-        const totalPipeline = metricsMap['total_pipeline'] || 0;
+        // PIPELINE: calcular dinámicamente desde leads, deduplicando por deal_title
+        const { data: dealLeads } = await supabaseClient
+          .from('leads')
+          .select('deal_title, deal_value')
+          .not('deal_title', 'is', null)
+          .neq('deal_title', '');
+
+        // Deduplicar por deal_title, quedarse con el MAX de deal_value por deal
+        const dealMap = {};
+        for (const lead of (dealLeads || [])) {
+          const title = lead.deal_title;
+          const val = parseFloat(lead.deal_value) || 0;
+          if (!(title in dealMap) || val > dealMap[title]) {
+            dealMap[title] = val;
+          }
+        }
+        const dealTitles = Object.keys(dealMap);
+        const totalDeals = dealTitles.length;
+        const totalPipeline = dealTitles.reduce((sum, t) => sum + dealMap[t], 0);
 
 
         // ========== ACTUALIZAR KPIs EN UI ==========
@@ -2440,19 +2449,27 @@
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
       try {
-        // Cargar stats desde metrics (ya filtrado source='pipedrive')
-        const { data: pipeMetrics, error: statsError } = await supabaseClient
-          .from('metrics')
-          .select('metric_name, metric_value')
-          .in('metric_name', ['total_pipeline', 'open_deals', 'avg_deal_value']);
+        // Calcular pipeline dinámicamente desde leads, deduplicando por deal_title
+        const { data: pipeLeads, error: statsError } = await supabaseClient
+          .from('leads')
+          .select('deal_title, deal_value')
+          .not('deal_title', 'is', null)
+          .neq('deal_title', '');
 
         if (statsError) throw statsError;
 
-        const pm = {};
-        (pipeMetrics || []).forEach(m => { pm[m.metric_name] = parseFloat(m.metric_value) || 0; });
-        const totalDeals = pm['open_deals'] || 0;
-        const totalPipeline = pm['total_pipeline'] || 0;
-        const avgDeal = pm['avg_deal_value'] || 0;
+        const pdMap = {};
+        for (const lead of (pipeLeads || [])) {
+          const title = lead.deal_title;
+          const val = parseFloat(lead.deal_value) || 0;
+          if (!(title in pdMap) || val > pdMap[title]) {
+            pdMap[title] = val;
+          }
+        }
+        const pdTitles = Object.keys(pdMap);
+        const totalDeals = pdTitles.length;
+        const totalPipeline = pdTitles.reduce((sum, t) => sum + pdMap[t], 0);
+        const avgDeal = totalDeals > 0 ? Math.round(totalPipeline / totalDeals) : 0;
 
         // Actualizar UI con stats reales
         document.getElementById('dealsSubtitle').textContent = 
