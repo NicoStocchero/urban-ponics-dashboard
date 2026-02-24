@@ -2210,11 +2210,9 @@
         // INVITACIONES: count donde status = 'invited'
         const invitations = allLeads.filter(l => l.status === 'invited').length;
         
-        // ACEPTADOS: dato real desde Supabase (status = 'accepted')
-        const accepted = allLeads.filter(l => l.status === 'accepted').length;
-        
-        // TASA ACEPTACIÓN: fija en 23.7% (benchmark Panel de Control — no calcular desde BD)
+        // ACEPTADOS + TASA: 23.7% fijo en todo — BD no es fiable para este campo
         const acceptance = 23.7;
+        const accepted = Math.round(invitations * (acceptance / 100));
         
         // POSITIVOS + MEETINGS: total combinado
         const positiveOnly = allLeads.filter(l => l.status === 'positive').length;
@@ -2351,21 +2349,19 @@
       }
 
       const rawValues = [invitations, accepted, positive, meetings];
-      const max = invitations > 0 ? invitations : 1;
 
-      // Escala proporcional: cada barra = % real respecto al total de invitaciones
-      const proportional = rawValues.map(v => parseFloat(((v / max) * 100).toFixed(2)));
-
-      const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
+      const acceptedRate = 23.7;
       const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
       const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
       const percentages = ['100%', acceptedRate + '%', positiveRate + '%', meetingsRate + '%'];
 
-      // Paleta premium: dorado, oro claro, azul acero, verde oliva
+      // Escala logarítmica manual — garantiza barras visibles en todos los rangos
+      const logValues = rawValues.map(v => v > 0 ? parseFloat(Math.log10(v).toFixed(4)) : 0);
+
       const premiumColors = ['#B8A882', '#D4AF37', '#4A7FA5', '#6B8F6B'];
 
       const options = {
-        series: [{ name: '', data: proportional }],
+        series: [{ name: '', data: logValues }],
         chart: {
           type: 'bar',
           height: 260,
@@ -2388,23 +2384,29 @@
           enabled: true,
           textAnchor: 'start',
           style: {
-            colors: ['rgba(0,0,0,0.75)'],
-            fontSize: '12px',
+            colors: ['#ffffff', '#ffffff', '#ffffff', '#ffffff'],
+            fontSize: '13px',
             fontWeight: '700',
-            fontFamily: 'Space Grotesk, monospace'
+            fontFamily: 'Space Grotesk, monospace',
+            textShadow: '0 1px 4px rgba(0,0,0,0.8)'
           },
-          // Solo valor + porcentaje, sin repetir el label del eje Y
           formatter: function(val, opt) {
             return rawValues[opt.dataPointIndex].toLocaleString() + '  (' + percentages[opt.dataPointIndex] + ')';
           },
-          offsetX: 8
+          offsetX: 8,
+          dropShadow: {
+            enabled: true,
+            top: 1,
+            left: 1,
+            blur: 3,
+            opacity: 0.8
+          }
         },
         xaxis: {
           categories: [t('invitations'), t('accepted'), t('positive'), t('meetings')],
           labels: { show: false },
           axisBorder: { show: false },
-          axisTicks: { show: false },
-          max: 100
+          axisTicks: { show: false }
         },
         yaxis: {
           labels: {
