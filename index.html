@@ -2345,80 +2345,79 @@
 
     // Crear funnel chart con datos actuales
     function createFunnelChart(invitations, accepted, positive, meetings) {
-      // Destroy previous chart instance to prevent memory leak
       if (funnelChartInstance) {
         funnelChartInstance.destroy();
         funnelChartInstance = null;
       }
+
+      const rawValues = [invitations, accepted, positive, meetings];
+      const max = invitations > 0 ? invitations : 1;
+
+      // Escala proporcional: cada barra = % real respecto al total de invitaciones
+      const proportional = rawValues.map(v => parseFloat(((v / max) * 100).toFixed(2)));
 
       const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
       const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
       const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
       const percentages = ['100%', acceptedRate + '%', positiveRate + '%', meetingsRate + '%'];
 
-      // Manual log transform so all bars are visible (ApexCharts doesn't support logarithmic on horizontal bars)
-      const rawValues = [invitations, accepted, positive, meetings];
-      const logValues = rawValues.map(function(v) { return v > 0 ? Math.log10(v) : 0; });
+      // Paleta premium: dorado, oro claro, azul acero, verde oliva
+      const premiumColors = ['#B8A882', '#D4AF37', '#4A7FA5', '#6B8F6B'];
 
       const options = {
-        series: [{
-          name: '',
-          data: logValues
-        }],
+        series: [{ name: '', data: proportional }],
         chart: {
           type: 'bar',
-          height: 280,
+          height: 260,
           background: 'transparent',
           toolbar: { show: false },
-          fontFamily: 'Space Grotesk, Inter, sans-serif'
+          fontFamily: 'Space Grotesk, Inter, sans-serif',
+          animations: { enabled: true, speed: 600 }
         },
         plotOptions: {
           bar: {
             horizontal: true,
-            barHeight: '65%',
+            barHeight: '58%',
             distributed: true,
-            borderRadius: 8,
-            dataLabels: {
-              position: 'bottom'
-            }
+            borderRadius: 6,
+            dataLabels: { position: 'center' }
           }
         },
-        colors: ['#D4AF37', '#00ff88', '#3b82f6', '#22c55e'],
+        colors: premiumColors,
         dataLabels: {
           enabled: true,
           textAnchor: 'start',
           style: {
-            colors: ['#fff'],
-            fontSize: '13px',
-            fontWeight: '600',
+            colors: ['rgba(0,0,0,0.75)'],
+            fontSize: '12px',
+            fontWeight: '700',
             fontFamily: 'Space Grotesk, monospace'
           },
-          formatter: function (val, opt) {
-            const labels = [t('invitations'), t('accepted'), t('positive'), t('meetings')];
-            return labels[opt.dataPointIndex] + ': ' + rawValues[opt.dataPointIndex].toLocaleString() + ' (' + percentages[opt.dataPointIndex] + ')';
+          // Solo valor + porcentaje, sin repetir el label del eje Y
+          formatter: function(val, opt) {
+            return rawValues[opt.dataPointIndex].toLocaleString() + '  (' + percentages[opt.dataPointIndex] + ')';
           },
-          offsetX: 10
+          offsetX: 8
         },
         xaxis: {
           categories: [t('invitations'), t('accepted'), t('positive'), t('meetings')],
-          labels: {
-            style: { colors: '#888', fontSize: '11px', fontFamily: 'Inter, sans-serif' },
-            formatter: function(val) {
-              if (val <= 0) return '0';
-              return Math.round(Math.pow(10, val)).toLocaleString();
-            }
-          },
-          min: 0
+          labels: { show: false },
+          axisBorder: { show: false },
+          axisTicks: { show: false },
+          max: 100
         },
         yaxis: {
           labels: {
-            style: { colors: '#D4AF37', fontSize: '12px', fontWeight: '600', fontFamily: 'Space Grotesk, monospace' }
+            style: {
+              colors: ['#C8B99A', '#C8B99A', '#C8B99A', '#C8B99A'],
+              fontSize: '12px',
+              fontWeight: '600',
+              fontFamily: 'Space Grotesk, sans-serif'
+            }
           }
         },
         grid: {
-          borderColor: 'rgba(184, 168, 130, 0.08)',
-          xaxis: { lines: { show: true } },
-          yaxis: { lines: { show: false } }
+          show: false
         },
         legend: { show: false },
         tooltip: {
