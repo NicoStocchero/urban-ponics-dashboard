@@ -2485,30 +2485,28 @@
           { label: t('status'), value: totalDeals > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
-        // Cargar top 10 deals: solo source='pipedrive', con deal_id real, sin duplicados
+        // Cargar todos los deals: con y sin valor, deduplicar por deal_title
         const { data, error } = await supabaseClient
           .from('leads')
           .select('deal_id, deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name')
-          .eq('source', 'pipedrive')
-          .not('deal_id', 'is', null)
-          .gt('deal_value', 0)
-          .order('deal_value', { ascending: false })
-          .limit(100);
+          .not('deal_title', 'is', null)
+          .neq('deal_title', '')
+          .order('deal_value', { ascending: false, nullsFirst: false })
+          .limit(200);
 
         if (error) throw error;
 
-        // Deduplicar por deal_id (clave real de Pipedrive)
-        const seenIds = new Set();
+        // Deduplicar por deal_title, quedarse con la fila de mayor valor
+        const seenTitles = new Set();
         const uniqueDeals = [];
         for (const lead of data) {
-          if (lead.deal_id && !seenIds.has(lead.deal_id)) {
-            seenIds.add(lead.deal_id);
+          if (lead.deal_title && !seenTitles.has(lead.deal_title)) {
+            seenTitles.add(lead.deal_title);
             uniqueDeals.push(lead);
           }
         }
 
-        // Tomar hasta top 25
-        const topDeals = uniqueDeals.slice(0, 25);
+        const topDeals = uniqueDeals;
 
         // Mapear stages reales de Pipedrive a porcentajes
         const stageToProgress = {
@@ -2540,12 +2538,13 @@
             title = `${lead.company} - Deal`;
           }
 
+          const val = parseFloat(lead.deal_value) || 0;
           return {
             id: idx + 1,
             title: title,
-            value: parseFloat(lead.deal_value),
+            value: val,
             contact: contact,
-            priority: lead.deal_value > 50000 ? 'high' : lead.deal_value > 20000 ? 'medium' : 'low',
+            priority: val > 50000 ? 'high' : val > 20000 ? 'medium' : 'low',
             progress: stageToProgress[lead.deal_stage] || 50
           };
         });
@@ -2589,7 +2588,7 @@
             <span class="priority-badge ${esc(deal.priority)}">${priorityLabels[deal.priority] || ''}</span>
           </div>
           <div style="font-size: 24px; font-weight: 700; color: var(--gold); margin-bottom: 12px;">
-            $${deal.value.toLocaleString()}
+            ${deal.value > 0 ? '$' + deal.value.toLocaleString() : '<span style="font-size:16px;color:var(--text-muted)">TBD</span>'}
           </div>
           <div style="margin-bottom: 8px;">
             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
