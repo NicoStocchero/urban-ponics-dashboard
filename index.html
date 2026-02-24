@@ -1675,7 +1675,7 @@
         stats: [
           { label: 'Total', value: 'Loading...' },
           { label: 'Conversion rate', value: 'Loading...' },
-          { label: 'Industry avg', value: '15-20%' },
+          { label: 'Industry avg', value: '10-15%' },
           { label: 'Status', value: '⏳ Loading' }
         ]
       },
@@ -2264,17 +2264,17 @@
 
         MODAL_DATA.acceptance.stats = [
           { label: t('actual'), value: acceptance.toFixed(1) + '%' },
-          { label: t('benchmarkMin'), value: '25%' },
-          { label: t('benchmarkMax'), value: '35%' },
-          { label: t('trend'), value: acceptance > 30 ? '↗ ' + t('excellent') : acceptance > 25 ? '→ ' + t('good') : '↘ ' + t('improving') }
+          { label: t('benchmarkMin'), value: '20%' },
+          { label: t('benchmarkMax'), value: '30%' },
+          { label: t('trend'), value: acceptance > 25 ? '↗ ' + t('excellent') : acceptance > 20 ? '→ ' + t('good') : '↘ ' + t('improving') }
         ];
 
         const positiveRate = accepted > 0 ? ((positive / accepted) * 100).toFixed(1) : 0;
         MODAL_DATA.positive.stats = [
           { label: t('total'), value: positive.toLocaleString() },
           { label: t('conversionRate'), value: positiveRate + '%' },
-          { label: t('industryAvg'), value: '15-20%' },
-          { label: t('status'), value: positiveRate > 20 ? '✅ ' + t('excellent') : positiveRate > 15 ? '→ ' + t('good') : '↘ ' + t('improving') }
+          { label: t('industryAvg'), value: '10-15%' },
+          { label: t('status'), value: positiveRate > 15 ? '✅ ' + t('excellent') : positiveRate > 10 ? '→ ' + t('good') : '↘ ' + t('improving') }
         ];
 
         const meetingRate = positive > 0 ? ((meetings / positive) * 100).toFixed(1) : 0;
