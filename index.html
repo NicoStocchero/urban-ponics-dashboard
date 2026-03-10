@@ -2862,7 +2862,8 @@
       const container = document.getElementById('dealsView');
 
       const meetings = deals.filter(d => d.status === 'meeting');
-      const positive = deals.filter(d => d.status === 'positive');
+      const solomon = deals.filter(d => d.source === 'solomon_email');
+      const positive = deals.filter(d => d.status === 'positive' && d.source !== 'solomon_email');
 
       function getInitials(first, last) {
         return ((first || '')[0] || '') + ((last || '')[0] || '');
@@ -2992,7 +2993,41 @@
             ${positive.length > 0 ? positive.map((p, i) => renderContactCard(p, 'positive')).join('') : `<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 2rem 0; font-size: 0.875rem;">${t('noPositive')}</p>`}
           </div>
         </div>
-      `;
+
+        ${solomon.length > 0 ? `
+        <div class="pipeline-subsection" style="margin-top:2rem;">
+          <div class="pipeline-subsection-header" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;">
+              <svg width="20" height="20" fill="none" stroke="#818cf8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <span style="font-weight:700;font-size:1rem;color:#a5b4fc;">Solomon Email</span>
+            <span style="margin-left:auto;background:rgba(99,102,241,0.2);color:#818cf8;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;">${solomon.length}</span>
+          </div>
+          <div class="pipeline-contact-grid">
+            ${solomon.map(s => {
+              const initials = ((s.first_name || '')[0] || '?').toUpperCase();
+              return \`
+                <div class="pipeline-contact-card" style="border-color:rgba(99,102,241,0.25);background:rgba(99,102,241,0.04);">
+                  <div class="contact-header">
+                    <div class="contact-avatar" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">\${initials}</div>
+                    <div>
+                      <div class="contact-name">\${esc(s.first_name || '')} \${esc(s.last_name || '')}</div>
+                      <div style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;background:rgba(99,102,241,0.15);color:#a5b4fc;font-size:10px;font-weight:700;letter-spacing:0.4px;margin-top:3px;">
+                        <svg width="9" height="9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        SOLOMON EMAIL
+                      </div>
+                    </div>
+                  </div>
+                  \${s.company ? \`<div class="contact-company"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>\${esc(s.company)}</div>\` : ''}
+                  \${s.email ? \`<div class="contact-email"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>\${esc(s.email)}</div>\` : ''}
+                  \${s.campaign ? \`<div class="contact-campaign"><svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>\${esc(s.campaign)}</div>\` : ''}
+                </div>
+              \`;
+            }).join('')}
+          </div>
+        </div>
+        ` : ''}
+      \`;
     }
 
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
