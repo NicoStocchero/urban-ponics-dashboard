@@ -1623,6 +1623,76 @@
       </div>
     </div>
   </div>
+  <!-- EMAIL OUTREACH - SOLOMON -->
+  <div class="section-card" style="margin-top: 2rem;">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="section-icon" style="background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.3);">
+          <svg width="24" height="24" fill="none" stroke="#818cf8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="section-title" style="color:#818cf8;">Email Outreach · Solomon</h2>
+          <p style="font-size:12px; color:var(--text-muted); margin:0;" id="solomonSubtitle">Loading...</p>
+        </div>
+      </div>
+      <span class="live-badge" style="background:rgba(99,102,241,0.15); border-color:rgba(99,102,241,0.3); color:#818cf8;">
+        <span class="live-dot" style="background:#818cf8;"></span>LIVE
+      </span>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:1rem; margin-bottom:1.5rem;" id="solomonStats">
+      <div class="pipeline-stat-card blue" style="--accent:#818cf8;">
+        <div class="stat-icon" style="background:rgba(99,102,241,0.15);">
+          <svg width="18" height="18" fill="none" stroke="#818cf8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="stat-label">Enviados</div>
+        <div class="stat-value" style="color:#818cf8;" id="sol-sent">—</div>
+      </div>
+      <div class="pipeline-stat-card green">
+        <div class="stat-icon" style="background:rgba(16,185,129,0.15);">
+          <svg width="18" height="18" fill="none" stroke="#10b981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        </div>
+        <div class="stat-label">Respondieron</div>
+        <div class="stat-value" id="sol-responded">—</div>
+      </div>
+      <div class="pipeline-stat-card gold">
+        <div class="stat-icon" style="background:rgba(212,175,55,0.15);">
+          <svg width="18" height="18" fill="none" stroke="var(--gold)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div class="stat-label">Interesados</div>
+        <div class="stat-value" id="sol-interested">—</div>
+      </div>
+      <div class="pipeline-stat-card" style="border-color:rgba(99,102,241,0.2);">
+        <div class="stat-icon" style="background:rgba(99,102,241,0.15);">
+          <svg width="18" height="18" fill="none" stroke="#818cf8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <div class="stat-label">Tasa Respuesta</div>
+        <div class="stat-value" style="color:#818cf8;" id="sol-rate">—</div>
+      </div>
+    </div>
+
+    <!-- Leads table -->
+    <div style="overflow-x:auto;">
+      <table class="premium-table" id="solomonTable">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Estado</th>
+            <th>Respuesta</th>
+            <th>Canal</th>
+          </tr>
+        </thead>
+        <tbody id="solomonTableBody">
+          <tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   </div><!-- #view-overview -->
 
   <!-- DEALS/PIPELINE VIEW -->
@@ -3045,13 +3115,67 @@
 
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
     // Cargar todos los datos al iniciar la página
+    async function loadSolomonLeads() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('leads')
+          .select('first_name, last_name, company, status, response_type, campaign')
+          .eq('source', 'solomon_email')
+          .order('company', { ascending: true });
+
+        if (error) throw error;
+
+        const total = data.length;
+        const responded = data.filter(l => l.status === 'responded' || l.status === 'paused').length;
+        const interested = data.filter(l => l.response_type === 'interested').length;
+        const rate = total > 0 ? Math.round((responded / total) * 100) : 0;
+
+        document.getElementById('sol-sent').textContent = total;
+        document.getElementById('sol-responded').textContent = responded;
+        document.getElementById('sol-interested').textContent = interested;
+        document.getElementById('sol-rate').textContent = rate + '%';
+        document.getElementById('solomonSubtitle').textContent =
+          `${total} contactos · ${interested} interesados · ${rate}% tasa de respuesta`;
+
+        const statusLabel = {
+          'responded': { text: 'Respondió', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+          'paused':    { text: 'Pausado',   color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+          'positive':  { text: 'Positivo',  color: 'var(--gold)', bg: 'rgba(212,175,55,0.12)' },
+          'meeting':   { text: 'Reunión',   color: '#818cf8', bg: 'rgba(99,102,241,0.12)' },
+        };
+        const responseLabel = {
+          'interested':   { text: '✓ Interesado', color: '#10b981' },
+          'not_interested': { text: '✗ No interesado', color: '#ef4444' },
+        };
+
+        const tbody = document.getElementById('solomonTableBody');
+        tbody.innerHTML = data.map(l => {
+          const s = statusLabel[l.status] || { text: l.status || '—', color: 'var(--text-muted)', bg: 'rgba(255,255,255,0.05)' };
+          const r = responseLabel[l.response_type] || { text: l.response_type || '—', color: 'var(--text-muted)' };
+          const name = [l.first_name, l.last_name].filter(Boolean).join(' ') || '—';
+          return `<tr>
+            <td style="font-weight:600;">${name}</td>
+            <td style="color:var(--text-muted);">${l.company || '—'}</td>
+            <td><span style="display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:${s.bg}; color:${s.color};">${s.text}</span></td>
+            <td style="color:${r.color}; font-size:12px; font-weight:600;">${r.text}</td>
+            <td style="color:var(--text-muted); font-size:11px;">Email / Solomon</td>
+          </tr>`;
+        }).join('');
+
+      } catch (err) {
+        console.error('Error loading Solomon leads:', err);
+        document.getElementById('solomonSubtitle').textContent = 'Error al cargar datos';
+      }
+    }
+
     async function initDashboard() {
       try {
         // Load all data sources in parallel
         await Promise.all([
           loadMetricsFromSupabase(),
           loadDealsFromSupabase(),
-          loadDealsFullData()
+          loadDealsFullData(),
+          loadSolomonLeads()
         ]);
       } catch (error) {
         console.error('Dashboard init error:', error);
