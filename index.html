@@ -53,15 +53,6 @@
     }
 
     /* Vista sections */
-    .view-section {
-      display: block;
-      margin-bottom: 3rem;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    .view-section.active {
-      display: block;
-    }
 
     /* Premium section wrapper for Leads & Pipeline */
     .section-card {
@@ -1483,9 +1474,27 @@
     </div>
 
     <!-- ============================================ -->
+    <!-- TAB NAVIGATION -->
+    <!-- ============================================ -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-view="view-overview">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Overview
+      </button>
+      <button class="tab-btn" data-view="view-deals">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Pipeline
+      </button>
+      <button class="tab-btn tab-btn-solomon" data-view="view-solomon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        Email · Solomon
+      </button>
+    </div>
+
+    <!-- ============================================ -->
     <!-- VISTAS / VIEWS -->
     <!-- ============================================ -->
-    
+
     <!-- OVERVIEW VIEW -->
     <div class="view-section active" id="view-overview">
     
@@ -1623,8 +1632,11 @@
       </div>
     </div>
   </div>
-  <!-- EMAIL OUTREACH - SOLOMON -->
-  <div class="section-card" style="margin-top: 2rem;">
+  </div><!-- #view-overview -->
+
+  <!-- EMAIL OUTREACH / SOLOMON VIEW -->
+  <div class="view-section" id="view-solomon">
+  <div class="section-card">
     <div class="section-header">
       <div class="section-header-left">
         <div class="section-icon" style="background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.3);">
@@ -1692,8 +1704,7 @@
       </table>
     </div>
   </div>
-
-  </div><!-- #view-overview -->
+  </div><!-- #view-solomon -->
 
   <!-- DEALS/PIPELINE VIEW -->
   <div class="view-section" id="view-deals">
@@ -3182,12 +3193,34 @@
       }
     }
 
+    // ── Tab Navigation ─────────────────────────────
+    function initTabs() {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const views   = document.querySelectorAll('.view-section');
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.view;
+
+          // Update buttons
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          // Update views
+          views.forEach(v => v.classList.remove('active'));
+          const targetView = document.getElementById(target);
+          if (targetView) targetView.classList.add('active');
+        });
+      });
+    }
+
     // Ejecutar cuando el DOM esté listo
     
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initDashboard);
+      document.addEventListener('DOMContentLoaded', () => { initDashboard(); initTabs(); });
     } else {
       initDashboard();
+      initTabs();
     }
 
   </script>
