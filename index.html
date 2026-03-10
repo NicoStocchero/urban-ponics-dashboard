@@ -54,10 +54,11 @@
 
     /* Vista sections */
     .view-section {
-      display: none;
+      display: block;
       margin-bottom: 3rem;
       animation: fadeIn 0.4s ease-out;
     }
+
     .view-section.active {
       display: block;
     }
@@ -772,47 +773,6 @@
       border: 1px solid rgba(184, 168, 130, 0.15);
     }
 
-    /* LinkedIn styles */
-    .contact-linkedin {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .contact-linkedin svg {
-      flex-shrink: 0;
-      color: #0A66C2;
-    }
-
-    .contact-linkedin-link {
-      color: #0A66C2;
-      text-decoration: none;
-      font-weight: 500;
-      transition: opacity 0.2s;
-    }
-
-    .contact-linkedin-link:hover {
-      opacity: 0.75;
-      text-decoration: underline;
-    }
-
-    .contact-avatar-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: inherit;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-
-    .contact-avatar-link:hover {
-      opacity: 0.85;
-      transform: scale(1.05);
-    }
-
     /* Loading skeleton */
     .loading-skeleton {
       display: flex;
@@ -1482,27 +1442,9 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- TAB NAVIGATION -->
-    <!-- ============================================ -->
-    <div class="tab-nav">
-      <button class="tab-btn active" data-view="view-overview">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-        Overview
-      </button>
-      <button class="tab-btn" data-view="view-deals">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        Pipeline
-      </button>
-      <a href="/solomon.html" class="tab-btn" style="text-decoration:none;">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-        Email · Solomon
-      </a>
-    </div>
-
-    <!-- ============================================ -->
     <!-- VISTAS / VIEWS -->
     <!-- ============================================ -->
-
+    
     <!-- OVERVIEW VIEW -->
     <div class="view-section active" id="view-overview">
     
@@ -1641,9 +1583,6 @@
     </div>
   </div>
   </div><!-- #view-overview -->
-
-  <!-- EMAIL OUTREACH / SOLOMON VIEW -->
-
 
   <!-- DEALS/PIPELINE VIEW -->
   <div class="view-section" id="view-deals">
@@ -2833,14 +2772,10 @@
                   const statusClass = lead.status === 'meeting' ? 'meeting' : 'positive';
                   const statusLabel = lead.status === 'meeting' ? t('statusMeeting') : t('statusPositive');
 
-                  const fullName = `${esc(lead.first_name)} ${esc(lead.last_name)}`;
-                  const nameCell = lead.linkedin
-                    ? `<a href="${esc(lead.linkedin)}" target="_blank" rel="noopener noreferrer" class="contact-linkedin-link" style="display:inline-flex;align-items:center;gap:6px;">${fullName}<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.7;flex-shrink:0;"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>`
-                    : fullName;
                   return `
                     <tr>
                       <td style="color: var(--text-primary); font-weight: 500;">
-                        ${nameCell}
+                        ${esc(lead.first_name)} ${esc(lead.last_name)}
                       </td>
                       <td style="color: var(--text-muted);">${esc(lead.company) || '-'}</td>
                       <td style="color: var(--text-muted);">${esc(lead.position) || '-'}</td>
@@ -2878,7 +2813,7 @@
       try {
         const { data, error } = await supabaseClient
           .from('leads')
-          .select('first_name, last_name, company, position, email, status, campaign, linkedin')
+          .select('first_name, last_name, company, position, email, status, campaign')
           .in('status', ['positive', 'meeting'])
           .order('status', { ascending: false })
           .limit(10000);
@@ -2936,19 +2871,12 @@
       function renderContactCard(contact, type) {
         const cardClass = type === 'meeting' ? 'meeting-card' : 'positive-card';
         const initials = esc(getInitials(contact.first_name, contact.last_name).toUpperCase());
-        const linkedinUrl = contact.linkedin ? esc(contact.linkedin) : null;
-        const nameHtml = linkedinUrl
-          ? `<a href="${linkedinUrl}" target="_blank" rel="noopener noreferrer" class="contact-linkedin-link">${esc(contact.first_name)} ${esc(contact.last_name)}</a>`
-          : `${esc(contact.first_name)} ${esc(contact.last_name)}`;
         return `
           <div class="pipeline-contact-card ${cardClass}">
             <div class="contact-header">
-              ${linkedinUrl
-                ? `<a href="${linkedinUrl}" target="_blank" rel="noopener noreferrer" class="contact-avatar contact-avatar-link">${initials}</a>`
-                : `<div class="contact-avatar">${initials}</div>`
-              }
+              <div class="contact-avatar">${initials}</div>
               <div>
-                <div class="contact-name">${nameHtml}</div>
+                <div class="contact-name">${esc(contact.first_name)} ${esc(contact.last_name)}</div>
                 ${contact.position ? `<div class="contact-position">${esc(contact.position)}</div>` : ''}
               </div>
             </div>
@@ -2966,14 +2894,6 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
                 ${esc(contact.email)}
-              </div>
-            ` : ''}
-            ${contact.linkedin ? `
-              <div class="contact-linkedin">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                </svg>
-                <a href="${esc(contact.linkedin)}" target="_blank" rel="noopener noreferrer" class="contact-linkedin-link">LinkedIn</a>
               </div>
             ` : ''}
             ${contact.campaign ? `
@@ -3064,6 +2984,7 @@
     }
 
     // ===== INICIALIZACIÓN AUTOMÁTICA =====
+    // Cargar todos los datos al iniciar la página
     async function initDashboard() {
       try {
         // Load all data sources in parallel
@@ -3077,34 +2998,12 @@
       }
     }
 
-    // ── Tab Navigation ─────────────────────────────
-    function initTabs() {
-      const tabBtns = document.querySelectorAll('.tab-btn');
-      const views   = document.querySelectorAll('.view-section');
-
-      tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const target = btn.dataset.view;
-
-          // Update buttons
-          tabBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-
-          // Update views
-          views.forEach(v => v.classList.remove('active'));
-          const targetView = document.getElementById(target);
-          if (targetView) targetView.classList.add('active');
-        });
-      });
-    }
-
     // Ejecutar cuando el DOM esté listo
     
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => { initDashboard(); initTabs(); });
+      document.addEventListener('DOMContentLoaded', initDashboard);
     } else {
       initDashboard();
-      initTabs();
     }
 
   </script>
