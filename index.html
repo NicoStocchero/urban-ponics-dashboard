@@ -2362,7 +2362,7 @@
 
       const rawValues = [invitations, accepted, positive, meetings];
 
-      const acceptedRate = 23.7;
+      const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
       const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
       const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
       const percentages = ['100%', acceptedRate + '%', positiveRate + '%', meetingsRate + '%'];
