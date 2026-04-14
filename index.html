@@ -2208,11 +2208,13 @@
         // ========== CALCULAR MÉTRICAS CORRECTAS ==========
         
         // INVITACIONES: count donde status = 'invited'
-        const invitations = allLeads.filter(l => l.status === 'invited').length;
+        const invitations = allLeads.filter(l => l.status !== 'not_contacted').length;
         
-        // ACEPTADOS + TASA: 23.7% fijo en todo — BD no es fiable para este campo
-        const acceptance = 23.7;
-        const accepted = Math.round(invitations * (acceptance / 100));
+        // ACEPTADOS + TASA: calculado dinámicamente
+        const accepted = allLeads.filter(l =>
+          ['accepted','messaged','responded','positive','meeting','paused'].includes(l.status)
+        ).length;
+        const acceptance = invitations > 0 ? (accepted / invitations * 100) : 0;
         
         // POSITIVOS + MEETINGS: total combinado
         const positiveOnly = allLeads.filter(l => l.status === 'positive').length;
@@ -2224,7 +2226,8 @@
           .from('leads')
           .select('deal_title, deal_value')
           .not('deal_title', 'is', null)
-          .neq('deal_title', '');
+          .neq('deal_title', '')
+          .gt('deal_value', 0);
 
         // Deduplicar por deal_title, quedarse con el MAX de deal_value por deal
         const dealMap = {};
@@ -2454,7 +2457,8 @@
           .from('leads')
           .select('deal_title, deal_value')
           .not('deal_title', 'is', null)
-          .neq('deal_title', '');
+          .neq('deal_title', '')
+          .gt('deal_value', 0);
 
         if (statsError) throw statsError;
 
