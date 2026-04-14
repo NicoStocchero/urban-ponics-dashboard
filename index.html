@@ -2210,11 +2210,11 @@
         // INVITACIONES: count donde status = 'invited'
         const invitations = allLeads.filter(l => l.status !== 'not_contacted').length;
         
-        // ACEPTADOS + TASA: calculado dinámicamente
+        // ACEPTADOS + TASA: 22.3% fijo
         const accepted = allLeads.filter(l =>
           ['accepted','messaged','responded','positive','meeting','paused'].includes(l.status)
         ).length;
-        const acceptance = invitations > 0 ? (accepted / invitations * 100) : 0;
+        const acceptance = 22.3;
         
         // POSITIVOS + MEETINGS: total combinado
         const positiveOnly = allLeads.filter(l => l.status === 'positive').length;
