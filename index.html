@@ -1812,6 +1812,7 @@
         thName: 'Name',
         thCompany: 'Company',
         thPosition: 'Position',
+        thRegion: 'Region',
         thEmail: 'Email',
         thStatus: 'Status',
 
@@ -1930,6 +1931,7 @@
         thName: 'Nombre',
         thCompany: 'Empresa',
         thPosition: 'Cargo',
+        thRegion: 'Región',
         thEmail: 'Email',
         thStatus: 'Estado',
 
@@ -2048,6 +2050,7 @@
         thName: 'Naam',
         thCompany: 'Bedrijf',
         thPosition: 'Functie',
+        thRegion: 'Regio',
         thEmail: 'E-mail',
         thStatus: 'Status',
 
@@ -2186,47 +2189,47 @@
     async function loadMetricsFromSupabase() {
       try {
         
-        // ========== PAGINACIÓN: Traer TODOS los leads sin límite fijo ==========
-        let allLeads = [];
+        // ========== FUNNEL REAL DESDE GHL (pipeline "LinkedIn", vía vista de Supabase principal) ==========
+        // Nombres de etapa reales, obtenidos de la API de GHL (opportunities/pipelines) y guardados en ghl_pipeline_stages.
+        const NOT_CONTACTED_STAGES = ['Por contactar'];
+        const ACCEPTED_STAGES = ['Invitación aceptada', 'Mensaje enviado', 'Respuesta', 'Interesado', 'Portfolio Enviado', 'Reunión agendada', '1ª Reunión', '2ª Reunión', '3ª Reunión'];
+        const POSITIVE_STAGES = ['Interesado', 'Portfolio Enviado', 'Reunión agendada', '1ª Reunión', '2ª Reunión', '3ª Reunión'];
+        const MEETING_STAGES = ['Reunión agendada', '1ª Reunión', '2ª Reunión', '3ª Reunión'];
+
+        let allContacts = [];
         let page = 0;
-        const pageSize = 1000; // Traer de 1000 en 1000
+        const pageSize = 1000;
         let hasMore = true;
 
         while (hasMore) {
-          const { data, error } = await supabaseClient
-            .from('leads')
-            .select('status, deal_value')
+          const { data, error } = await mainSupabaseClient
+            .from(PIPELINE_VIEW)
+            .select('ghl_stage_name')
             .range(page * pageSize, (page + 1) * pageSize - 1);
 
-          if (error) {
-            throw error;
-          }
+          if (error) throw error;
 
           if (data && data.length > 0) {
-            allLeads = allLeads.concat(data);
+            allContacts = allContacts.concat(data);
             page++;
-            hasMore = data.length === pageSize; // Si trae menos que pageSize, es la última página
+            hasMore = data.length === pageSize;
           } else {
             hasMore = false;
           }
         }
 
+        // ========== CALCULAR MÉTRICAS DEL FUNNEL ==========
 
-        // ========== CALCULAR MÉTRICAS CORRECTAS ==========
-        
-        // INVITACIONES: count donde status = 'invited'
-        const invitations = allLeads.filter(l => l.status !== 'not_contacted').length;
-        
-        // ACEPTADOS + TASA: 22.3% fijo
-        const accepted = allLeads.filter(l =>
-          ['accepted','messaged','responded','positive','meeting','paused'].includes(l.status)
-        ).length;
-        const acceptance = 22.3;
-        
-        // POSITIVOS + MEETINGS: total combinado
-        const positiveOnly = allLeads.filter(l => l.status === 'positive').length;
-        const meetings = allLeads.filter(l => l.status === 'meeting').length;
-        const positive = positiveOnly + meetings; // positive + meeting (ambos cuentan como interesados)
+        // INVITACIONES: cualquier contacto que entró al pipeline de outreach (no "Por contactar" ni sin etapa)
+        const invitations = allContacts.filter(c => c.ghl_stage_name && !NOT_CONTACTED_STAGES.includes(c.ghl_stage_name)).length;
+
+        // ACEPTADOS: aceptó la invitación de LinkedIn o avanzó más
+        const accepted = allContacts.filter(c => ACCEPTED_STAGES.includes(c.ghl_stage_name)).length;
+        const acceptance = invitations > 0 ? (accepted / invitations) * 100 : 0;
+
+        // POSITIVOS + MEETINGS
+        const positive = allContacts.filter(c => POSITIVE_STAGES.includes(c.ghl_stage_name)).length;
+        const meetings = allContacts.filter(c => MEETING_STAGES.includes(c.ghl_stage_name)).length;
         
         // PIPELINE: deals reales de Pipedrive sincronizados en el Supabase principal (via GHL/Pipedrive), deduplicando por deal_id
         const { data: dealLeads } = await mainSupabaseClient
@@ -2277,7 +2280,7 @@
           { label: t('totalSent'), value: invitations.toLocaleString() },
           { label: t('acceptedCount'), value: accepted.toLocaleString() },
           { label: t('acceptanceRate'), value: acceptance.toFixed(1) + '%' },
-          { label: 'Total BBDD', value: allLeads.length.toLocaleString() + ' leads' }
+          { label: 'Total BBDD', value: allContacts.length.toLocaleString() + ' leads' }
         ];
 
         MODAL_DATA.acceptance.stats = [
@@ -2368,7 +2371,7 @@
 
       const rawValues = [invitations, accepted, positive, meetings];
 
-      const acceptedRate = 22.3;
+      const acceptedRate = invitations > 0 ? ((accepted / invitations) * 100).toFixed(1) : 0;
       const positiveRate = invitations > 0 ? ((positive / invitations) * 100).toFixed(1) : 0;
       const meetingsRate = invitations > 0 ? ((meetings / invitations) * 100).toFixed(1) : 0;
       const percentages = ['100%', acceptedRate + '%', positiveRate + '%', meetingsRate + '%'];
@@ -2770,7 +2773,7 @@
                 <tr>
                   <th>${t('thName')}</th>
                   <th>${t('thCompany')}</th>
-                  <th>${t('thPosition')}</th>
+                  <th>${t('thRegion')}</th>
                   <th>${t('thEmail')}</th>
                   <th>${t('thStatus')}</th>
                 </tr>
@@ -2786,7 +2789,7 @@
                         ${esc(lead.first_name)} ${esc(lead.last_name)}
                       </td>
                       <td style="color: var(--text-muted);">${esc(lead.company) || '-'}</td>
-                      <td style="color: var(--text-muted);">${esc(lead.position) || '-'}</td>
+                      <td style="color: var(--text-muted);">${esc(lead.region) || '-'}</td>
                       <td style="color: var(--text-muted);">${esc(lead.email) || '-'}</td>
                       <td>
                         <span class="status-badge ${statusClass}">
@@ -2816,17 +2819,24 @@
         `;
     }
 
-    // Cargar tabla de leads
+    // Cargar tabla de leads (conversaciones positivas reales del pipeline "LinkedIn" de GHL)
     async function loadLeadsFromSupabase() {
       try {
-        const { data, error } = await supabaseClient
-          .from('leads')
-          .select('first_name, last_name, company, position, email, status, campaign')
-          .in('status', ['positive', 'meeting'])
-          .order('status', { ascending: false })
+        const POSITIVE_STAGES = ['Interesado', 'Portfolio Enviado', 'Reunión agendada', '1ª Reunión', '2ª Reunión', '3ª Reunión'];
+        const MEETING_STAGES = ['Reunión agendada', '1ª Reunión', '2ª Reunión', '3ª Reunión'];
+
+        const { data: rows, error } = await mainSupabaseClient
+          .from(PIPELINE_VIEW)
+          .select('first_name, last_name, company, region, email, ghl_stage_name')
+          .in('ghl_stage_name', POSITIVE_STAGES)
           .limit(10000);
 
         if (error) throw error;
+
+        const data = (rows || []).map(lead => ({
+          ...lead,
+          status: MEETING_STAGES.includes(lead.ghl_stage_name) ? 'meeting' : 'positive'
+        })).sort((a, b) => (a.status === 'meeting' ? 0 : 1) - (b.status === 'meeting' ? 0 : 1));
 
         _cachedLeadsData = data;
         renderLeadsTable(data);
@@ -2845,13 +2855,38 @@
     // Cargar pipeline con meetings y positive responses
     async function loadDealsFullData() {
       try {
-        const { data, error} = await supabaseClient
-          .from('leads')
-          .select('*')
-          .or('status.eq.meeting,status.eq.positive,source.eq.solomon_email')
+        const POSITIVE_STAGES = ['Interesado', 'Portfolio Enviado', 'Reunión agendada', '1ª Reunión', '2ª Reunión', '3ª Reunión'];
+        const MEETING_STAGES = ['Reunión agendada', '1ª Reunión', '2ª Reunión', '3ª Reunión'];
+
+        // Conversaciones positivas reales, en vivo desde GHL
+        const { data: ghlRows, error: ghlError } = await mainSupabaseClient
+          .from(PIPELINE_VIEW)
+          .select('first_name, last_name, company, region, email, ghl_stage_name')
+          .in('ghl_stage_name', POSITIVE_STAGES)
           .limit(10000);
 
-        if (error) throw error;
+        if (ghlError) throw ghlError;
+
+        const ghlContacts = (ghlRows || []).map(lead => ({
+          first_name: lead.first_name,
+          last_name: lead.last_name,
+          company: lead.company,
+          position: lead.region,
+          email: lead.email,
+          status: MEETING_STAGES.includes(lead.ghl_stage_name) ? 'meeting' : 'positive',
+          source: 'ghl'
+        }));
+
+        // Solomon Email: canal histórico de email, no sincronizado desde GHL
+        const { data: solomonRows } = await supabaseClient
+          .from('leads')
+          .select('first_name, last_name, company, position, email, campaign, source')
+          .eq('source', 'solomon_email')
+          .limit(10000);
+
+        const solomonContacts = (solomonRows || []).map(lead => ({ ...lead, status: 'positive' }));
+
+        const data = ghlContacts.concat(solomonContacts);
 
         _cachedDealsViewData = data;
         renderDealsView(data);
