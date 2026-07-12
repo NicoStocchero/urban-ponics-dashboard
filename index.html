@@ -758,6 +758,7 @@
       color: var(--text-muted);
       font-size: 0.8rem;
       margin-bottom: 0.5rem;
+      overflow-wrap: anywhere;
     }
 
     .pipeline-contact-card .contact-campaign {
@@ -810,11 +811,82 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    html {
+      overflow-x: hidden;
+      max-width: 100%;
+      scroll-behavior: smooth;
+    }
+
+    #section-pipeline,
+    #section-funnel,
+    #section-deals,
+    #view-deals {
+      scroll-margin-top: 5.5rem;
+    }
+
+    /* ========== NAVBAR FLOTANTE ========== */
+    .quick-nav {
+      position: fixed;
+      top: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 500;
+      display: flex;
+      gap: 0.25rem;
+      background: rgba(15, 15, 15, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.375rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      max-width: calc(100vw - 2rem);
+    }
+
+    .quick-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+
+    .quick-nav-item:hover {
+      color: var(--gold-light);
+      background: rgba(184, 168, 130, 0.1);
+    }
+
+    .quick-nav-item.active {
+      background: var(--gold);
+      color: #000000;
+    }
+
+    @media (max-width: 560px) {
+      .quick-nav-item span {
+        display: none;
+      }
+
+      .quick-nav-item {
+        padding: 0.55rem;
+      }
+
+      .quick-nav {
+        gap: 0.125rem;
+      }
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg-black);
       color: var(--text-primary);
       overflow-x: hidden;
+      max-width: 100%;
     }
 
     body::before {
@@ -837,6 +909,7 @@
       z-index: 1;
       min-height: 100vh;
       padding: 2rem;
+      padding-top: 5.5rem;
       max-width: 1600px;
       margin: 0 auto;
     }
@@ -1358,6 +1431,7 @@
     @media (max-width: 768px) {
       .dashboard {
         padding: 1rem;
+        padding-top: 4.75rem;
       }
 
       .header {
@@ -1405,6 +1479,37 @@
 
       .kpi-value {
         font-size: 2.5rem;
+        overflow-wrap: anywhere;
+      }
+
+      .kpi-header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      /* Causa raíz del scroll lateral: el número grande sin espacios ($1,039,000)
+         + el ícono circular fijo no entran en una fila en mobile. Se apilan. */
+      .pipeline-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+      }
+
+      .pipeline-hero-icon-ring {
+        align-self: center;
+      }
+
+      .pipeline-hero-value {
+        overflow-wrap: anywhere;
+      }
+
+      .deal-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .deal-company {
+        overflow-wrap: anywhere;
       }
 
       .deals-grid {
@@ -1476,6 +1581,26 @@
   </style>
 </head>
 <body>
+  <!-- Navbar flotante de navegación rápida -->
+  <nav class="quick-nav" id="quickNav">
+    <a href="#section-pipeline" class="quick-nav-item" data-target="section-pipeline">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+      <span data-i18n="navPipeline">Pipeline</span>
+    </a>
+    <a href="#section-funnel" class="quick-nav-item" data-target="section-funnel">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+      <span data-i18n="navFunnel">Funnel</span>
+    </a>
+    <a href="#section-deals" class="quick-nav-item" data-target="section-deals">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span data-i18n="navDeals">Deals</span>
+    </a>
+    <a href="#view-deals" class="quick-nav-item" data-target="view-deals">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4"/></svg>
+      <span data-i18n="navConversations">Conversations</span>
+    </a>
+  </nav>
+
   <!-- Layout sin Sidebar - Single Page -->
   <div class="dashboard-layout">
     
@@ -1515,7 +1640,7 @@
     <div class="view-section active" id="view-overview">
     
     <!-- PIPELINE GRANDE - Full Width -->
-    <div class="pipeline-hero">
+    <div class="pipeline-hero" id="section-pipeline">
       <div class="pipeline-hero-glow"></div>
       <div class="pipeline-hero-content">
         <div class="pipeline-hero-left">
@@ -1596,7 +1721,7 @@
     </div>
 
     <!-- Funnel Chart -->
-    <div class="funnel-section">
+    <div class="funnel-section" id="section-funnel">
       <div class="funnel-header">
         <div class="funnel-header-left">
           <div class="funnel-header-icon">
@@ -1614,7 +1739,7 @@
     </div>
 
     <!-- Deals Grid -->
-    <div>
+    <div id="section-deals">
       <div class="section-header">
         <div>
           <h2 class="section-title">Top Open Deals</h2>
@@ -1790,6 +1915,10 @@
       en: {
         // Header
         dashboardTitle: 'Investor Dashboard',
+        navPipeline: 'Pipeline',
+        navFunnel: 'Funnel',
+        navDeals: 'Deals',
+        navConversations: 'Conversations',
         dashboardSubtitle: 'Real-time Sales Intelligence',
         live: 'LIVE',
         
@@ -1911,6 +2040,10 @@
       es: {
         // Header
         dashboardTitle: 'Dashboard Inversores',
+        navPipeline: 'Pipeline',
+        navFunnel: 'Funnel',
+        navDeals: 'Deals',
+        navConversations: 'Conversaciones',
         dashboardSubtitle: 'Inteligencia de Ventas en Tiempo Real',
         live: 'EN VIVO',
         
@@ -2032,6 +2165,10 @@
       nl: {
         // Header
         dashboardTitle: 'Investeerders Dashboard',
+        navPipeline: 'Pipeline',
+        navFunnel: 'Funnel',
+        navDeals: 'Deals',
+        navConversations: 'Gesprekken',
         dashboardSubtitle: 'Real-time Verkoop Intelligentie',
         live: 'LIVE',
         
@@ -2189,6 +2326,12 @@
       document.querySelector('.title-section h1').textContent = t('dashboardTitle');
       document.querySelector('.subtitle').textContent = t('dashboardSubtitle');
       document.querySelector('[data-i18n="live"]').textContent = t('live');
+
+      // Navbar flotante
+      document.querySelector('[data-i18n="navPipeline"]').textContent = t('navPipeline');
+      document.querySelector('[data-i18n="navFunnel"]').textContent = t('navFunnel');
+      document.querySelector('[data-i18n="navDeals"]').textContent = t('navDeals');
+      document.querySelector('[data-i18n="navConversations"]').textContent = t('navConversations');
       
       // KPIs labels
       const kpiLabels = {
@@ -2826,6 +2969,29 @@
 
     // Inicializar idioma guardado
     changeLanguage(currentLang);
+
+    // Navbar flotante: resaltar la sección visible mientras se scrollea
+    (function initQuickNav() {
+      const navItems = document.querySelectorAll('.quick-nav-item');
+      const sections = Array.from(navItems)
+        .map(item => document.getElementById(item.dataset.target))
+        .filter(Boolean);
+
+      if (!sections.length) return;
+
+      const setActive = (id) => {
+        navItems.forEach(item => item.classList.toggle('active', item.dataset.target === id));
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries.filter(e => e.isIntersecting);
+        if (visible.length > 0) {
+          setActive(visible[0].target.id);
+        }
+      }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+      sections.forEach(section => observer.observe(section));
+    })();
 
     // ==========================================
     // SIDEBAR & NAVIGATION
