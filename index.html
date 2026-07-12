@@ -2170,10 +2170,17 @@
     }
 
     // Inicializar Supabase
+    // Legacy: BBDD dedicada de outreach (Pipedrive/SalesRobot/Lemlist, deprecados). Alimenta el funnel de invitations/accepted/positive/meetings.
     const SUPABASE_URL = 'https://mwbkrkoeltsbkbguoemo.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13Ymtya29lbHRzYmtiZ3VvZW1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTg5MzMsImV4cCI6MjA4NjQ3NDkzM30.3DrznzqfbNP3RPYOGcj5uXiqPsSzFnWc5AoKyLk0OS8';
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Main: BBDD principal de la organización (GHL + Pipedrive sincronizados). Alimenta el pipeline comercial real.
+    const MAIN_SUPABASE_URL = 'https://zkbdoiuqiwksysitpvlt.supabase.co';
+    const MAIN_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprYmRvaXVxaXdrc3lzaXRwdmx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDk4OTMsImV4cCI6MjA4Nzc4NTg5M30.TNl3XdLf0seVTJO8NlkdMHI3xVHRNOX8YA0UW7eVevk';
+    const mainSupabaseClient = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_ANON_KEY);
+    const PIPELINE_VIEW = 'urbanponics_pipeline_view';
 
     // Cargar datos reales desde Supabase
     async function loadMetricsFromSupabase() {
@@ -2221,21 +2228,20 @@
         const meetings = allLeads.filter(l => l.status === 'meeting').length;
         const positive = positiveOnly + meetings; // positive + meeting (ambos cuentan como interesados)
         
-        // PIPELINE: calcular dinámicamente desde leads, deduplicando por deal_title
-        const { data: dealLeads } = await supabaseClient
-          .from('leads')
-          .select('deal_title, deal_value')
-          .not('deal_title', 'is', null)
-          .neq('deal_title', '')
+        // PIPELINE: deals reales de Pipedrive sincronizados en el Supabase principal (via GHL/Pipedrive), deduplicando por deal_id
+        const { data: dealLeads } = await mainSupabaseClient
+          .from(PIPELINE_VIEW)
+          .select('deal_id, deal_value')
+          .not('deal_id', 'is', null)
           .gt('deal_value', 0);
 
-        // Deduplicar por deal_title, quedarse con el MAX de deal_value por deal
+        // Deduplicar por deal_id, quedarse con el MAX de deal_value por deal
         const dealMap = {};
         for (const lead of (dealLeads || [])) {
-          const title = lead.deal_title;
+          const id = lead.deal_id;
           const val = parseFloat(lead.deal_value) || 0;
-          if (!(title in dealMap) || val > dealMap[title]) {
-            dealMap[title] = val;
+          if (!(id in dealMap) || val > dealMap[id]) {
+            dealMap[id] = val;
           }
         }
         const dealTitles = Object.keys(dealMap);
@@ -2452,22 +2458,21 @@
     // Cargar deals desde Supabase
     async function loadDealsFromSupabase() {
       try {
-        // Calcular pipeline dinámicamente desde leads, deduplicando por deal_title
-        const { data: pipeLeads, error: statsError } = await supabaseClient
-          .from('leads')
-          .select('deal_title, deal_value')
-          .not('deal_title', 'is', null)
-          .neq('deal_title', '')
+        // Calcular pipeline dinámicamente desde la vista de Supabase principal, deduplicando por deal_id
+        const { data: pipeLeads, error: statsError } = await mainSupabaseClient
+          .from(PIPELINE_VIEW)
+          .select('deal_id, deal_value')
+          .not('deal_id', 'is', null)
           .gt('deal_value', 0);
 
         if (statsError) throw statsError;
 
         const pdMap = {};
         for (const lead of (pipeLeads || [])) {
-          const title = lead.deal_title;
+          const id = lead.deal_id;
           const val = parseFloat(lead.deal_value) || 0;
-          if (!(title in pdMap) || val > pdMap[title]) {
-            pdMap[title] = val;
+          if (!(id in pdMap) || val > pdMap[id]) {
+            pdMap[id] = val;
           }
         }
         const pdTitles = Object.keys(pdMap);
@@ -2489,23 +2494,22 @@
           { label: t('status'), value: totalDeals > 0 ? '✅ ' + t('active') : '⏳ ' + t('pending') }
         ];
 
-        // Cargar todos los deals: con y sin valor, deduplicar por deal_title
-        const { data, error } = await supabaseClient
-          .from('leads')
-          .select('deal_id, deal_title, deal_value, company, position, deal_stage, expected_close_date, first_name, last_name')
-          .not('deal_title', 'is', null)
-          .neq('deal_title', '')
+        // Cargar todos los deals reales (Pipedrive, via vista de Supabase principal), deduplicar por deal_id
+        const { data, error } = await mainSupabaseClient
+          .from(PIPELINE_VIEW)
+          .select('deal_id, deal_title, deal_value, company, deal_stage, expected_close_date, first_name, last_name')
+          .not('deal_id', 'is', null)
           .order('deal_value', { ascending: false, nullsFirst: false })
           .limit(200);
 
         if (error) throw error;
 
-        // Deduplicar por deal_title, quedarse con la fila de mayor valor
+        // Deduplicar por deal_id, quedarse con la primera fila (ya viene ordenada por deal_value desc)
         const seenTitles = new Set();
         const uniqueDeals = [];
         for (const lead of data) {
-          if (lead.deal_title && !seenTitles.has(lead.deal_title)) {
-            seenTitles.add(lead.deal_title);
+          if (lead.deal_id && !seenTitles.has(lead.deal_id)) {
+            seenTitles.add(lead.deal_id);
             uniqueDeals.push(lead);
           }
         }
