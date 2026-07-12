@@ -1363,7 +1363,39 @@
       .header {
         flex-direction: column;
         gap: 1rem;
+        align-items: stretch;
+        padding: 1.25rem;
+      }
+
+      .logo-section {
+        gap: 0.75rem;
+      }
+
+      .logo-img {
+        height: 36px;
+      }
+
+      .title-section h1 {
+        font-size: 1.25rem;
+      }
+
+      .update-section {
         align-items: flex-start;
+        text-align: left;
+        width: 100%;
+      }
+
+      .language-selector {
+        align-self: flex-start;
+      }
+
+      .modal-content {
+        padding: 1.5rem;
+        width: 92%;
+      }
+
+      .kpi-card {
+        padding: 1.5rem;
       }
 
       .kpis-grid,
@@ -1423,6 +1455,22 @@
       .section-card {
         padding: 1.5rem;
         border-radius: 16px;
+      }
+    }
+
+    /* Phones chicos: reducir padding de cards para que no se sientan apretadas */
+    @media (max-width: 420px) {
+      .pipeline-contact-card,
+      .deal-card {
+        padding: 1.25rem;
+      }
+
+      .kpi-value {
+        font-size: 2rem;
+      }
+
+      .pipeline-hero-value {
+        font-size: 2rem;
       }
     }
   </style>
