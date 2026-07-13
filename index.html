@@ -906,6 +906,125 @@
       }
     }
 
+    .quick-nav-search-toggle {
+      background: transparent;
+      border: none;
+      font: inherit;
+    }
+
+    .quick-nav-search-toggle.active {
+      background: var(--gold);
+      color: #000000;
+    }
+
+    /* ========== PANEL DE BUSQUEDA GLOBAL ========== */
+    .quick-search-panel {
+      display: none;
+      position: fixed;
+      top: 4.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 499;
+      width: min(480px, calc(100vw - 2rem));
+      background: rgba(15, 15, 15, 0.95);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-hover);
+      border-radius: 20px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .quick-search-panel.open {
+      display: block;
+      animation: fadeInUp 0.2s ease;
+    }
+
+    .quick-search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .quick-search-input-wrap input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .quick-search-input-wrap input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .quick-search-results {
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+
+    .quick-search-result {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      padding: 0.75rem 1.1rem;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.15s;
+    }
+
+    .quick-search-result:last-child {
+      border-bottom: none;
+    }
+
+    .quick-search-result:hover {
+      background: rgba(184, 168, 130, 0.08);
+    }
+
+    .quick-search-result-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .quick-search-result-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .quick-search-result-type {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      margin-right: 0.4rem;
+    }
+
+    .quick-search-result-type.deal {
+      background: rgba(184, 168, 130, 0.15);
+      color: var(--gold-light);
+    }
+
+    .quick-search-result-type.lead {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+
+    .quick-search-empty {
+      padding: 1.5rem 1.1rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg-black);
@@ -1636,7 +1755,19 @@
       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4"/></svg>
       <span data-i18n="navConversations">Conversations</span>
     </a>
+    <button type="button" class="quick-nav-item quick-nav-search-toggle" id="quickNavSearchToggle" title="Search" data-i18n-title="navSearch">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    </button>
   </nav>
+
+  <!-- Panel de busqueda global (deals + leads), se abre desde el navbar -->
+  <div class="quick-search-panel" id="quickSearchPanel">
+    <div class="quick-search-input-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="text" id="quickSearchInput" data-i18n-placeholder="navSearchPlaceholder" placeholder="Search deals, contacts, companies...">
+    </div>
+    <div id="quickSearchResults" class="quick-search-results"></div>
+  </div>
 
   <!-- Layout sin Sidebar - Single Page -->
   <div class="dashboard-layout">
@@ -1956,6 +2087,11 @@
         navFunnel: 'Funnel',
         navDeals: 'Deals',
         navConversations: 'Conversations',
+        navSearch: 'Search',
+        navSearchPlaceholder: 'Search deals, contacts, companies...',
+        navSearchNoResults: 'No matches found',
+        navSearchDeal: 'Deal',
+        navSearchLead: 'Contact',
         dashboardSubtitle: 'Real-time Sales Intelligence',
         live: 'LIVE',
         
@@ -2081,6 +2217,11 @@
         navFunnel: 'Funnel',
         navDeals: 'Deals',
         navConversations: 'Conversaciones',
+        navSearch: 'Buscar',
+        navSearchPlaceholder: 'Buscar deals, contactos, empresas...',
+        navSearchNoResults: 'Sin resultados',
+        navSearchDeal: 'Deal',
+        navSearchLead: 'Contacto',
         dashboardSubtitle: 'Inteligencia de Ventas en Tiempo Real',
         live: 'EN VIVO',
         
@@ -2206,6 +2347,11 @@
         navFunnel: 'Funnel',
         navDeals: 'Deals',
         navConversations: 'Gesprekken',
+        navSearch: 'Zoeken',
+        navSearchPlaceholder: 'Zoek deals, contacten, bedrijven...',
+        navSearchNoResults: 'Geen resultaten',
+        navSearchDeal: 'Deal',
+        navSearchLead: 'Contact',
         dashboardSubtitle: 'Real-time Verkoop Intelligentie',
         live: 'LIVE',
         
@@ -2373,6 +2519,13 @@
           item.title = label;
         }
       });
+
+      // Buscador global
+      const searchToggle = document.getElementById('quickNavSearchToggle');
+      if (searchToggle) searchToggle.title = t('navSearch');
+      const searchInput = document.getElementById('quickSearchInput');
+      if (searchInput) searchInput.placeholder = t('navSearchPlaceholder');
+      if (typeof runQuickSearch === 'function') runQuickSearch();
       
       // KPIs labels
       const kpiLabels = {
@@ -2432,7 +2585,19 @@
     // Legacy: BBDD dedicada de outreach (Pipedrive/SalesRobot/Lemlist, deprecados). Alimenta el funnel de invitations/accepted/positive/meetings.
     const SUPABASE_URL = 'https://mwbkrkoeltsbkbguoemo.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13Ymtya29lbHRzYmtiZ3VvZW1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTg5MzMsImV4cCI6MjA4NjQ3NDkzM30.3DrznzqfbNP3RPYOGcj5uXiqPsSzFnWc5AoKyLk0OS8';
-    const { createClient } = supabase;
+    // Si el CDN de supabase-js falla en cargar (red restrictiva, ad-blocker, outage),
+    // no queremos que TODO el script se corte con un ReferenceError: el nav, el buscador
+    // y el resto de la UI tienen que seguir funcionando aunque los datos no carguen.
+    const createClient = (typeof supabase !== 'undefined' && supabase.createClient) || function offlineCreateClient() {
+      const resolved = { data: null, error: new Error('Supabase client unavailable: supabase-js failed to load') };
+      const proxy = new Proxy({}, {
+        get(_target, prop) {
+          if (prop === 'then') return (resolve) => resolve(resolved);
+          return () => proxy;
+        }
+      });
+      return { from: () => proxy };
+    };
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Main: BBDD principal de la organización (GHL + Pipedrive sincronizados). Alimenta el pipeline comercial real.
@@ -2711,6 +2876,7 @@
         }
       };
 
+      if (typeof ApexCharts === 'undefined') return; // CDN no disponible: el resto del dashboard sigue funcionando
       funnelChartInstance = new ApexCharts(document.querySelector("#funnelChart"), options);
       funnelChartInstance.render();
     }
@@ -3032,6 +3198,118 @@
       }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
 
       sections.forEach(section => observer.observe(section));
+    })();
+
+    // ==========================================
+    // BUSCADOR GLOBAL (deals + leads/conversaciones)
+    // ==========================================
+    function getSearchableItems() {
+      const items = [];
+
+      (_cachedDealsData || []).forEach(deal => {
+        items.push({
+          type: 'deal',
+          title: deal.title,
+          meta: deal.contact && deal.contact !== 'Confidencial' ? deal.contact : ('$' + deal.value.toLocaleString()),
+          searchText: [deal.title, deal.contact].filter(Boolean).join(' ').toLowerCase(),
+          onSelect: () => showDealModal(deal)
+        });
+      });
+
+      (_cachedDealsViewData || []).forEach(lead => {
+        const name = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || lead.email || '—';
+        items.push({
+          type: 'lead',
+          title: name,
+          meta: [lead.company, lead.email].filter(Boolean).join(' · '),
+          searchText: [lead.first_name, lead.last_name, lead.company, lead.email].filter(Boolean).join(' ').toLowerCase(),
+          onSelect: () => showModal(name, [
+            { label: t('thCompany'), value: lead.company || '—' },
+            { label: t('thEmail'), value: lead.email || '—' },
+            { label: t('thStatus'), value: lead.status === 'meeting' ? t('statusMeeting') : t('statusPositive') }
+          ])
+        });
+      });
+
+      return items;
+    }
+
+    function renderQuickSearchResults(query) {
+      const resultsEl = document.getElementById('quickSearchResults');
+      if (!resultsEl) return;
+
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        resultsEl.innerHTML = '';
+        return;
+      }
+
+      const matches = getSearchableItems()
+        .filter(item => item.searchText.includes(q))
+        .slice(0, 20);
+
+      if (matches.length === 0) {
+        resultsEl.innerHTML = `<div class="quick-search-empty">${t('navSearchNoResults')}</div>`;
+        return;
+      }
+
+      resultsEl.innerHTML = matches.map((item, i) => `
+        <div class="quick-search-result" data-index="${i}">
+          <div class="quick-search-result-title">
+            <span class="quick-search-result-type ${item.type}">${item.type === 'deal' ? t('navSearchDeal') : t('navSearchLead')}</span>
+            ${esc(item.title)}
+          </div>
+          ${item.meta ? `<div class="quick-search-result-meta">${esc(item.meta)}</div>` : ''}
+        </div>
+      `).join('');
+
+      resultsEl.querySelectorAll('.quick-search-result').forEach((el, i) => {
+        el.addEventListener('click', () => {
+          matches[i].onSelect();
+          closeQuickSearch();
+        });
+      });
+    }
+
+    function runQuickSearch() {
+      const input = document.getElementById('quickSearchInput');
+      if (input) renderQuickSearchResults(input.value);
+    }
+
+    function openQuickSearch() {
+      document.getElementById('quickSearchPanel').classList.add('open');
+      document.getElementById('quickNavSearchToggle').classList.add('active');
+      const input = document.getElementById('quickSearchInput');
+      input.focus();
+      runQuickSearch();
+    }
+
+    function closeQuickSearch() {
+      document.getElementById('quickSearchPanel').classList.remove('open');
+      document.getElementById('quickNavSearchToggle').classList.remove('active');
+    }
+
+    (function initQuickSearch() {
+      const toggle = document.getElementById('quickNavSearchToggle');
+      const panel = document.getElementById('quickSearchPanel');
+      const input = document.getElementById('quickSearchInput');
+      if (!toggle || !panel || !input) return;
+
+      toggle.addEventListener('click', () => {
+        panel.classList.contains('open') ? closeQuickSearch() : openQuickSearch();
+      });
+
+      input.addEventListener('input', () => renderQuickSearchResults(input.value));
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeQuickSearch();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (panel.classList.contains('open') && !panel.contains(e.target) && !toggle.contains(e.target)) {
+          closeQuickSearch();
+        }
+      });
     })();
 
     // ==========================================
